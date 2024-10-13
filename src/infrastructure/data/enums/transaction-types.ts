@@ -1,0 +1,7 @@
+export enum TransactionTypes {
+    ORDER = 'ORDER_PAYMENT',
+    ORDER_CANCEL = 'ORDER_CANCEL',
+    ORDER_COMMISSION = 'ORDER_COMMISSION',
+    ADMIN_RESET = 'ADMIN_RESET',
+    OTHER = 'OTHER',
+}
