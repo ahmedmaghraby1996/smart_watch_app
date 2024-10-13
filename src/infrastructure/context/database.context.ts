@@ -10,6 +10,7 @@ import { NotificationEntity } from '../entities/notification/notification.entity
 import { WatchUser } from '../entities/watch-user/watch-user.entity';
 import { IMEI } from '../entities/watch-user/IMEI.entity';
 import { School } from '../entities/school/school.entity';
+import { WatchRequest } from '../entities/watch-user/watch-request.entity';
 
 
 
@@ -18,7 +19,7 @@ export const DB_ENTITIES = [
   Address,
   Otp,
   School,
-
+WatchRequest,
   Transaction,
   Wallet,
   NotificationEntity,

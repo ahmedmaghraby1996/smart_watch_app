@@ -1,7 +1,7 @@
 import { AuditableEntity } from "src/infrastructure/base/auditable.entity";
-import { Column, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { WatchUser } from "./watch-user.entity";
-
+@Entity()
 export class WatchRequest extends AuditableEntity{
 
   @ManyToOne(() => WatchUser, (watchUser) => watchUser.requests)
@@ -10,4 +10,11 @@ export class WatchRequest extends AuditableEntity{
 
   @Column()
   watch_user_id: string
+
+
+  @Column()
+  code:number
+
+
+  
 }
