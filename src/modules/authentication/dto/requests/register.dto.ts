@@ -5,6 +5,8 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsStrongPassword,
+  isStrongPassword,
 } from 'class-validator';
 import { Unique } from 'src/core/validators/unique-constraints.validator';
 import { Gender } from 'src/infrastructure/data/enums/gender.enum';
@@ -16,6 +18,11 @@ export class RegisterRequest {
   @IsNotEmpty()
   @IsString()
   name: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsStrongPassword()
+  password: string;
 
 
 

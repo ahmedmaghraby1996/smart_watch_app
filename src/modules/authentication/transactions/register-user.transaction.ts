@@ -60,7 +60,7 @@ export class RegisterUserTransaction extends BaseTransaction<
         user.avatar = path;
       }
       // encrypt password
-      const randomPassword = randStr(12);
+      const randomPassword = req.password || randStr(8);
       user.password = await bcrypt.hash(
         randomPassword + this._config.get('app.key'),
         10,
