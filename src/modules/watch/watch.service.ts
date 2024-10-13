@@ -9,6 +9,7 @@ import { AddWatchUserRequest } from './dto/requests/add-watch-user.request';
 import { FileService } from '../file/file.service';
 import { plainToInstance } from 'class-transformer';
 import { Request } from 'express';
+import { WatchRequest } from 'src/infrastructure/entities/watch-user/watch-request.entity';
 
 @Injectable()
 export class WatchService extends BaseService<WatchUser> {
@@ -17,6 +18,8 @@ export class WatchService extends BaseService<WatchUser> {
     repo: Repository<WatchUser>,
     public file_serivce: FileService,
     @InjectRepository(IMEI) public IMEI_repo: Repository<IMEI>,
+    @InjectRepository(WatchRequest)
+    public watchRequest_repo: Repository<WatchRequest>,
     @Inject(REQUEST) private readonly request: Request,
   ) {
     super(repo);
@@ -61,9 +64,43 @@ export class WatchService extends BaseService<WatchUser> {
   }
 
   async getSchoolWatchUsers() {
-
     return await this._repo.find({
-where:{school_id:this.request.user.school_id}
+      where: { school_id: this.request.user.school_id },
+    });
+  }
+
+  async makeRequest(id: string) {
+    const watch = await this._repo.findOne({
+      where: { id: id },
+    });
+    if (!watch) throw new BadRequestException('message.not_found');
+
+    const request = new WatchRequest();
+    request.watch_user_id = watch.id;
+    //generate random code 6 digit
+
+    request.code = Math.floor(100000 + Math.random() * 900000);
+    await this.watchRequest_repo.save(request);
+    return request;
+  }
+  async getWatchRequests() {
+    return await this.watchRequest_repo.find({
+      where: [
+        { watchUser: { parent_id: this.request.user.id } },
+        { watchUser: { driver_id: this.request.user.id } },
+      ],
+      relations: {
+        watchUser: { parent: true, driver: true },
+      },
+    });
+  }
+
+  async getSchoolWatchRequests() {
+    return await this.watchRequest_repo.find({
+      where: [{ watchUser: { school_id: this.request.user.school_id } }],
+      relations: {
+        watchUser: { parent: true, driver: true },
+      },
     });
   }
 }

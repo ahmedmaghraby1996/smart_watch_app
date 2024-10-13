@@ -1,10 +1,11 @@
 import { Gender } from 'src/infrastructure/data/enums/gender.enum';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { School } from '../school/school.entity';
 import { AuditableEntity } from 'src/infrastructure/base/auditable.entity';
 import { IMEI } from './IMEI.entity';
 import { OwnedEntity } from 'src/infrastructure/base/owned.entity';
 import { User } from '../user/user.entity';
+import { WatchRequest } from './watch-request.entity';
 
 @Entity()
 export class WatchUser extends AuditableEntity {
@@ -12,8 +13,14 @@ export class WatchUser extends AuditableEntity {
   @JoinColumn({ name: 'parent_id' })
   parent: User;
 
+  @OneToMany(() => WatchRequest, (watchRequest) => watchRequest.watchUser)
+  requests: WatchRequest[];
   @Column()
   parent_id: string;
+
+
+  @Column()
+  phone:string
 
 
   @ManyToOne(() => User, (user) => user.clients)

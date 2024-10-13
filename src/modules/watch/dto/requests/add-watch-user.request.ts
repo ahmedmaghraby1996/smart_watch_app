@@ -9,6 +9,11 @@ export class AddWatchUserRequest {
   @ApiProperty()
   @IsString()
   name: string;
+
+  @ApiProperty()
+  @IsString()
+  
+  phone: string;
   @ApiProperty()
   @ApiProperty({ default: Gender.MALE, enum: [Gender.MALE, Gender.FEMALE] })
   @IsEnum(Gender)

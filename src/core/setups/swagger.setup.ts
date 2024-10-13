@@ -36,7 +36,7 @@ export default (app: INestApplication, config: ConfigService) => {
       WatchModule,
       AuthenticationModule,
       UserModule,
-      TransactionModule,
+      // TransactionModule,
     ],
     operationIdFactory,
   });
