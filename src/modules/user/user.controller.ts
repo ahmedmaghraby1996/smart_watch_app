@@ -22,6 +22,11 @@ import { UserService } from './user.service';
 import { UpdateFcmRequest } from './dto/update-fcm.request';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
+import { PaginatedRequest } from 'src/core/base/requests/paginated.request';
+import { PaginatedResponse } from 'src/core/base/responses/paginated.response';
+import { applyQueryIncludes } from 'src/core/helpers/service-related.helper';
+import { plainToInstance } from 'class-transformer';
+import { UserResponse } from './dto/response/user-response';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -37,6 +42,20 @@ export class UserController {
     private userService: UserService,
     @Inject(REQUEST) private request: Request,
   ) {}
+
+
+
+  @Get()
+  async getAll(@Query() query: PaginatedRequest) {
+    applyQueryIncludes(query, 'school');
+    const users=await this.userService.findAll(query);
+    const usersResponse = plainToInstance(
+      UserResponse,
+      users,
+    )
+    const total = await this.userService.count(query);
+    return new PaginatedResponse(usersResponse, { meta: { total, ...query } });
+  }
 
   //update fcm token
   @Put('/fcm-token')
