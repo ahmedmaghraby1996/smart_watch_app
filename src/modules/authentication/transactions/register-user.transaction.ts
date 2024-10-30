@@ -14,6 +14,7 @@ import { Role } from 'src/infrastructure/data/enums/role.enum';
 import { plainToInstance } from 'class-transformer';
 
 import { Wallet } from 'src/infrastructure/entities/wallet/wallet.entity';
+import { School } from 'src/infrastructure/entities/school/school.entity';
 
 @Injectable()
 export class RegisterUserTransaction extends BaseTransaction<
@@ -73,6 +74,13 @@ export class RegisterUserTransaction extends BaseTransaction<
 
 
       // create driver setting if user is a driver
+      if (req.role === Role.School) {
+        await context.save(School, new School({
+          name:savedUser.name,
+          avatar:savedUser.avatar,
+          user: savedUser
+        }));
+      }
 
 
 
