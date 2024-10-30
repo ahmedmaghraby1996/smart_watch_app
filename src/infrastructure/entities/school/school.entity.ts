@@ -5,7 +5,7 @@ import { User } from "../user/user.entity";
 import { OwnedEntity } from "src/infrastructure/base/owned.entity";
 
 @Entity()
-export class School extends OwnedEntity 
+export class School extends AuditableEntity 
 {
 
     @Column()
