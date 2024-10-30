@@ -14,10 +14,7 @@ export class School extends OwnedEntity
     @Column({nullable:true})
     avatar: string
 
-    @OneToOne(()=>User,(user)=>user.school)
-    @JoinColumn()
-    user: User
-
+ 
 
     @OneToMany(()=>User, (user) => user.school)
     security: User[]

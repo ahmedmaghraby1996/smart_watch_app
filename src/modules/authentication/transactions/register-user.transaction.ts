@@ -75,11 +75,13 @@ export class RegisterUserTransaction extends BaseTransaction<
 
       // create driver setting if user is a driver
       if (req.role === Role.School) {
-        await context.save(School, new School({
+     const school =  await context.save(School, new School({
           name:savedUser.name,
           avatar:savedUser.avatar,
-          user: savedUser
+         
         }));
+        savedUser.school = school;
+        await context.save(savedUser);
       }
 
 
