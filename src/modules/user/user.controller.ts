@@ -28,13 +28,13 @@ import { applyQueryIncludes } from 'src/core/helpers/service-related.helper';
 import { plainToInstance } from 'class-transformer';
 import { UserResponse } from './dto/response/user-response';
 
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @ApiHeader({
   name: 'Accept-Language',
   required: false,
   description: 'Language header: en, ar',
 })
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 @ApiTags('Users')
 @Controller('user')
 export class UserController {
