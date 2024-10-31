@@ -27,14 +27,16 @@ import { PaginatedResponse } from 'src/core/base/responses/paginated.response';
 import { applyQueryIncludes } from 'src/core/helpers/service-related.helper';
 import { plainToInstance } from 'class-transformer';
 import { UserResponse } from './dto/response/user-response';
+import { Roles } from '../authentication/guards/roles.decorator';
+import { Role } from 'src/infrastructure/data/enums/role.enum';
 
-// @ApiBearerAuth()
+@ApiBearerAuth()
 @ApiHeader({
   name: 'Accept-Language',
   required: false,
   description: 'Language header: en, ar',
 })
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @ApiTags('Users')
 @Controller('user')
 export class UserController {
@@ -44,7 +46,7 @@ export class UserController {
   ) {}
 
 
-
+@Roles(Role.ADMIN)
   @Get()
   async getAll(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'school');

@@ -38,13 +38,13 @@ import { RolesGuard } from '../authentication/guards/roles.guard';
 import { watch } from 'fs';
 import { IMEI_entity } from 'src/infrastructure/entities/watch-user/IMEI.entity';
 
-// @ApiBearerAuth()
+@ApiBearerAuth()
 @ApiHeader({
   name: 'Accept-Language',
   required: false,
   description: 'Language header: en, ar',
 })
-// @UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Watch')
 @Controller('watch')
 export class WatchController {
