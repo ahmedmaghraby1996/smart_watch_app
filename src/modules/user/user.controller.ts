@@ -49,11 +49,7 @@ export class UserController {
   async getAll(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'school');
     const users=await this.userService.findAll(query);
-    const usersResponse = plainToInstance(
-      UserResponse,
-      users,{
-        excludeExtraneousValues: true,}
-    )
+    const usersResponse = users.map((user) => plainToInstance(UserResponse, {...user,school:user.school}, { excludeExtraneousValues: true }));
     const total = await this.userService.count(query);
     return new PaginatedResponse(usersResponse, { meta: { total, ...query } });
   }

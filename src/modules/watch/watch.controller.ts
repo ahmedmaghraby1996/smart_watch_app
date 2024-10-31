@@ -58,7 +58,7 @@ export class WatchController {
   @Post('insert/:IMEI')
   async insert(@Param('IMEI') IMEI: string) {
     return new ActionResponse(
-       this._service.IMEI_repo.save(new IMEI_entity({ IMEI: IMEI })),
+      await this._service.IMEI_repo.save(new IMEI_entity({ IMEI: IMEI })),
     );
   }
 
