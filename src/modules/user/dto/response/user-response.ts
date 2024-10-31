@@ -17,7 +17,7 @@ export class UserResponse {
     @Expose()
     created_at: Date;
     @Expose()
-   @Transform((school) => school.value.name)
+   @Transform((school) => school?.value?.name)
     school:School
 
 }
