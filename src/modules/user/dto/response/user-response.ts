@@ -18,7 +18,7 @@ export class UserResponse {
   created_at: Date;
   @Expose()
   @Transform(( value ) => {
-    return value !=null? { id: value.obj.school.id, name: value.obj.school.name, avatar: toUrl(value.obj.school.avatar) }
+    return value.obj.school ? { id: value.obj.school.id, name: value.obj.school.name, avatar: toUrl(value.obj.school.avatar) }
       : null;
   })
   school: School;
