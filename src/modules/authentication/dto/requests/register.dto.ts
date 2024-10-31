@@ -34,8 +34,8 @@ export class RegisterRequest {
   email?: string;
   @ApiPropertyOptional()
   @IsOptional()
-  @IsNotEmpty()
-  birth_date:string
+  @IsString()
+  school_id:string
 
   @ApiPropertyOptional()
   @IsOptional()

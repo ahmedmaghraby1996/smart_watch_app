@@ -56,7 +56,7 @@ export class RegisterUserTransaction extends BaseTransaction<
           { buffer: resizedImage, originalname: req.avatarFile.originalname },
           { path: 'avatars' },
         );
-        console.log(path);
+       
         // set avatar path
         user.avatar = path;
       }
@@ -66,6 +66,7 @@ export class RegisterUserTransaction extends BaseTransaction<
         randomPassword + this._config.get('app.key'),
         10,
       );
+      user.school_id= req.school_id;
       user.username = user.phone;
       // set user role
       user.roles = [req.role];
