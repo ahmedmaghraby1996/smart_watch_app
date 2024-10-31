@@ -5,7 +5,7 @@ import { WatchUser } from "./watch-user.entity";
 @Entity()
 export class IMEI_entity extends BaseEntity{
 
-    @Column()
+    @Column({unique:true,})
     IMEI: string
 
     @OneToOne(() => WatchUser, (watchUser) => watchUser.IMEI)

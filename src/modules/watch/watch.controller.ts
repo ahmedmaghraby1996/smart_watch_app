@@ -38,13 +38,13 @@ import { RolesGuard } from '../authentication/guards/roles.guard';
 import { watch } from 'fs';
 import { IMEI_entity } from 'src/infrastructure/entities/watch-user/IMEI.entity';
 
-@ApiBearerAuth()
+// @ApiBearerAuth()
 @ApiHeader({
   name: 'Accept-Language',
   required: false,
   description: 'Language header: en, ar',
 })
-@UseGuards(JwtAuthGuard, RolesGuard)
+// @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Watch')
 @Controller('watch')
 export class WatchController {
@@ -54,12 +54,18 @@ export class WatchController {
     @Inject(REQUEST) private readonly request: Request,
   ) {}
 
-  @Roles(Role.PARENT)
+  @Roles(Role.ADMIN)
   @Post('insert/:IMEI')
   async insert(@Param('IMEI') IMEI: string) {
     return new ActionResponse(
        this._service.IMEI_repo.create(new IMEI_entity({ IMEI: IMEI })),
     );
+  }
+
+  @Roles(Role.ADMIN)
+  @Get('get-all-IMEI')
+  async getAll() {
+    return new ActionResponse(await this._service.IMEI_repo.find());
   }
 
   @Roles(Role.PARENT)
