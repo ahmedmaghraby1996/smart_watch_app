@@ -66,6 +66,7 @@ export class RegisterUserTransaction extends BaseTransaction<
         randomPassword + this._config.get('app.key'),
         10,
       );
+      if(req.role === Role.SECURITY)
       user.school_id= req.school_id;
       user.username = user.phone;
       // set user role
