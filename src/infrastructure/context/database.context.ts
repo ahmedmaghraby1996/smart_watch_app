@@ -8,7 +8,7 @@ import { Transaction } from '../entities/wallet/transaction.entity';
 import { Wallet } from '../entities/wallet/wallet.entity';
 import { NotificationEntity } from '../entities/notification/notification.entity';
 import { WatchUser } from '../entities/watch-user/watch-user.entity';
-import { IMEI } from '../entities/watch-user/IMEI.entity';
+import { IMEI_entity } from '../entities/watch-user/IMEI.entity';
 import { School } from '../entities/school/school.entity';
 import { WatchRequest } from '../entities/watch-user/watch-request.entity';
 
@@ -24,7 +24,7 @@ WatchRequest,
   Wallet,
   NotificationEntity,
   WatchUser,
-  IMEI
+  IMEI_entity
   
 ];
 

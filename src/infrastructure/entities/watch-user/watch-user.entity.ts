@@ -2,7 +2,7 @@ import { Gender } from 'src/infrastructure/data/enums/gender.enum';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { School } from '../school/school.entity';
 import { AuditableEntity } from 'src/infrastructure/base/auditable.entity';
-import { IMEI } from './IMEI.entity';
+import { IMEI_entity } from './IMEI.entity';
 import { OwnedEntity } from 'src/infrastructure/base/owned.entity';
 import { User } from '../user/user.entity';
 import { WatchRequest } from './watch-request.entity';
@@ -30,9 +30,9 @@ export class WatchUser extends AuditableEntity {
   @Column({ nullable: true })
   driver_id: string;
 
-  @OneToOne(() => IMEI, (imei) => imei.watchUser)
+  @OneToOne(() => IMEI_entity, (imei) => imei.watchUser)
   @JoinColumn({ name: 'imei_id' })
-  IMEI: IMEI;
+  IMEI: IMEI_entity;
   @Column({ nullable: true })
   name: string;
 

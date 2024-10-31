@@ -36,6 +36,7 @@ import { Roles } from '../authentication/guards/roles.decorator';
 import { JwtAuthGuard } from '../authentication/guards/jwt-auth.guard';
 import { RolesGuard } from '../authentication/guards/roles.guard';
 import { watch } from 'fs';
+import { IMEI_entity } from 'src/infrastructure/entities/watch-user/IMEI.entity';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -52,6 +53,14 @@ export class WatchController {
 
     @Inject(REQUEST) private readonly request: Request,
   ) {}
+
+  @Roles(Role.PARENT)
+  @Post('insert/:IMEI')
+  async insert(@Param('IMEI') IMEI: string) {
+    return new ActionResponse(
+       this._service.IMEI_repo.create(new IMEI_entity({ IMEI: IMEI })),
+    );
+  }
 
   @Roles(Role.PARENT)
   @Get('check/:IMEI')

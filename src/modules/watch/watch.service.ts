@@ -2,7 +2,7 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/core/base/service/service.base';
-import { IMEI } from 'src/infrastructure/entities/watch-user/IMEI.entity';
+import { IMEI_entity } from 'src/infrastructure/entities/watch-user/IMEI.entity';
 import { WatchUser } from 'src/infrastructure/entities/watch-user/watch-user.entity';
 import { Repository } from 'typeorm/repository/Repository';
 import { AddWatchUserRequest } from './dto/requests/add-watch-user.request';
@@ -17,7 +17,7 @@ export class WatchService extends BaseService<WatchUser> {
     @InjectRepository(WatchUser)
     repo: Repository<WatchUser>,
     public file_serivce: FileService,
-    @InjectRepository(IMEI) public IMEI_repo: Repository<IMEI>,
+    @InjectRepository(IMEI_entity) public IMEI_repo: Repository<IMEI_entity>,
     @InjectRepository(WatchRequest)
     public watchRequest_repo: Repository<WatchRequest>,
     @Inject(REQUEST) private readonly request: Request,

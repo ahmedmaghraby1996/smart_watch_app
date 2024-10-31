@@ -3,11 +3,16 @@ import { Column, Entity, OneToOne } from "typeorm";
 import { WatchUser } from "./watch-user.entity";
 
 @Entity()
-export class IMEI extends BaseEntity{
+export class IMEI_entity extends BaseEntity{
 
     @Column()
     IMEI: string
 
     @OneToOne(() => WatchUser, (watchUser) => watchUser.IMEI)
     watchUser: WatchUser
+
+    constructor(partial: Partial<IMEI_entity>) {
+        super();
+        Object.assign(this, partial);
+      }
  }
