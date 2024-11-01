@@ -13,6 +13,6 @@ export class WatchRequestResponse {
     @Expose()
     code: number
     @Expose()
-    @Transform(({ value }) => plainToInstance(UserResponse, value)) 
+    @Transform(( value ) => plainToInstance(UserResponse, value.obj.user, { excludeExtraneousValues: true })) 
     user: UserResponse
 }
