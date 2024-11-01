@@ -20,5 +20,8 @@ export class WatchRequestResponse {
     watch_user: UserResponse
     @Transform(( value ) => plainToInstance(UserResponse, value.obj.driver, { excludeExtraneousValues: true })) 
     driver: UserResponse
+    @Transform(( value ) => plainToInstance(UserResponse, value.obj.parent, { excludeExtraneousValues: true }))
+    parent: UserResponse
+
     
 }
