@@ -77,6 +77,7 @@ export class WatchService extends BaseService<WatchUser> {
 
     const request = new WatchRequest();
     request.watch_user_id = watch.id;
+    request.user_id = this.request.user.id;
     //generate random code 6 digit
 
     request.code = Math.floor(100000 + Math.random() * 900000);
