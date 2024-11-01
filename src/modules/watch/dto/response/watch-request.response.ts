@@ -12,9 +12,13 @@ export class WatchRequestResponse {
     created_at: Date;
     @Expose()
     code: number
-    @Expose()
+   
     @Transform(( value ) => plainToInstance(UserResponse, value.obj.user, { excludeExtraneousValues: true })) 
     user: UserResponse
+
+    @Expose()
+    @Transform(( value ) => value.obj.watch_user?.parent?.id===value.obj.user.id?true:false) 
+    is_parent: boolean
     @Expose()
     @Transform(( value ) => plainToInstance(UserResponse, value.obj.watch_user, { excludeExtraneousValues: true })) 
     watch_user: UserResponse
