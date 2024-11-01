@@ -110,7 +110,6 @@ export class WatchController {
   @Get('/get-admin-requests')
   async getWatchRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
-    applyQueryIncludes(query, 'school');
  const requests = await this._request_service.findAll(query);
  const total = await this._request_service.count(query);
     return new PaginatedResponse(requests, { meta: { total, ...query } });
