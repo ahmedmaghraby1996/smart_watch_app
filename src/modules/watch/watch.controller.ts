@@ -107,7 +107,7 @@ export class WatchController {
   }
 
   @Roles(Role.ADMIN)
-  @Get('/get-users-requests')
+  @Get('/get-admin-requests')
   async getWatchRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
     applyQueryIncludes(query, 'school');
