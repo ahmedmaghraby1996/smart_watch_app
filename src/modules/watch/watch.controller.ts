@@ -42,6 +42,7 @@ import { WatchRequestService } from './watch-request.service';
 import { PaginatedRequest } from 'src/core/base/requests/paginated.request';
 import { applyQueryIncludes } from 'src/core/helpers/service-related.helper';
 import { PaginatedResponse } from 'src/core/base/responses/paginated.response';
+import { WatchRequestResponse } from './dto/response/watch-request.response';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -96,7 +97,7 @@ export class WatchController {
 
   @Roles(Role.PARENT)
   @Post('make-request')
-  async makeRequest(@Param('/:watch_user_id') watch_user_id: string) {
+  async makeRequest(@Param('watch_user_id') watch_user_id: string) {
     return new ActionResponse(await this._service.makeRequest(watch_user_id));
   }
 
@@ -110,9 +111,13 @@ export class WatchController {
   @Get('/get-admin-requests')
   async getWatchRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
+    applyQueryIncludes(query, 'watch_user');
  const requests = await this._request_service.findAll(query);
  const total = await this._request_service.count(query);
-    return new PaginatedResponse(requests, { meta: { total, ...query } });
+ const result = plainToInstance(WatchRequestResponse, requests, {
+   
+ })
+    return new PaginatedResponse(result, { meta: { total, ...query } });
   }
   @Roles(Role.PARENT, Role.DRIVER)
   @Get('/get-users-requests')
