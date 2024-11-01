@@ -7,6 +7,7 @@ import {
   Inject,
   Param,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -37,6 +38,10 @@ import { JwtAuthGuard } from '../authentication/guards/jwt-auth.guard';
 import { RolesGuard } from '../authentication/guards/roles.guard';
 import { watch } from 'fs';
 import { IMEI_entity } from 'src/infrastructure/entities/watch-user/IMEI.entity';
+import { WatchRequestService } from './watch-request.service';
+import { PaginatedRequest } from 'src/core/base/requests/paginated.request';
+import { applyQueryIncludes } from 'src/core/helpers/service-related.helper';
+import { PaginatedResponse } from 'src/core/base/responses/paginated.response';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -50,6 +55,7 @@ import { IMEI_entity } from 'src/infrastructure/entities/watch-user/IMEI.entity'
 export class WatchController {
   constructor(
     private readonly _service: WatchService,
+    private readonly _request_service: WatchRequestService,
 
     @Inject(REQUEST) private readonly request: Request,
   ) {}
@@ -98,6 +104,16 @@ export class WatchController {
   @Get('/get-users')
   async getWatchUsers() {
     return new ActionResponse(await this._service.getWatchUsers());
+  }
+
+  @Roles(Role.ADMIN)
+  @Get('/get-users-requests')
+  async getWatchRequests(@Query() query: PaginatedRequest) {
+    applyQueryIncludes(query, 'user');
+    applyQueryIncludes(query, 'school');
+ const requests = await this._request_service.findAll(query);
+ const total = await this._request_service.count(query);
+    return new PaginatedResponse(requests, { meta: { total, ...query } });
   }
   @Roles(Role.PARENT, Role.DRIVER)
   @Get('/get-users-requests')

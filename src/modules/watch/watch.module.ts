@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { WatchController } from './watch.controller';
 import { WatchService } from './watch.service';
 import { FileService } from '../file/file.service';
+import { WatchRequest } from 'src/infrastructure/entities/watch-user/watch-request.entity';
+import { WatchRequestService } from './watch-request.service';
 
 @Module({
   controllers: [WatchController],
-  providers: [WatchService,FileService],
+  providers: [WatchService,FileService,WatchRequestService],
 })
 export class WatchModule {}
