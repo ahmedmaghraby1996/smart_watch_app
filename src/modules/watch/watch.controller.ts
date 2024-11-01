@@ -118,14 +118,14 @@ export class WatchController {
   @Roles(Role.PARENT, Role.DRIVER)
   @Get('/get-users-requests')
   async getWatchUsersRequests() {
-    return new ActionResponse(await this._service.getWatchUsers());
+    return new ActionResponse(await this._service.getWatchRequests());
   }
 
   @Roles(Role.SECURITY)
   @Roles(Role.PARENT, Role.DRIVER)
   @Get('/get-school-users-requests')
   async getSchoolWatchUsersRequests() {
-    return new ActionResponse(await this._service.getSchoolWatchUsers());
+    return new ActionResponse(await this._service.getSchoolWatchRequests());
   }
 
   @Roles(Role.SECURITY)
