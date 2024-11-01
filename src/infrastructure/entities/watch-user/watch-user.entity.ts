@@ -13,7 +13,7 @@ export class WatchUser extends AuditableEntity {
   @JoinColumn({ name: 'parent_id' })
   parent: User;
 
-  @OneToMany(() => WatchRequest, (watchRequest) => watchRequest.watchUser)
+  @OneToMany(() => WatchRequest, (watchRequest) => watchRequest.watch_user)
   requests: WatchRequest[];
   @Column()
   parent_id: string;

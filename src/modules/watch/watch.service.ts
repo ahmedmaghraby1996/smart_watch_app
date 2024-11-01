@@ -87,20 +87,20 @@ export class WatchService extends BaseService<WatchUser> {
   async getWatchRequests() {
     return await this.watchRequest_repo.find({
       where: [
-        { watchUser: { parent_id: this.request.user.id } },
-        { watchUser: { driver_id: this.request.user.id } },
+        { watch_user: { parent_id: this.request.user.id } },
+        { watch_user: { driver_id: this.request.user.id } },
       ],
       relations: {
-        watchUser: { parent: true, driver: true },
+        watch_user: { parent: true, driver: true },
       },
     });
   }
 
   async getSchoolWatchRequests() {
     return await this.watchRequest_repo.find({
-      where: [{ watchUser: { school_id: this.request.user.school_id } }],
+      where: [{ watch_user: { school_id: this.request.user.school_id } }],
       relations: {
-        watchUser: { parent: true, driver: true },
+        watch_user: { parent: true, driver: true },
       },
     });
   }

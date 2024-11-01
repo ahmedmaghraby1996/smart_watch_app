@@ -11,7 +11,7 @@ export class WatchRequest extends OwnedEntity{
 
   @ManyToOne(() => WatchUser, (watchUser) => watchUser.requests)
   @JoinColumn({ name: 'watch_user_id' })
-  watchUser: WatchUser 
+  watch_user: WatchUser 
 
   @Column()
   watch_user_id: string

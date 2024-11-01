@@ -112,6 +112,8 @@ export class WatchController {
   async getWatchRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
     applyQueryIncludes(query, 'watch_user');
+    applyQueryIncludes(query, 'watch_user.school');
+    applyQueryIncludes(query, 'watch_user.driver');
  const requests = await this._request_service.findAll(query);
  const total = await this._request_service.count(query);
  const result = plainToInstance(WatchRequestResponse, requests, {
