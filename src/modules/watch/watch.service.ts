@@ -10,6 +10,8 @@ import { FileService } from '../file/file.service';
 import { plainToInstance } from 'class-transformer';
 import { Request } from 'express';
 import { WatchRequest } from 'src/infrastructure/entities/watch-user/watch-request.entity';
+import { ConfirmRequest } from './dto/requests/confirm-request';
+import { RequestStatus } from 'src/infrastructure/data/enums/reservation-status.eum';
 
 @Injectable()
 export class WatchService extends BaseService<WatchUser> {
@@ -71,6 +73,17 @@ export class WatchService extends BaseService<WatchUser> {
     });
   }
 
+
+  async confirmRequest(req: ConfirmRequest) {
+    const request = await this.watchRequest_repo.findOne({
+      where: { id: req.request_id ,code: req.code},
+    });
+    if (!request) throw new BadRequestException('invalid code');
+    request.status = RequestStatus.COMPLETED;
+    await this.watchRequest_repo.save(request);
+    return request;
+    
+  }
   async makeRequest(id: string) {
     const watch = await this._repo.findOne({
       where: { id: id },

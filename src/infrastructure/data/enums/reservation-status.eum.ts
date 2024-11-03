@@ -1,11 +1,10 @@
-export enum ReservationStatus {
+export enum RequestStatus {
    
     // CONFIRMED = 'CONFIRMED',
-    CREATED = 'CREATED',
-    CANCELED = 'CANCELED',
-    STARTED="STARTED",
-    COMPLETED='COMPLETED',
-    SCHEDULED='SCHEDULED',
+    PEDNING = 'PEDNING',
+    COMPLETED = 'COMPLETED',
+    
+    
 
 
   }

@@ -45,6 +45,7 @@ import { PaginatedResponse } from 'src/core/base/responses/paginated.response';
 import { WatchRequestResponse } from './dto/response/watch-request.response';
 import { UserResponse } from '../user/dto/response/user-response';
 import { WatchUserResponse } from './dto/response/watch-user.response';
+import { ConfirmRequest } from './dto/requests/confirm-request';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -101,6 +102,12 @@ export class WatchController {
   @Post('make-request')
   async makeRequest(@Param('watch_user_id') watch_user_id: string) {
     return new ActionResponse(await this._service.makeRequest(watch_user_id));
+  }
+
+  @Roles(Role.SECURITY)
+  @Post('confirm-request')
+  async confirmRequest(@Body() req: ConfirmRequest) {
+    return new ActionResponse(await this._service.confirmRequest(req));
   }
 
   @Roles(Role.PARENT, Role.DRIVER)
