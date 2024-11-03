@@ -40,9 +40,11 @@ import { watch } from 'fs';
 import { IMEI_entity } from 'src/infrastructure/entities/watch-user/IMEI.entity';
 import { WatchRequestService } from './watch-request.service';
 import { PaginatedRequest } from 'src/core/base/requests/paginated.request';
-import { applyQueryIncludes } from 'src/core/helpers/service-related.helper';
+import { applyQueryFilters, applyQueryIncludes } from 'src/core/helpers/service-related.helper';
 import { PaginatedResponse } from 'src/core/base/responses/paginated.response';
 import { WatchRequestResponse } from './dto/response/watch-request.response';
+import { UserResponse } from '../user/dto/response/user-response';
+import { WatchUserResponse } from './dto/response/watch-user.response';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -104,7 +106,7 @@ export class WatchController {
   @Roles(Role.PARENT, Role.DRIVER)
   @Get('/get-users')
   async getWatchUsers() {
-    return new ActionResponse(await this._service.getWatchUsers());
+    return new ActionResponse(plainToInstance( WatchUserResponse,await this._service.getWatchUsers()));
   }
 
   @Roles(Role.ADMIN)
@@ -122,20 +124,38 @@ export class WatchController {
   }
   @Roles(Role.PARENT, Role.DRIVER)
   @Get('/get-users-requests')
-  async getWatchUsersRequests() {
-    return new ActionResponse(await this._service.getWatchRequests());
+  async getWatchUsersRequests(@Query() query: PaginatedRequest) {
+    applyQueryIncludes(query, 'user');
+    applyQueryIncludes(query, 'watch_user#school.driver.parent');
+    applyQueryFilters(query,`watch_user.driver_id=${this.request.user.id}`);
+    applyQueryFilters(query,`watch_user.parent_id=${this.request.user.id}`);
+ const requests = await this._request_service.findAll(query);
+ const total = await this._request_service.count(query);
+ const result = plainToInstance(WatchRequestResponse, requests, {
+   
+ })
+    return new PaginatedResponse(result, { meta: { total, ...query } });
   }
 
   @Roles(Role.SECURITY)
-  @Roles(Role.PARENT, Role.DRIVER)
+
   @Get('/get-school-users-requests')
-  async getSchoolWatchUsersRequests() {
-    return new ActionResponse(await this._service.getSchoolWatchRequests());
+  async getSchoolWatchUsersRequests(@Query() query: PaginatedRequest) {
+    applyQueryIncludes(query, 'user');
+    applyQueryIncludes(query, 'watch_user#school.driver.parent');
+    applyQueryFilters(query,`watch_user.school_id=${this.request.user.school_id}`);
+
+ const requests = await this._request_service.findAll(query);
+ const total = await this._request_service.count(query);
+ const result = plainToInstance(WatchRequestResponse, requests, {
+   
+ })
+    return new PaginatedResponse(result, { meta: { total, ...query } });
   }
 
   @Roles(Role.SECURITY)
   @Get('/get-school-users')
   async getSchoolWatchUsers() {
-    return new ActionResponse(await this._service.getWatchUsers());
+    return new ActionResponse(plainToInstance(WatchUserResponse, await this._service.getWatchUsers()));
   }
 }
