@@ -3,6 +3,7 @@ import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { WatchUser } from "./watch-user.entity";
 import { OwnedEntity } from "src/infrastructure/base/owned.entity";
 import { User } from "../user/user.entity";
+import { RequestStatus } from "src/infrastructure/data/enums/reservation-status.eum";
 @Entity()
 export class WatchRequest extends OwnedEntity{
   @ManyToOne(() => User, (user) => user.requests)
@@ -16,6 +17,8 @@ export class WatchRequest extends OwnedEntity{
   @Column()
   watch_user_id: string
 
+  @Column({enum:RequestStatus})
+  status:RequestStatus
 
   @Column()
   code:number
