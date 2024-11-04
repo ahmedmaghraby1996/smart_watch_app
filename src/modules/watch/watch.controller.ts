@@ -38,7 +38,7 @@ import { JwtAuthGuard } from '../authentication/guards/jwt-auth.guard';
 import { RolesGuard } from '../authentication/guards/roles.guard';
 import { watch } from 'fs';
 import { IMEI_entity } from 'src/infrastructure/entities/watch-user/IMEI.entity';
-import { WatchRequestService } from './watch-request.service';
+import { IMEIService, WatchRequestService } from './watch-request.service';
 import { PaginatedRequest } from 'src/core/base/requests/paginated.request';
 import { applyQueryFilters, applyQueryIncludes } from 'src/core/helpers/service-related.helper';
 import { PaginatedResponse } from 'src/core/base/responses/paginated.response';
@@ -60,6 +60,7 @@ export class WatchController {
   constructor(
     private readonly _service: WatchService,
     private readonly _request_service: WatchRequestService,
+    private readonly _IMEI_service: IMEIService,
 
     @Inject(REQUEST) private readonly request: Request,
   ) {}
@@ -74,8 +75,14 @@ export class WatchController {
 
   @Roles(Role.ADMIN)
   @Get('get-all-IMEI')
-  async getAll() {
-    return new ActionResponse(await this._service.IMEI_repo.find());
+  async getAll(@Query() query: PaginatedRequest) {
+    applyQueryIncludes(query, 'watch_user');
+    const IMEI = await this._IMEI_service.findAll(query);
+    const total = await this._service.IMEI_repo.count(query);
+    const result = IMEI.map((IMEI) => plainToInstance(WatchUserResponse, IMEI.watchUser, {
+      
+    }))
+    return new PaginatedResponse(result, { meta: { total: total, ...query } });
   }
 
   @Roles(Role.PARENT)
