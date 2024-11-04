@@ -78,7 +78,7 @@ export class WatchController {
   async getAll(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'watch_user');
     const IMEI = await this._IMEI_service.findAll(query);
-    const total = await this._service.IMEI_repo.count(query);
+    const total = await this._IMEI_service.count(query);
     const result = IMEI.map((IMEI) => plainToInstance(WatchUserResponse, IMEI.watch_user, {
       
     }))
