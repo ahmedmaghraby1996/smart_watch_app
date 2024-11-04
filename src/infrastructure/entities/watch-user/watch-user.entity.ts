@@ -30,7 +30,7 @@ export class WatchUser extends AuditableEntity {
   @Column({ nullable: true })
   driver_id: string;
 
-  @OneToOne(() => IMEI_entity, (imei) => imei.watchUser)
+  @OneToOne(() => IMEI_entity, (imei) => imei.watch_user)
   @JoinColumn({ name: 'imei_id' })
   IMEI: IMEI_entity;
   @Column({ nullable: true })

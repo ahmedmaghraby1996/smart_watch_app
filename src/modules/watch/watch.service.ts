@@ -32,7 +32,7 @@ export class WatchService extends BaseService<WatchUser> {
       where: { IMEI: IMEI },
       relations: ['watchUser'],
     });
-    if (!watch || watch.watchUser) return false;
+    if (!watch || watch.watch_user) return false;
     return true;
   }
 
@@ -41,7 +41,7 @@ export class WatchService extends BaseService<WatchUser> {
       where: { IMEI: req.IMEI },
       relations: ['watchUser'],
     });
-    if (!watch || watch.watchUser)
+    if (!watch || watch.watch_user)
       throw new BadRequestException('message.IMEI_already_exist');
 
     const avatar = await this.file_serivce.upload(req.avatarFile, 'avatars');

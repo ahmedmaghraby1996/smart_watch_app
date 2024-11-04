@@ -9,7 +9,7 @@ export class IMEI_entity extends BaseEntity{
     IMEI: string
 
     @OneToOne(() => WatchUser, (watchUser) => watchUser.IMEI)
-    watchUser: WatchUser
+    watch_user: WatchUser
 
     constructor(partial: Partial<IMEI_entity>) {
         super();
