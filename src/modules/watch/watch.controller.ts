@@ -141,8 +141,7 @@ export class WatchController {
   async getWatchUsersRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
     applyQueryIncludes(query, 'watch_user#school.driver.parent');
-    applyQueryFilters(query,`watch_user.driver_id=${this.request.user.id}`);
-    applyQueryFilters(query,`watch_user.parent_id=${this.request.user.id}`);
+    applyQueryFilters(query,`watch_user.driver_id=${this.request.user.id}` ,[`watch_user.parent_id=${this.request.user.id}`]);
  const requests = await this._request_service.findAll(query);
  const total = await this._request_service.count(query);
  const result = plainToInstance(WatchRequestResponse, requests, {
