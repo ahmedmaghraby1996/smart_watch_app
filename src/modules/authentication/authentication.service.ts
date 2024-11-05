@@ -70,7 +70,16 @@ export class AuthenticationService {
     };
   }
   async googleSignin(req: GoogleSigninRequest) {
-  this._firebase_admin_service.validateToken(req.token);
+
+    fetch(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${req.token}`)
+    .then(response => response.json())
+    .then(userInfo => {
+      console.log("User Info:", userInfo);
+      // userInfo will contain user details such as id, email, name, etc.
+    })
+    .catch(error => {
+      console.error("Error fetching user info:", error);
+    });
   }
 
   async register(req: any) {
