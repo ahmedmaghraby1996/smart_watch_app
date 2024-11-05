@@ -106,7 +106,7 @@ export class WatchController {
   }
 
   @Roles(Role.PARENT)
-  @Post('make-request')
+  @Post('make-request/:watch_user_id')
   async makeRequest(@Param('watch_user_id') watch_user_id: string) {
     return new ActionResponse(await this._service.makeRequest(watch_user_id));
   }
