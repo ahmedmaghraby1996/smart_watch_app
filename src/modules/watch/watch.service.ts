@@ -39,7 +39,7 @@ export class WatchService extends BaseService<WatchUser> {
   async addWatchUser(req: AddWatchUserRequest) {
     const watch = await this.IMEI_repo.findOne({
       where: { IMEI: req.IMEI },
-      relations: ['watchUser'],
+      relations: {watch_user: true},
     });
     if (!watch || watch.watch_user)
       throw new BadRequestException('message.IMEI_already_exist');
