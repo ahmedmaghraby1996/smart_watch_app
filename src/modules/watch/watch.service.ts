@@ -86,7 +86,8 @@ export class WatchService extends BaseService<WatchUser> {
   }
   async makeRequest(id: string) {
     const watch = await this._repo.findOne({
-      where: { id: id },
+      where:[ { id: id , parent_id: this.request.user.id},{ id: id , driver_id: this.request.user.id}]
+      
     });
     if (!watch) throw new BadRequestException('message.not_found');
 
