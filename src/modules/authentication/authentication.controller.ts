@@ -43,7 +43,7 @@ export class AuthenticationController {
     const authData = await this.authService.login(
       await this.authService.validateUser(req),
     );
-    const result = plainToInstance(AuthResponse, authData, {
+    const result = plainToInstance(AuthResponse, {...authData,role:authData.roles[0]}, {
       excludeExtraneousValues: true,
     });
     return new ActionResponse<AuthResponse>(result);
