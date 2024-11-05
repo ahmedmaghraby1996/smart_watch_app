@@ -21,7 +21,7 @@ import { UploadValidator } from 'src/core/validators/upload.validator';
 import { AuthenticationService } from './authentication.service';
 import { RegisterRequest } from './dto/requests/register.dto';
 import { SendOtpRequest } from './dto/requests/send-otp.dto';
-import { LoginRequest } from './dto/requests/signin.dto';
+import { GoogleSigninRequest, LoginRequest } from './dto/requests/signin.dto';
 import { VerifyOtpRequest } from './dto/requests/verify-otp.dto';
 import { AuthResponse } from './dto/responses/auth.response';
 import { RegisterResponse } from './dto/responses/register.response';
@@ -48,6 +48,14 @@ export class AuthenticationController {
     });
     return new ActionResponse<AuthResponse>(result);
   }
+
+  @Post("google-sign-in")
+  async googleSignin(
+    @Body() req: GoogleSigninRequest,
+  ) {
+   await this.authService.googleSignin(req);
+  }
+
 
 
  

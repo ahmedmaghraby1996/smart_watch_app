@@ -10,3 +10,13 @@ export class LoginRequest {
     @IsNotEmpty() @IsString()
     password: string;
 }
+
+export class GoogleSigninRequest {
+    @ApiProperty()
+    @IsNotEmpty() @IsString()
+    token: string;
+
+    // @ApiProperty()
+    // @IsNotEmpty() @IsString()
+    // password: string;
+}

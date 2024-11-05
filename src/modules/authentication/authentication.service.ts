@@ -1,6 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { LoginRequest } from './dto/requests/signin.dto';
+import { GoogleSigninRequest, LoginRequest } from './dto/requests/signin.dto';
 import { Inject } from '@nestjs/common/decorators';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
@@ -20,6 +20,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 
 import { Wallet } from 'src/infrastructure/entities/wallet/wallet.entity';
+import { FirebaseAdminService } from '../notification/firebase-admin-service';
 
 @Injectable()
 export class AuthenticationService {
@@ -36,6 +37,7 @@ export class AuthenticationService {
 
 
     @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
+    private readonly _firebase_admin_service: FirebaseAdminService,
  
     @Inject(ConfigService) private readonly _config: ConfigService,
   ) {}
@@ -66,6 +68,9 @@ export class AuthenticationService {
       ...user,
       access_token: this.jwtService.sign(payload, jwtSignOptions(this._config)),
     };
+  }
+  async googleSignin(req: GoogleSigninRequest) {
+  this._firebase_admin_service.validateToken(req.token);
   }
 
   async register(req: any) {

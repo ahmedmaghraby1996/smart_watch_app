@@ -15,6 +15,7 @@ import { NotificationService } from '../notification/services/notification.servi
 import { FcmIntegrationService } from 'src/integration/notify/fcm-integration.service';
 
 import { TransactionService } from '../transaction/transaction.service';
+import { FirebaseAdminService } from '../notification/firebase-admin-service';
 
 @Global()
 @Module({
@@ -27,7 +28,6 @@ import { TransactionService } from '../transaction/transaction.service';
     VerifyOtpTransaction,
     JwtService,
     JwtStrategy,
-  
     FileService,
     NotificationService,
     FcmIntegrationService
