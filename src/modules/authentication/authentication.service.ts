@@ -12,7 +12,7 @@ import { SendOtpTransaction } from './transactions/send-otp.transaction';
 import { UserService } from '../user/user.service';
 import { VerifyOtpTransaction } from './transactions/verify-otp.transaction';
 import { jwtSignOptions } from 'src/core/setups/jwt.setup';
-
+import axios from 'axios';
 import { Role } from 'src/infrastructure/data/enums/role.enum';
 
 import { Repository } from 'typeorm';
@@ -71,15 +71,17 @@ export class AuthenticationService {
   }
   async googleSignin(req: GoogleSigninRequest) {
 
-    fetch(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${req.token}`)
-    .then(response => response.json())
-    .then(userInfo => {
-      console.log("User Info:", userInfo);
-      // userInfo will contain user details such as id, email, name, etc.
-    })
-    .catch(error => {
-      console.error("Error fetching user info:", error);
-    });
+     
+
+    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${req.token}`)
+      .then(response => {
+        const userInfo = response.data;
+        console.log("User Info:", userInfo);
+      })
+      .catch(error => {
+        console.error("Error fetching user info:", error);
+      });
+    
   }
 
   async register(req: any) {
