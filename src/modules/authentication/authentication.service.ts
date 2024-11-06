@@ -82,7 +82,7 @@ export class AuthenticationService {
         })
 
         if (!user) {
-          const newUser = new User({...userInfo,role: req.role,username: userInfo.email});
+          const newUser = new User({...userInfo,role: req.role,username: userInfo.email,avatar:userInfo.picture});
           return await this.userService._repo.save(newUser);
         }
         else
