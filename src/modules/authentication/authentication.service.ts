@@ -75,7 +75,7 @@ export class AuthenticationService {
       )
       .then(async (response) => {
         const userInfo = response.data;
-        console.log('User Info:', userInfo);
+     
 
         const user = await this.userService._repo.findOneBy({
         id: userInfo.id,
@@ -83,10 +83,10 @@ export class AuthenticationService {
 
         if (!user) {
           const newUser = new User({...userInfo,role: req.role,username: userInfo.email,avatar:userInfo.picture});
-          return await this.userService._repo.save(newUser);
+          return await {...this.userService._repo.save(newUser),access_token: this.jwtService.sign({ username: userInfo.email, sub: userInfo.id }, jwtSignOptions(this._config))};
         }
         else
-        return user;
+        return {...user,access_token: this.jwtService.sign({ username: userInfo.email, sub: userInfo.id }, jwtSignOptions(this._config))};
       })
      
       .catch((error) => {
