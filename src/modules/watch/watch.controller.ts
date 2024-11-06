@@ -137,7 +137,7 @@ export class WatchController {
  })
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
-  @Roles(Role.PARENT, Role.DRIVER)
+  @Roles(Role.PARENT, Role.DRIVER, Role.SECURITY)
   @Get('/get-users-requests')
   async getWatchUsersRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
