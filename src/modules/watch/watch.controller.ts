@@ -168,9 +168,20 @@ export class WatchController {
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
 
-  @Roles(Role.SECURITY)
+ 
+  @Roles(Role.School)
   @Get('/get-school-users')
-  async getSchoolWatchUsers() {
-    return new ActionResponse(plainToInstance(WatchUserResponse, await this._service.getWatchUsers()));
+  async getSchoolWatchUsers(@Query() query: PaginatedRequest) {
+    applyQueryIncludes(query, 'school');
+    applyQueryIncludes(query, 'driver');
+    applyQueryIncludes(query, 'parent');
+    applyQueryFilters(query,`school_id=${this.request.user.school_id}`);
+ const watch_users = await this._service.findAll(query);
+ const total = await this._service.count(query);
+ const result = plainToInstance(WatchUserResponse, watch_users, {
+   
+ })
+    return new PaginatedResponse(result, { meta: { total, ...query } });
+ 
   }
 }
