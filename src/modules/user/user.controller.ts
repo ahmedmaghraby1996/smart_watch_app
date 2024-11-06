@@ -51,6 +51,7 @@ export class UserController {
   async getAll(@Query() query: PaginatedRequest) {
     if(this.request.user.roles[0]==Role.School){
       applyQueryFilters(query,`school_id=${this.request.user.school_id}`);
+      applyQueryFilters(query,`roles=${Role.SECURITY}`);
     }
     applyQueryIncludes(query, 'school');
     const users=await this.userService.findAll(query);
