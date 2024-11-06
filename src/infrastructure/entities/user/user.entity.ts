@@ -20,6 +20,7 @@ import { Transaction } from '../wallet/transaction.entity';
 import { WatchUser } from '../watch-user/watch-user.entity';
 import { School } from '../school/school.entity';
 import { WatchRequest } from '../watch-user/watch-request.entity';
+import { SuggestionsComplaints } from '../suggestions-complaints/suggestions-complaints.entity';
 
 @Entity()
 export class User extends AuditableEntity {
@@ -38,6 +39,9 @@ export class User extends AuditableEntity {
   @Column({ length: 100 })
   name: string;
 
+  @OneToMany(() => SuggestionsComplaints, (suggestionsComplaints) => suggestionsComplaints.user)
+  suggestionsComplaints: SuggestionsComplaints[];
+  
   @OneToMany(() => WatchRequest, (watchRequest) => watchRequest.user)
   requests: WatchRequest[];
     

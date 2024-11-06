@@ -11,6 +11,10 @@ import { WatchUser } from '../entities/watch-user/watch-user.entity';
 import { IMEI_entity } from '../entities/watch-user/IMEI.entity';
 import { School } from '../entities/school/school.entity';
 import { WatchRequest } from '../entities/watch-user/watch-request.entity';
+import { SuggestionsComplaints } from '../entities/suggestions-complaints/suggestions-complaints.entity';
+import { FaqQuestion } from '../entities/faq/faq_question';
+import { StaticPage } from '../entities/static-pages/static-pages.entity';
+import { ContactUs } from '../entities/contact-us/contact-us.entity';
 
 
 
@@ -24,7 +28,11 @@ WatchRequest,
   Wallet,
   NotificationEntity,
   WatchUser,
-  IMEI_entity
+  IMEI_entity,
+  SuggestionsComplaints,
+  FaqQuestion,
+  StaticPage,
+  ContactUs
   
 ];
 
