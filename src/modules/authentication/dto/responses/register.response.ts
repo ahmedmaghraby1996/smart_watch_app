@@ -18,7 +18,10 @@ export class RegisterResponse {
     @Expose() gender: string;
     @Expose() role: Role;
     @Expose() language: string;
+    @Expose() school_id: string;
     @Expose() fcm_token: string;
+    
+    
 
     // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
    
