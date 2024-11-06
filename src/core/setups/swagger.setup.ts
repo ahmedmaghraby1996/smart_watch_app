@@ -4,6 +4,10 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 
 import { AuthenticationModule } from 'src/modules/authentication/authentication.module';
+import { ContactUsModule } from 'src/modules/contact-us/contact-us.module';
+import { FaqModule } from 'src/modules/faq/faq.module';
+import { StaticPageModule } from 'src/modules/static-page/static-page.module';
+import { SuggestionsComplaintsModule } from 'src/modules/suggestions-complaints/suggestions-complaints.module';
 
 
 import { TransactionModule } from 'src/modules/transaction/transaction.module';
@@ -36,6 +40,10 @@ export default (app: INestApplication, config: ConfigService) => {
       WatchModule,
       AuthenticationModule,
       UserModule,
+      SuggestionsComplaintsModule,
+      StaticPageModule,
+      ContactUsModule,
+      FaqModule,
       // TransactionModule,
     ],
     operationIdFactory,
