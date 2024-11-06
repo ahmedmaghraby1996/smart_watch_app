@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { Role } from "src/infrastructure/data/enums/role.enum";
 
 export class LoginRequest {
     @ApiProperty()
@@ -16,7 +17,8 @@ export class GoogleSigninRequest {
     @IsNotEmpty() @IsString()
     token: string;
 
-    // @ApiProperty()
-    // @IsNotEmpty() @IsString()
-    // password: string;
+    @ApiProperty({ default: Role.PARENT, enum: [Role.PARENT, Role.SECURITY,Role.DRIVER ,Role.School] })
+    @IsNotEmpty()
+    @IsEnum(Role)
+    role: Role;
 }

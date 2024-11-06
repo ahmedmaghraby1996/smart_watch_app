@@ -18,15 +18,15 @@ import { Role } from 'src/infrastructure/data/enums/role.enum';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-
 import { Wallet } from 'src/infrastructure/entities/wallet/wallet.entity';
 import { FirebaseAdminService } from '../notification/firebase-admin-service';
+import { User } from 'src/infrastructure/entities/user/user.entity';
 
 @Injectable()
 export class AuthenticationService {
   constructor(
     @Inject(UserService) private readonly userService: UserService,
- 
+
     @Inject(RegisterUserTransaction)
     private readonly registerUserTransaction: RegisterUserTransaction,
     @Inject(SendOtpTransaction)
@@ -35,10 +35,9 @@ export class AuthenticationService {
     private readonly verifyOtpTransaction: VerifyOtpTransaction,
     @Inject(JwtService) private readonly jwtService: JwtService,
 
-
     @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
     private readonly _firebase_admin_service: FirebaseAdminService,
- 
+
     @Inject(ConfigService) private readonly _config: ConfigService,
   ) {}
 
@@ -70,27 +69,33 @@ export class AuthenticationService {
     };
   }
   async googleSignin(req: GoogleSigninRequest) {
-
-     
-
-    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${req.token}`)
-      .then(response => {
+    axios
+      .get(
+        `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${req.token}`,
+      )
+      .then(async (response) => {
         const userInfo = response.data;
-        console.log("User Info:", userInfo);
+        console.log('User Info:', userInfo);
+
+        const user = await this.userService._repo.findOneBy({
+        id: userInfo.id,
+        })
+
+        if (!user) {
+          const newUser = new User({...userInfo,role: req.role});
+          return await this.userService._repo.save(newUser);
+        }
+        return user;
       })
-      .catch(error => {
-        console.error("Error fetching user info:", error);
+     
+      .catch((error) => {
+        return error.response.data;
       });
-    
   }
 
   async register(req: any) {
     const user = await this.registerUserTransaction.run(req);
 
-    
-
- 
-  
     return user;
   }
 
