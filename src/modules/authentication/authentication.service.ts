@@ -69,7 +69,7 @@ export class AuthenticationService {
     };
   }
   async googleSignin(req: GoogleSigninRequest) {
-    axios
+  return  axios
       .get(
         `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${req.token}`,
       )

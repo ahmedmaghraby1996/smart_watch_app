@@ -53,11 +53,7 @@ export class AuthenticationController {
   async googleSignin(
     @Body() req: GoogleSigninRequest,
   ) {
-    try {
-  return await this.authService.googleSignin(req);}
-    catch (error) {
-      return error
-    }
+  return await this.authService.googleSignin(req);
   }
 
 
