@@ -85,6 +85,7 @@ export class AuthenticationService {
           const newUser = new User({...userInfo,role: req.role,username: userInfo.email});
           return await this.userService._repo.save(newUser);
         }
+        else
         return user;
       })
      
