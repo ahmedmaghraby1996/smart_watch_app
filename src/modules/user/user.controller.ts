@@ -24,7 +24,7 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { PaginatedRequest } from 'src/core/base/requests/paginated.request';
 import { PaginatedResponse } from 'src/core/base/responses/paginated.response';
-import { applyQueryIncludes } from 'src/core/helpers/service-related.helper';
+import { applyQueryFilters, applyQueryIncludes } from 'src/core/helpers/service-related.helper';
 import { plainToInstance } from 'class-transformer';
 import { UserResponse } from './dto/response/user-response';
 import { Roles } from '../authentication/guards/roles.decorator';
@@ -46,9 +46,12 @@ export class UserController {
   ) {}
 
 
-@Roles(Role.ADMIN)
+@Roles(Role.ADMIN,Role.School)
   @Get()
   async getAll(@Query() query: PaginatedRequest) {
+    if(this.request.user.roles[0]==Role.School){
+      applyQueryFilters(query,`school_id=${this.request.user.school_id}`);
+    }
     applyQueryIncludes(query, 'school');
     const users=await this.userService.findAll(query);
     const usersResponse = users.map((user) => plainToInstance(UserResponse, {...user,school:user.school}, { excludeExtraneousValues: true }));
