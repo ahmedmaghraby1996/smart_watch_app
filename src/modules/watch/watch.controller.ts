@@ -152,7 +152,7 @@ export class WatchController {
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
 
-  @Roles(Role.SECURITY)
+  @Roles(Role.SECURITY,Role.School)
 
   @Get('/get-school-users-requests')
   async getSchoolWatchUsersRequests(@Query() query: PaginatedRequest) {
