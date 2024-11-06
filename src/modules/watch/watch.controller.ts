@@ -143,7 +143,22 @@ export class WatchController {
     applyQueryIncludes(query, 'user');
     applyQuerySort(query, 'created_at=desc');
     applyQueryIncludes(query, 'watch_user#school.driver.parent');
-    applyQueryFilters(query, null,[`watch_user.parent_id=${this.request.user.id}`,`watch_user.driver_id=${this.request.user.id}`]);
+    const role=this.request.user.roles[0];
+    switch(role){
+      case Role.DRIVER:
+        applyQueryFilters(query,`watch_user.driver_id=${this.request.user.id}`);
+        break;
+      case Role.PARENT:
+        applyQueryFilters(query,`watch_user.parent_id=${this.request.user.id}`);
+        break;
+        case Role.SECURITY:
+        applyQueryFilters(query,`watch_user.school_id=${this.request.user.school_id}`);
+        break;
+        default:
+          applyQueryFilters(query,`watch_user.parent_id=${this.request.user.id}`);
+          break;
+    }
+
  const requests = await this._request_service.findAll(query);
  const total = await this._request_service.count(query);
  const result = plainToInstance(WatchRequestResponse, requests, {
