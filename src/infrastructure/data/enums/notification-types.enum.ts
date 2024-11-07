@@ -7,6 +7,8 @@ export enum NotificationTypes {
   CANCELED = 'CANCELED',
   OFFER = 'OFFER',
   ORDER = 'ORDER',
+  ADMIN = 'ADMIN',
+  USERS = 'USERS',
 
   PHARMACY_ORDER = 'PHARMACY_ORDER',
 }

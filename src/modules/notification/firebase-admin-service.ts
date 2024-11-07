@@ -80,20 +80,5 @@ export class FirebaseAdminService {
       console.error('Error sending notification:', error);
     }
   }
-
-
-  async validateToken(token: string) {
-    try {
-      const decodedToken = await admin.auth().verifyIdToken(token);
-      const uid = decodedToken.uid;
-      console.log(uid);
-      console.log(decodedToken);
-      // Handle user sign-up or login based on uid
-     return uid;
-    } catch (error) {
-      console.log(error);
-     
-    }}
-
 }
 

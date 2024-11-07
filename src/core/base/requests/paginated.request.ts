@@ -3,7 +3,6 @@ import { Transform } from 'class-transformer';
 import { IsNumber, IsOptional } from 'class-validator';
 import { toRightNumber } from 'src/core/helpers/cast.helper';
 import {
-  ILike,
   LessThan,
   LessThanOrEqual,
   Like,
@@ -55,6 +54,11 @@ export class PaginatedRequest {
   @IsOptional()
   select: object;
 
+  @ApiProperty({ required: false ,default: false})
+  @IsOptional()
+  @Transform(({ value }) => value === 'true')
+  isDeleted: boolean;
+
   get skip(): number {
     if (this.page && !this.limit) {
       return (this.page - 1) * 10;
@@ -95,35 +99,44 @@ export class PaginatedRequest {
         } else {
           const operator = this.getOperator(filterPart);
 
-        const [key, value] = filterPart.split(operator);
-        switch (operator) {
-          case '#':
-            whereFilter = { ...whereFilter, [key]: ILike(`%${value}%`) };
-            break;
-          case '<':
-            whereFilter = { ...whereFilter, [key]: LessThan(value) };
-            break;
-          case '>':
-            whereFilter = { ...whereFilter, [key]: MoreThan(value) };
-            break;
-          case '<=':
-            whereFilter = { ...whereFilter, [key]: LessThanOrEqual(value) };
-            break;
-          case '>=':
-            whereFilter = { ...whereFilter, [key]: MoreThanOrEqual(value) };
-            break;
-          case '!=':
-            whereFilter = { ...whereFilter, [key]: Not(value) };
-            break;
-          default:
-            whereFilter = { ...whereFilter, [key]: value };
-            break;
-        }}
+          const [key, value] = filterPart.split(operator);
+          switch (operator) {
+            case '<':
+              whereFilter = { ...whereFilter, [key]: LessThan(value) };
+              break;
+            case '>':
+              whereFilter = { ...whereFilter, [key]: MoreThan(value) };
+              break;
+            case '<=':
+              whereFilter = { ...whereFilter, [key]: LessThanOrEqual(value) };
+              break;
+            case '>=':
+              whereFilter = { ...whereFilter, [key]: MoreThanOrEqual(value) };
+              break;
+            case '!=':
+              whereFilter = { ...whereFilter, [key]: Not(value) };
+              break;
+            default:
+            case ':=:':
+              whereFilter = { ...whereFilter, [key]: Like(`%${value}%`) };
+              break;
+            case '=:':
+              whereFilter = { ...whereFilter, [key]: Like(`${value}%`) };
+              break;
+            case ':=':
+              whereFilter = { ...whereFilter, [key]: Like(`%${value}`) };
+              break;
+              
+              whereFilter = { ...whereFilter, [key]: value };
+              break;
+          }
+        }
       });
       whereFilters.push(whereFilter);
     });
     return whereFilters;
   }
+  
 
   get order(): SortFilter {
     let orderFilters: SortFilter;
@@ -150,7 +163,6 @@ export class PaginatedRequest {
 
   get relations(): IncludesFilter {
     let relations: IncludesFilter;
-
     // convert includes to array if it's a string
     if (this.includes && typeof this.includes === 'string') {
       this.includes = [this.includes];
@@ -168,6 +180,15 @@ export class PaginatedRequest {
   }
 
   // handle sub relations with level limit of x
+  private handleSubRelations(include: string): IncludesFilter {
+    const subRelations = include.split('.');
+    if (subRelations.length > 1) {
+      const subRelation = subRelations.shift();
+      return { [subRelation]: this.handleSubRelations(subRelations.join('.')) };
+    } else {
+      return { [include]: true };
+    }
+  }
   private handleSubFilters(filter: string) {
     const subFilters = filter.split('.');
     if (
@@ -196,30 +217,8 @@ export class PaginatedRequest {
       }
     }
   }
-  private handleSubRelations(include: string): IncludesFilter {
-    if (include.includes('#')) {
-      const key = include.split('#')[0];
-
-      const relations = include.split('#')[1].split('.');
-
-      const resultObject = {};
-      relations.forEach((key) => {
-        resultObject[key] = true;
-      });
-     
-      return { [key]: resultObject };
-    }
-    const subRelations = include.split('.');
-    if (subRelations.length > 1) {
-      const subRelation = subRelations.shift();
-      return { [subRelation]: this.handleSubRelations(subRelations.join('.')) };
-    } else {
-      return { [include]: true };
-    }
-  }
 
   private getOperator(statement: string): string {
-    if (statement.includes('#')) return '#';
     if (statement.includes('<=')) return '<=';
     if (statement.includes('>=')) return '>=';
     if (statement.includes('<')) return '<';
