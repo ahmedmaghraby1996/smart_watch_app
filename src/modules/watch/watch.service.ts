@@ -30,7 +30,7 @@ export class WatchService extends BaseService<WatchUser> {
   async checkWatch(IMEI: string) {
     const watch = await this.IMEI_repo.findOne({
       where: { IMEI: IMEI },
-      relations: ['watchUser'],
+      relations: {watch_user: true},
     });
     if (!watch || watch.watch_user) return false;
     return true;
