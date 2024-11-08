@@ -15,15 +15,12 @@ import { Role } from 'src/infrastructure/data/enums/role.enum';
 
 
 export class UpdateProfileRequest {
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  first_name: string;
+
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  last_name: string;
+  name: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -60,8 +57,8 @@ export class UpdateProfileRequest {
   @IsOptional()
   fcm_token: string;
 
-  @ApiProperty({required:false})
-  @Transform(({ value }) => value.split(','))
-  @IsOptional()
-  premessions: string[]
+  // @ApiProperty({required:false})
+  // @Transform(({ value }) => value.split(','))
+  // @IsOptional()
+  // premessions: string[]
 }
