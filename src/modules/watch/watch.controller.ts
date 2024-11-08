@@ -74,6 +74,28 @@ export class WatchController {
   }
 
   @Roles(Role.ADMIN)
+  @Post('edit/:id/:IMEI')
+  async editIMEI(@Param('IMEI') IMEI: string, @Param('id') id: string) {
+    const IEMI=await this._service.IMEI_repo.findOne({where:{id:id}});
+    if(!IEMI) throw new Error('IMEI not exist');
+    IEMI.IMEI=IMEI;
+    return new ActionResponse(
+      await this._service.IMEI_repo.save(IEMI),
+    );
+  }
+
+  @Roles(Role.ADMIN)
+  @Post('delete-IMEI/:id')
+  async edit(@Param('IMEI') IMEI: string, @Param('id') id: string) {
+    const IEMI=await this._service.IMEI_repo.findOne({where:{id:id},relations:{watch_user:true}});
+    if(!IEMI) throw new Error('IMEI not exist');
+    if(IEMI.watch_user) throw new Error('IMEI has watch user');
+    return new ActionResponse(
+      await this._service.IMEI_repo.delete(IEMI.id),
+    );
+  }
+
+  @Roles(Role.ADMIN)
   @Get('get-all-IMEI')
   async getAll(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'watch_user');
