@@ -14,6 +14,7 @@ import {
   SendToUsersNotificationRequest,
 } from '../dto/requests/send-to-users-notification.request';
 import { Role } from 'src/infrastructure/data/enums/role.enum';
+import { FirebaseAdminService } from '../firebase-admin-service';
 
 @Injectable()
 export class NotificationService extends BaseUserService<NotificationEntity> {
@@ -24,7 +25,7 @@ export class NotificationService extends BaseUserService<NotificationEntity> {
     public userRepo: Repository<User>,
     @Inject(REQUEST) request: Request,
     private readonly _userService: UserService,
-    private readonly _fcmIntegrationService: FcmIntegrationService,
+    private readonly _fcmIntegrationService: FirebaseAdminService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {
     super(_repo, request);
@@ -57,14 +58,11 @@ export class NotificationService extends BaseUserService<NotificationEntity> {
     console.log('recipient', recipient);
 
     if (recipient.fcm_token) {
-      await this._fcmIntegrationService.send(
+      await this._fcmIntegrationService.sendNotification(
         recipient.fcm_token,
         notification['title_' + recipient.language],
         notification['text_' + recipient.language],
-        {
-          action: notification.type,
-          action_id: notification.url,
-        },
+      
       );
     }
     if (!notification) throw new BadRequestException('message.not_found');
