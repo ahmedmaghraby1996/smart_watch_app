@@ -46,6 +46,12 @@ export class NotificationEntity extends OwnedEntity {
   //createdat column
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
+
+  @Column({nullable:true,type:"simple-array"})
+  user_ids: string[];
+
+  @Column({nullable:true})
+  role: string;
   
 
 

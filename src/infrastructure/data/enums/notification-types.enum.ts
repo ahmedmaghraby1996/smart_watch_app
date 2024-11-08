@@ -9,6 +9,7 @@ export enum NotificationTypes {
   ORDER = 'ORDER',
   ADMIN = 'ADMIN',
   USERS = 'USERS',
+  SCHOOL = 'SCHOOL',
 
   PHARMACY_ORDER = 'PHARMACY_ORDER',
 }

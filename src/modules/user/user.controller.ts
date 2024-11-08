@@ -10,6 +10,7 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -17,7 +18,7 @@ import {
 import { JwtAuthGuard } from '../authentication/guards/jwt-auth.guard';
 import { RolesGuard } from '../authentication/guards/roles.guard';
 import { ActionResponse } from 'src/core/base/responses/action.response';
-import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UpdateFcmRequest } from './dto/update-fcm.request';
 import { REQUEST } from '@nestjs/core';
@@ -29,6 +30,11 @@ import { plainToInstance } from 'class-transformer';
 import { UserResponse } from './dto/response/user-response';
 import { Roles } from '../authentication/guards/roles.decorator';
 import { Role } from 'src/infrastructure/data/enums/role.enum';
+import { GetUserRequest } from './dto/get-user.request';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadValidator } from 'src/core/validators/upload.validator';
+import { RegisterResponse } from '../authentication/dto/responses/register.response';
+import { UpdateProfileRequest } from './dto/update-profile-request';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -71,11 +77,37 @@ export class UserController {
     );
   }
 
+
+  @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('avatarFile'))
+  @ApiConsumes('multipart/form-data')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @Put('update-profile')
+  async updateProfile(
+    @Query() query: GetUserRequest,
+    @Body() request: UpdateProfileRequest,
+    @UploadedFile(new UploadValidator().build())
+    avatarFile: Express.Multer.File,
+  ) {
+    if (avatarFile) {
+      request.avatarFile = avatarFile;
+    }
+    return new ActionResponse(
+      plainToInstance(
+        RegisterResponse,
+        await this.userService.updateProfile(query.id, request),
+        {
+          excludeExtraneousValues: true,
+        },
+      ),
+    );
+  }
+
   //update fcm token
   @Delete('/delete')
-  async deleteUser() {
+  async deleteUser(@Query() query: GetUserRequest) {
     return new ActionResponse(
-      await this.userService.deleteUser(this.request.user.id),
+      await this.userService.deleteUser(query.id?? this.request.user.id),
     );
   }
 }

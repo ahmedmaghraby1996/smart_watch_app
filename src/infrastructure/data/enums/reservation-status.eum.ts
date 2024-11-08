@@ -1,7 +1,7 @@
 export enum RequestStatus {
    
     // CONFIRMED = 'CONFIRMED',
-    PEDNING = 'PEDNING',
+    PENDNING = 'PENDNING',
     COMPLETED = 'COMPLETED',
     
     
