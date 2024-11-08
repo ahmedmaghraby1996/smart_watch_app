@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Inject,
@@ -85,8 +86,8 @@ export class WatchController {
   }
 
   @Roles(Role.ADMIN)
-  @Post('delete-IMEI/:id')
-  async edit(@Param('IMEI') IMEI: string, @Param('id') id: string) {
+  @Delete('delete-IMEI/:id')
+  async deleteIMEI( @Param('id') id: string) {
     const IEMI=await this._service.IMEI_repo.findOne({where:{id:id},relations:{watch_user:true}});
     if(!IEMI) throw new Error('IMEI not exist');
     if(IEMI.watch_user) throw new Error('IMEI has watch user');
