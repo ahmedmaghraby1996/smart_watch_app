@@ -35,6 +35,16 @@ export class WatchService extends BaseService<WatchUser> {
     if (!watch || watch.watch_user) return false;
     return true;
   }
+  async getSingleRequest(id:string){
+    return await this.watchRequest_repo.findOne({
+      where: {id },
+      relations:{
+        user:true,
+        watch_user: { parent: true, driver: true,school: true },
+      },
+      withDeleted:true
+    });
+  }
 
   async addWatchUser(req: AddWatchUserRequest) {
     const watch = await this.IMEI_repo.findOne({

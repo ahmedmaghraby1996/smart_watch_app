@@ -40,7 +40,7 @@ import { watch } from 'fs';
 import { IMEI_entity } from 'src/infrastructure/entities/watch-user/IMEI.entity';
 import { IMEIService, WatchRequestService } from './watch-request.service';
 import { PaginatedRequest } from 'src/core/base/requests/paginated.request';
-import { applyQueryFilters, applyQueryIncludes, applyQuerySort } from 'src/core/helpers/service-related.helper';
+import { applyQueryFilters, applyQueryIncludes, applyQueryISDeleted, applyQuerySort } from 'src/core/helpers/service-related.helper';
 import { PaginatedResponse } from 'src/core/base/responses/paginated.response';
 import { WatchRequestResponse } from './dto/response/watch-request.response';
 import { UserResponse } from '../user/dto/response/user-response';
@@ -142,6 +142,7 @@ export class WatchController {
   async getWatchUsersRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
     applyQuerySort(query, 'created_at=desc');
+    applyQueryISDeleted(query);
     applyQueryIncludes(query, 'watch_user#school.driver.parent');
     const role=this.request.user.roles[0];
     switch(role){
@@ -166,6 +167,14 @@ export class WatchController {
  })
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
+  @Roles(Role.PARENT, Role.DRIVER, Role.SECURITY)
+  @Get('/get-users-requests/:request_id')
+  async getSignleWatchUsersRequests(@Param('request_id') request_id: string) {
+const request=await this._service.getSingleRequest(request_id);
+const response=plainToInstance(WatchRequestResponse, request);
+return new ActionResponse(response);
+   
+  }
 
   @Roles(Role.SECURITY,Role.School)
 
@@ -182,6 +191,8 @@ export class WatchController {
  })
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
+
+  
 
  
   @Roles(Role.School)

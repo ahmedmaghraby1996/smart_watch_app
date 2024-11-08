@@ -25,6 +25,9 @@ export const applyQueryFilters = (
   }
 };
 
+export const applyQueryISDeleted = (query: PaginatedRequest) => {
+  query.isDeleted = true;
+};
 export const applyQuerySort = (query: PaginatedRequest, applySort: string) => {
   if (query.sortBy) {
     if (typeof query.sortBy === 'string') {
