@@ -38,12 +38,15 @@ export class NotificationService extends BaseUserService<NotificationEntity> {
     return await this._repo.save(notification);
   }
 
-  async getSingleNotification(id:string){
-    const notification= await this._repo.findOneBy({id})
-    const users= notification.user_ids==null?null: await this.userRepo.find({where:{id:In(notification.user_ids)}})
-  return {notification,users};
-  
-  
+  async getSingleNotification(id: string) {
+    const notification = await this._repo.findOneBy({ id });
+    const users =
+      notification.user_ids == null
+        ? null
+        : await this.userRepo.find({
+            where: { id: In(notification.user_ids) },
+          });
+    return { notification, users };
   }
   override async create(data: NotificationEntity) {
     data.is_read = false;
@@ -125,26 +128,36 @@ export class NotificationService extends BaseUserService<NotificationEntity> {
     const { message_ar, message_en, title_ar, title_en } =
       sendToUsersNotificationRequest;
 
-      console.log(sendToUsersNotificationRequest.users_id)
+    console.log(sendToUsersNotificationRequest.users_id);
     const users = await this.userRepository.find({
-      where: {
+      where: this.currentUser.roles[0] == Role.School ? { roles: sendToUsersNotificationRequest.role,
+        id:
+          sendToUsersNotificationRequest?.users_id != null
+            ? In(sendToUsersNotificationRequest?.users_id)
+            : null,school_id: this.currentUser.school_id} : {
         roles: sendToUsersNotificationRequest.role,
-        id: sendToUsersNotificationRequest?.users_id !=null
-          ? 
-          In(sendToUsersNotificationRequest?.users_id):null,
+        id:
+          sendToUsersNotificationRequest?.users_id != null
+            ? In(sendToUsersNotificationRequest?.users_id)
+            : null,
       },
-    })
-    this.create(new NotificationEntity({
-      user_id: this.currentUser.id,
-      url: this.currentUser.id,
-      type: this.currentUser.roles[0]==Role.School?NotificationTypes.SCHOOL:NotificationTypes.ADMIN,
-      title_ar: title_ar,
-      title_en: title_en,
-      text_ar: message_ar,
-      user_ids:sendToUsersNotificationRequest?.users_id,
-      role:sendToUsersNotificationRequest?.role,
-      text_en: message_en,
-    }))
+    });
+    this.create(
+      new NotificationEntity({
+        user_id: this.currentUser.id,
+        url: this.currentUser.id,
+        type:
+          this.currentUser.roles[0] == Role.School
+            ? NotificationTypes.SCHOOL
+            : NotificationTypes.ADMIN,
+        title_ar: title_ar,
+        title_en: title_en,
+        text_ar: message_ar,
+        user_ids: sendToUsersNotificationRequest?.users_id,
+        role: sendToUsersNotificationRequest?.role,
+        text_en: message_en,
+      }),
+    );
     users.map(async (user) => {
       return this.create(
         new NotificationEntity({
