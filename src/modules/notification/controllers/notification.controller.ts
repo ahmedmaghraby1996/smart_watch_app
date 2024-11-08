@@ -69,7 +69,7 @@ export class NotificationController {
 
   @Get("/:id")
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN,Role.School)
   async getSingleNotification(@Param("id") id: string) {
     const result= await this.notificationService.getSingleNotification(id);
 return new ActionResponse<NotificationResponse>(
