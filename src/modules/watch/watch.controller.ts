@@ -159,7 +159,7 @@ export class WatchController {
   }
 
   @Roles(Role.PARENT)
-  @Get('/delete-watch-user/:watch_user_id')
+  @Delete('/delete-watch-user/:watch_user_id')
   async deleteWatchUsers(@Param('watch_user_id') watch_user_id: string) {
     return new ActionResponse(await this._service._repo.softDelete({id:watch_user_id,parent_id: this.request.user.id}));
   }
