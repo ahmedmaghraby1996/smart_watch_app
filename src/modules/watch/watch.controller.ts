@@ -109,10 +109,10 @@ export class WatchController {
     return new PaginatedResponse(result, { meta: { total: total, ...query } });
   }
   
-  @Roles(Role.PARENT)
+ 
   @Get('get-IMEI/:id')
   async getIEMI(@Param('id') id: string) {
-    const IMEI = await this._IMEI_service._repo.findOne({where:{id:id},relations:{watch_user:true}});
+    const IMEI = await this._IMEI_service._repo.findOne({where:{id:id},relations:{watch_user:{parent:true,school:true,driver:true}}});
     return new ActionResponse({id:IMEI.id,IMEI:IMEI.IMEI,watch_user:plainToInstance(WatchUserResponse,IMEI.watch_user)});
   }
 
