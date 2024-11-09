@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { BaseService } from 'src/core/base/service/service.base';
 import { randNum } from 'src/core/helpers/cast.helper';
 import { plainToInstance } from 'class-transformer';
-import sharp from 'sharp';
+import * as sharp from 'sharp';
 import { UpdateProfileRequest } from './dto/update-profile-request';
 import { ImageManager } from 'src/integration/sharp/image.manager';
 import { StorageManager } from 'src/integration/storage/storage.manager';
