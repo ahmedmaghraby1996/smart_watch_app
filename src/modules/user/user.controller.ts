@@ -80,20 +80,37 @@ export class UserController {
     return new PaginatedResponse(usersResponse, { meta: { total, ...query } });
   }
 
+  @Roles(Role.ADMIN, Role.School, Role.SECURITY, Role.PARENT)
+  @Get('profile')
+  async getProile() {
+    return new ActionResponse(
+      plainToInstance(
+        UserResponse,
+        await this.userService.findOne(this.request.user.id),
+        { excludeExtraneousValues: true },
+      ),
+    );
+  }
+
   @Get('drivers')
   async getAllDrivers(@Query('filter') filter: string) {
     filter == null ? (filter = '') : filter;
     const drivers = await this.userService._repo.find({
-      where: [{
-        roles: Role.DRIVER,
-      
-        phone: ILike(`%${filter}%`),
-      },{
-        roles: Role.DRIVER,
-        name: ILike(`%${filter}%`),
-      }]
+      where: [
+        {
+          roles: Role.DRIVER,
+
+          phone: ILike(`%${filter}%`),
+        },
+        {
+          roles: Role.DRIVER,
+          name: ILike(`%${filter}%`),
+        },
+      ],
     });
-    return new ActionResponse(plainToInstance(UserResponse, drivers,{excludeExtraneousValues:true}));
+    return new ActionResponse(
+      plainToInstance(UserResponse, drivers, { excludeExtraneousValues: true }),
+    );
   }
 
   //update fcm token
