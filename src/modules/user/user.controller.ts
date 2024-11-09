@@ -18,14 +18,22 @@ import {
 import { JwtAuthGuard } from '../authentication/guards/jwt-auth.guard';
 import { RolesGuard } from '../authentication/guards/roles.guard';
 import { ActionResponse } from 'src/core/base/responses/action.response';
-import { ApiBearerAuth, ApiConsumes, ApiHeader, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiHeader,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UpdateFcmRequest } from './dto/update-fcm.request';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { PaginatedRequest } from 'src/core/base/requests/paginated.request';
 import { PaginatedResponse } from 'src/core/base/responses/paginated.response';
-import { applyQueryFilters, applyQueryIncludes } from 'src/core/helpers/service-related.helper';
+import {
+  applyQueryFilters,
+  applyQueryIncludes,
+} from 'src/core/helpers/service-related.helper';
 import { plainToInstance } from 'class-transformer';
 import { UserResponse } from './dto/response/user-response';
 import { Roles } from '../authentication/guards/roles.decorator';
@@ -35,6 +43,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadValidator } from 'src/core/validators/upload.validator';
 import { RegisterResponse } from '../authentication/dto/responses/register.response';
 import { UpdateProfileRequest } from './dto/update-profile-request';
+import { ILike } from 'typeorm';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -51,19 +60,37 @@ export class UserController {
     @Inject(REQUEST) private request: Request,
   ) {}
 
-
-@Roles(Role.ADMIN,Role.School)
+  @Roles(Role.ADMIN, Role.School)
   @Get()
   async getAll(@Query() query: PaginatedRequest) {
-    if(this.request.user.roles[0]==Role.School){
-      applyQueryFilters(query,`school_id=${this.request.user.school_id}`);
-      applyQueryFilters(query,`roles=${Role.SECURITY}`);
+    if (this.request.user.roles[0] == Role.School) {
+      applyQueryFilters(query, `school_id=${this.request.user.school_id}`);
+      applyQueryFilters(query, `roles=${Role.SECURITY}`);
     }
     applyQueryIncludes(query, 'school');
-    const users=await this.userService.findAll(query);
-    const usersResponse = users.map((user) => plainToInstance(UserResponse, {...user,school:user.school}, { excludeExtraneousValues: true }));
+    const users = await this.userService.findAll(query);
+    const usersResponse = users.map((user) =>
+      plainToInstance(
+        UserResponse,
+        { ...user, school: user.school },
+        { excludeExtraneousValues: true },
+      ),
+    );
     const total = await this.userService.count(query);
     return new PaginatedResponse(usersResponse, { meta: { total, ...query } });
+  }
+
+  @Get('drivers')
+  async getAllDrivers(@Query('filter') filter: string) {
+    filter == null ? (filter = '') : filter;
+    const drivers = await this.userService._repo.find({
+      where: {
+        roles: Role.DRIVER,
+        name: ILike(`%${filter}%`),
+        phone: ILike(`%${filter}%`),
+      },
+    });
+    return new ActionResponse(plainToInstance(UserResponse, drivers));
   }
 
   //update fcm token
@@ -76,7 +103,6 @@ export class UserController {
       await this.userService.findOne(this.request.user.id),
     );
   }
-
 
   @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('avatarFile'))
   @ApiConsumes('multipart/form-data')
@@ -107,7 +133,7 @@ export class UserController {
   @Delete('/delete')
   async deleteUser(@Query() query: GetUserRequest) {
     return new ActionResponse(
-      await this.userService.deleteUser(query.id?? this.request.user.id),
+      await this.userService.deleteUser(query.id ?? this.request.user.id),
     );
   }
 }

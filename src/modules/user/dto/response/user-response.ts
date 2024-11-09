@@ -7,6 +7,12 @@ export class UserResponse {
   id: string;
   @Expose()
   name: string;
+
+  @Expose()
+  phone: string;
+
+  @Expose()
+  gender: string;
   @Expose()
   email: string;
   @Expose()

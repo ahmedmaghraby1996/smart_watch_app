@@ -12,6 +12,8 @@ import { Request } from 'express';
 import { WatchRequest } from 'src/infrastructure/entities/watch-user/watch-request.entity';
 import { ConfirmRequest } from './dto/requests/confirm-request';
 import { RequestStatus } from 'src/infrastructure/data/enums/reservation-status.eum';
+import { School } from 'src/infrastructure/entities/school/school.entity';
+import { ILike } from 'typeorm';
 
 @Injectable()
 export class WatchService extends BaseService<WatchUser> {
@@ -22,6 +24,7 @@ export class WatchService extends BaseService<WatchUser> {
     @InjectRepository(IMEI_entity) public IMEI_repo: Repository<IMEI_entity>,
     @InjectRepository(WatchRequest)
     public watchRequest_repo: Repository<WatchRequest>,
+    @InjectRepository(School) public school_repo: Repository<School>,
     @Inject(REQUEST) private readonly request: Request,
   ) {
     super(repo);
@@ -129,5 +132,12 @@ export class WatchService extends BaseService<WatchUser> {
         watch_user: { parent: true, driver: true },
       },
     });
+  }
+
+  async getSchools(name: string){
+  name==null?name="":name
+  return await this.school_repo.find({
+    where:{name:ILike(`%${name}%`)}
+  })
   }
 }

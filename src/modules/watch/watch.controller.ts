@@ -47,6 +47,7 @@ import { WatchRequestResponse } from './dto/response/watch-request.response';
 import { UserResponse } from '../user/dto/response/user-response';
 import { WatchUserResponse } from './dto/response/watch-user.response';
 import { ConfirmRequest } from './dto/requests/confirm-request';
+import { toUrl } from 'src/core/helpers/file.helper';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -107,12 +108,23 @@ export class WatchController {
     })}})
     return new PaginatedResponse(result, { meta: { total: total, ...query } });
   }
+  
+  @Roles(Role.PARENT)
+  @Get('get-IMEI/:id')
+  async getIEMI(@Param('id') id: string) {
+    const IMEI = await this._IMEI_service._repo.findOne({where:{id:id},relations:{watch_user:true}});
+    return new ActionResponse({id:IMEI.id,IMEI:IMEI.IMEI,watch_user:plainToInstance(WatchUserResponse,IMEI.watch_user)});
+  }
+
+
+  
 
   @Roles(Role.PARENT)
   @Get('check/:IMEI')
   async checkWatch(@Param('IMEI') IMEI: string) {
     return new ActionResponse(await this._service.checkWatch(IMEI));
   }
+
 
   @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('avatarFile'))
   @ApiConsumes('multipart/form-data')
@@ -232,5 +244,12 @@ return new ActionResponse(response);
  })
     return new PaginatedResponse(result, { meta: { total, ...query } });
  
+  }
+
+
+  @Get('schools')
+  async getSchools(@Query() name: string) {
+    return new ActionResponse((await this._service.getSchools(name)).map((school) => {
+      return { id: school.id, name: school.name , avatar: toUrl(school.avatar)};}));
   }
 }
