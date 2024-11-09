@@ -84,11 +84,14 @@ export class UserController {
   async getAllDrivers(@Query('filter') filter: string) {
     filter == null ? (filter = '') : filter;
     const drivers = await this.userService._repo.find({
-      where: {
+      where: [{
+        roles: Role.DRIVER,
+      
+        phone: ILike(`%${filter}%`),
+      },{
         roles: Role.DRIVER,
         name: ILike(`%${filter}%`),
-        phone: ILike(`%${filter}%`),
-      },
+      }]
     });
     return new ActionResponse(plainToInstance(UserResponse, drivers));
   }
