@@ -248,7 +248,7 @@ return new ActionResponse(response);
 
 
   @Get('schools')
-  async getSchools(@Query() name: string) {
+  async getSchools(@Query("name") name: string) {
     return new ActionResponse((await this._service.getSchools(name)).map((school) => {
       return { id: school.id, name: school.name , avatar: toUrl(school.avatar)};}));
   }
