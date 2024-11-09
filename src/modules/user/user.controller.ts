@@ -93,7 +93,7 @@ export class UserController {
         name: ILike(`%${filter}%`),
       }]
     });
-    return new ActionResponse(plainToInstance(UserResponse, drivers));
+    return new ActionResponse(plainToInstance(UserResponse, drivers,{excludeExtraneousValues:true}));
   }
 
   //update fcm token
