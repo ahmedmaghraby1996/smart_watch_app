@@ -103,7 +103,7 @@ export class NotificationService extends BaseUserService<NotificationEntity> {
             new NotificationEntity({
               user_id: userId,
               url: userId,
-              type: NotificationTypes.ADMIN,
+              type: NotificationTypes.USERS,
               title_ar: title_ar,
               title_en: title_en,
               text_ar: message_ar,
@@ -161,7 +161,7 @@ export class NotificationService extends BaseUserService<NotificationEntity> {
         new NotificationEntity({
           user_id: user.id,
           url: user.id,
-          type: NotificationTypes.ADMIN,
+          type: NotificationTypes.USERS,
           title_ar: title_ar,
           title_en: title_en,
           text_ar: message_ar,
