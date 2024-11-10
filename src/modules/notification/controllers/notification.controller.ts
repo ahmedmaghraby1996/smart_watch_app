@@ -52,7 +52,8 @@ export class NotificationController {
   @Roles(Role.PARENT,Role.SECURITY,Role.School,Role.DRIVER,Role.ADMIN)
   async findAll(@Query() query: PaginatedRequest) {
     applyQuerySort(query, `created_at=desc`);
-    let result = await this.notificationService.findAllOwned(query);
+    applyQueryFilters(query, `user_id=${this.notificationService.currentUser.id}`);
+    let result = await this.notificationService.findAll(query);
     result = this._i18nResponse.entity(result,this.notificationService.currentUser.roles);
     const response = plainToInstance(NotificationResponse, result, {
       excludeExtraneousValues: true,
