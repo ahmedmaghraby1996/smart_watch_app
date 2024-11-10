@@ -60,7 +60,7 @@ export class AuthenticationController {
   async apppleSignin(
     @Body() req: GoogleSigninRequest,
   ) {
-    return new ActionResponse(  await this.authService.getAppleUserFromToken(req));
+    return new ActionResponse(  await this.authService.getAppleUserFromToken(req.token));
   }
 
 
