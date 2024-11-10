@@ -17,7 +17,7 @@ export class WatchRequest extends OwnedEntity{
   @Column()
   watch_user_id: string
 
-  @Column({enum:RequestStatus})
+  @Column({default:RequestStatus.PENDNING})
   status:RequestStatus
 
   @Column()
