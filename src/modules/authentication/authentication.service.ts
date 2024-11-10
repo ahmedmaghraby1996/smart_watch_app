@@ -21,9 +21,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Wallet } from 'src/infrastructure/entities/wallet/wallet.entity';
 import { FirebaseAdminService } from '../notification/firebase-admin-service';
 import { User } from 'src/infrastructure/entities/user/user.entity';
-
+import * as jose from "jose";
 @Injectable()
 export class AuthenticationService {
+
+ 
   constructor(
     @Inject(UserService) private readonly userService: UserService,
     
@@ -97,41 +99,56 @@ export class AuthenticationService {
 
 
 
-async  getAppleUserFromToken(idToken) {
-  try {
-    // 1. Fetch Apple's public keys
-    const { data: appleKeys } = await axios.get('https://appleid.apple.com/auth/keys');
-    
-    // 2. Decode the token header to identify which key was used
-    const decodedHeader = this.jwtService.decode(idToken, { complete: true }).header;
-    
-    // 3. Find the matching key
-    const key = appleKeys.keys.find(k => k.kid === decodedHeader.kid);
-    if (!key) {
-      throw new Error('Apple public key not found for the given token.');
-    }
+  async  getAppleUserFromToken(idToken,) {
+    try {
+      // Step 1: Fetch Apple's public keys
+      const { data: appleKeys } = await axios.get('https://appleid.apple.com/auth/keys');
+      
+      // Step 2: Decode the token header to identify which key was used
+      const decodedHeader = this.jwtService.decode(idToken, { complete: true }).header;
+      
+      // Step 3: Find the matching key by `kid`
+      const key = appleKeys.keys.find(k => k.kid === decodedHeader.kid);
+      if (!key) throw new Error('Apple public key not found for the given token.');
+      
+      let applePublicKey;
+  
+      // Step 4: Check if `x5c` exists and use it if available
+      if (key.x5c && key.x5c[0]) {
+        applePublicKey = `-----BEGIN PUBLIC KEY-----\n${key.x5c[0]}\n-----END PUBLIC KEY-----`;
+      } else {
+        // If `x5c` is missing, construct the RSA public key using `n` and `e`
+        const jwk = {
+          kty: 'RSA',
+          n: key.n,
+          e: key.e,
+        };
+        const rsaKey = await jose.importJWK(jwk, 'RS256');
+        applePublicKey = rsaKey; // Now we have a usable RSA key object
+      }
+  
+      // Step 5: Verify the token using the constructed public key
+      const decodedToken = await jose.jwtVerify(idToken, applePublicKey, {
+        algorithms: ['RS256'],
+        issuer: 'https://appleid.apple.com', // Verify the issuer as additional security
+      });
+  
+      // Step 6: Extract user information from the decoded token payload
+      const userId = decodedToken.payload.sub;
+      const email = decodedToken.payload.email;
+  console.log('decodedToken',decodedToken.payload);
+  
+      // Return or save user data
+      return {
+        userId,
+        email,
 
-    // 4. Convert the Apple key to a PEM format
-    const applePublicKey = `-----BEGIN PUBLIC KEY-----\n${key.x5c[0]}\n-----END PUBLIC KEY-----`;
-
-    // 5. Verify the token using the matching key
-    const decodedToken = this.jwtService.verify(idToken, {
-      algorithms: ['ES256'],
-      audience: 'https://appleid.apple.com',
-      issuer: 'https://appleid.apple.com',
-      publicKey: applePublicKey,
-    });
-
-    // 6. Return user information
-    return {
-      userId: decodedToken.sub,
-      email: decodedToken.email,
-    };
-  } catch (error) {
-    console.error('Error decoding Apple ID token:', error);
-    throw error;
-  }
-}
+        avatar: null, // Apple doesn’t provide an avatar
+      };
+    } catch (error) {
+      console.error('Error decoding Apple ID token:', error);
+  
+    }}
 
 
 
