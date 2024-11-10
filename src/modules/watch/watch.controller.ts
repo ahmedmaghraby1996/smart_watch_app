@@ -211,7 +211,7 @@ export class WatchController {
  })
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
-  @Roles(Role.PARENT, Role.DRIVER, Role.SECURITY)
+  @Roles(Role.PARENT, Role.DRIVER, Role.SECURITY,Role.School,Role.ADMIN)
   @Get('/get-users-requests/:request_id')
   async getSignleWatchUsersRequests(@Param('request_id') request_id: string) {
 const request=await this._service.getSingleRequest(request_id);
