@@ -26,6 +26,7 @@ import { User } from 'src/infrastructure/entities/user/user.entity';
 export class AuthenticationService {
   constructor(
     @Inject(UserService) private readonly userService: UserService,
+    
 
     @Inject(RegisterUserTransaction)
     private readonly registerUserTransaction: RegisterUserTransaction,
@@ -93,6 +94,48 @@ export class AuthenticationService {
         return error.response.data;
       });
   }
+
+
+
+async  getAppleUserFromToken(idToken) {
+  try {
+    // 1. Fetch Apple's public keys
+    const { data: appleKeys } = await axios.get('https://appleid.apple.com/auth/keys');
+    
+    // 2. Decode the token header to identify which key was used
+    const decodedHeader = this.jwtService.decode(idToken, { complete: true }).header;
+    
+    // 3. Find the matching key
+    const key = appleKeys.keys.find(k => k.kid === decodedHeader.kid);
+    if (!key) {
+      throw new Error('Apple public key not found for the given token.');
+    }
+
+    // 4. Convert the Apple key to a PEM format
+    const applePublicKey = `-----BEGIN PUBLIC KEY-----\n${key.x5c[0]}\n-----END PUBLIC KEY-----`;
+
+    // 5. Verify the token using the matching key
+    const decodedToken = this.jwtService.verify(idToken, {
+      algorithms: ['ES256'],
+      audience: 'https://appleid.apple.com',
+      issuer: 'https://appleid.apple.com',
+      publicKey: applePublicKey,
+    });
+
+    // 6. Return user information
+    return {
+      userId: decodedToken.sub,
+      email: decodedToken.email,
+    };
+  } catch (error) {
+    console.error('Error decoding Apple ID token:', error);
+    throw error;
+  }
+}
+
+
+
+  
 
   async register(req: any) {
     const user = await this.registerUserTransaction.run(req);

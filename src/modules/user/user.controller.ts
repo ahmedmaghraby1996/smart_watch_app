@@ -156,4 +156,18 @@ export class UserController {
       await this.userService.deleteUser(query.id ?? this.request.user.id),
     );
   }
+
+  @Get('/:id')
+  async getUserById(@Param('id') id: string) {
+    return new ActionResponse(
+      plainToInstance(
+        UserResponse,
+        await this.userService._repo.findOne({
+          where: { id: id },
+          relations: { school: true },
+        }),{
+          excludeExtraneousValues: true,}
+      ),
+    );
+  }
 }
