@@ -23,6 +23,7 @@ export class WatchRequest extends OwnedEntity{
   @Column()
   code:number
 
-
+  @Column({ length: 10, unique: true })
+  number: string;
   
 }
