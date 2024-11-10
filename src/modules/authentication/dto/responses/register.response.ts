@@ -5,8 +5,8 @@ import { Role } from "src/infrastructure/data/enums/role.enum";
 export class RegisterResponse {
     @Expose() id: string;
     @Expose() account: string;
-    @Expose() first_name: string;
-    @Expose() last_name: string;
+ 
+    @Expose() name: string;
     @Transform(({ value }) => toUrl(value))
     @Expose() avatar: string;
     @Expose() username: string;

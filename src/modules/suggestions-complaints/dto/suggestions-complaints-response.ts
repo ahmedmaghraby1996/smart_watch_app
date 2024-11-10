@@ -19,7 +19,7 @@ export class SuggestionsComplaintResponse{
     created_at: Date;
 
     @Expose()
-@Transform(( value ) => {return {phone:value.obj.user.phone,id:value.obj.user.id, avatar:toUrl(value.obj.user.avatar),name:value.obj.user.first_name+' '+value.obj.user.last_name}})
+@Transform(( value ) => {return {phone:value.obj.user.phone,id:value.obj.user.id, avatar:toUrl(value.obj.user.avatar),name:value.obj.user.name}})
     user:User
     
 }

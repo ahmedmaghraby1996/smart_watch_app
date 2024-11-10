@@ -37,7 +37,7 @@ export class NotificationResponse {
     value.obj.users= value.obj.users?.map((user)=>{ return {
       id: user.id,
       avatar: toUrl(user.avatar),
-      name:user.first_name + ' ' + user.last_name,
+      name:user.name,
     };})
     return value.obj.users;
     })
