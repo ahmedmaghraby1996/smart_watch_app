@@ -36,12 +36,10 @@ lerna-debug.log*
 
 # storage
 
-Storage
+
 # Environtment
 
-/package-lock.json
 
-/package.json
 
 .env
 firebase.*.json
