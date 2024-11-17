@@ -185,7 +185,7 @@ export class WatchController {
   @Get('/get-admin-requests')
   async getWatchRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
-    applyQueryIncludes(query, 'watch_user#school.driver.parent');
+    applyQueryIncludes(query, 'watch_user#school.drivers.parent');
     applyQuerySort(query, 'created_at=desc');
 
     const requests = await this._request_service.findAll(query);
@@ -199,7 +199,7 @@ export class WatchController {
     applyQueryIncludes(query, 'user');
     applyQuerySort(query, 'created_at=desc');
     applyQueryISDeleted(query);
-    applyQueryIncludes(query, 'watch_user#school.driver.parent');
+    applyQueryIncludes(query, 'watch_user#school.drivers.parent');
     const role = this.request.user.roles[0];
     switch (role) {
       case Role.DRIVER:
@@ -245,7 +245,7 @@ export class WatchController {
   @Get('/get-school-users-requests')
   async getSchoolWatchUsersRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
-    applyQueryIncludes(query, 'watch_user#school.driver.parent');
+    applyQueryIncludes(query, 'watch_user#school.drivers.parent');
     applyQueryFilters(
       query,
       `watch_user.school_id=${this.request.user.school_id}`,
