@@ -25,7 +25,7 @@ export class AddWatchUserRequest {
   school_id: string;
 
   @ApiProperty({required: false,type: 'array',items: {type: 'string'}})
-  @IsArray({each: true})
+  @IsArray()
   @IsOptional()
   driver_ids: string[];
 
