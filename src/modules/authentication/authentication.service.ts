@@ -22,6 +22,9 @@ import { Wallet } from 'src/infrastructure/entities/wallet/wallet.entity';
 import { FirebaseAdminService } from '../notification/firebase-admin-service';
 import { User } from 'src/infrastructure/entities/user/user.entity';
 import * as jose from "jose";
+import { Request } from 'express';
+import { REQUEST } from '@nestjs/core';
+
 @Injectable()
 export class AuthenticationService {
 
@@ -40,6 +43,7 @@ export class AuthenticationService {
 
     @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
     private readonly _firebase_admin_service: FirebaseAdminService,
+    @Inject(REQUEST) private readonly request: Request,
 
     @Inject(ConfigService) private readonly _config: ConfigService,
   ) {}
@@ -157,6 +161,14 @@ export class AuthenticationService {
   async register(req: any) {
     const user = await this.registerUserTransaction.run(req);
 
+    return user;
+  }
+  async registerFamilyMember(req: any) {
+    const user = await this.registerUserTransaction.run(req);
+    user.user_id = this.request.user.id;
+    user.relation_type = req.relation_type;
+    this.userService._repo.save(user);
+    
     return user;
   }
 

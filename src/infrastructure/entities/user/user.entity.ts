@@ -6,6 +6,7 @@ import {
   OneToMany,
   OneToOne,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Factory } from 'nestjs-seeder';
 import { randNum } from 'src/core/helpers/cast.helper';
@@ -39,12 +40,14 @@ export class User extends AuditableEntity {
   @Column({ length: 100 })
   name: string;
 
-  @OneToMany(() => SuggestionsComplaints, (suggestionsComplaints) => suggestionsComplaints.user)
+  @OneToMany(
+    () => SuggestionsComplaints,
+    (suggestionsComplaints) => suggestionsComplaints.user,
+  )
   suggestionsComplaints: SuggestionsComplaints[];
-  
+
   @OneToMany(() => WatchRequest, (watchRequest) => watchRequest.user)
   requests: WatchRequest[];
-    
 
   // @Factory((faker, ctx) => faker.internet.password())
   @Column({ nullable: true, length: 60 })
@@ -85,8 +88,7 @@ export class User extends AuditableEntity {
   @Column({ nullable: true })
   birth_date: string;
 
-
-  @ManyToOne(()=>School, (school) => school.security)
+  @ManyToOne(() => School, (school) => school.security)
   school: School;
   @Column({ nullable: true })
   school_id: string;
@@ -113,6 +115,18 @@ export class User extends AuditableEntity {
   })
   addresses: Promise<Address[]>;
 
+  @OneToMany(() => User, (user) => user.user)
+  family: User[];
+
+  @ManyToOne(() => User, (user) => user.family)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @Column({ nullable: true })
+  user_id: string;
+
+  @Column({ nullable: true })
+  relation_type: string;
   constructor(partial: Partial<User>) {
     super();
     Object.assign(this, partial);

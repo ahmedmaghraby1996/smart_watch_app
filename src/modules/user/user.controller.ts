@@ -92,18 +92,19 @@ export class UserController {
     );
   }
 
-  @Get('drivers')
+  @Get('family-members')
   async getAllDrivers(@Query('filter') filter: string) {
     filter == null ? (filter = '') : filter;
     const drivers = await this.userService._repo.find({
       where: [
         {
           roles: Role.DRIVER,
-
+          user_id:this.request.user.id,
           phone: ILike(`%${filter}%`),
         },
         {
           roles: Role.DRIVER,
+          user_id:this.request.user.id,
           name: ILike(`%${filter}%`),
         },
       ],

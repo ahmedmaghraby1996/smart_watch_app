@@ -7,13 +7,14 @@ import {
   Post,
   UploadedFile,
   UploadedFiles,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
   FileFieldsInterceptor,
   FileInterceptor,
 } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 import { ActionResponse } from 'src/core/base/responses/action.response';
 import { Router } from 'src/core/base/router';
@@ -25,6 +26,11 @@ import { GoogleSigninRequest, LoginRequest } from './dto/requests/signin.dto';
 import { VerifyOtpRequest } from './dto/requests/verify-otp.dto';
 import { AuthResponse } from './dto/responses/auth.response';
 import { RegisterResponse } from './dto/responses/register.response';
+import { Roles } from './guards/roles.decorator';
+import { Role } from 'src/infrastructure/data/enums/role.enum';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RolesGuard } from './guards/roles.guard';
+import { FamilyMemberRequest } from './dto/requests/family-member.request';
 
 
 
@@ -87,7 +93,27 @@ export class AuthenticationController {
     });
   }
 
-  
+  @Roles(Role.PARENT)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('avatarFile'))
+  @ApiConsumes('multipart/form-data')
+  @Post('register-family-member' )
+  async registerFamilyMember(
+    @Body() req: FamilyMemberRequest,
+    @UploadedFile(new UploadValidator().build())
+    avatarFile: Express.Multer.File,
+  ): Promise<ActionResponse<RegisterResponse>> {
+
+    req.avatarFile = avatarFile;
+    const user = await this.authService.registerFamilyMember(req);
+    const result = plainToInstance(RegisterResponse, user, {
+      excludeExtraneousValues: true,
+    });
+    return new ActionResponse<RegisterResponse>(result, {
+      statusCode: HttpStatus.CREATED,
+    });
+  }
 
 
 
