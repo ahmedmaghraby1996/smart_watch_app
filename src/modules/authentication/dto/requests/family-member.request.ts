@@ -3,7 +3,6 @@ import { RegisterRequest } from './register.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsEnum } from 'class-validator';
 import { Role } from 'src/infrastructure/data/enums/role.enum';
-import { RelationType } from 'typeorm/metadata/types/RelationTypes';
 
 export class FamilyMemberRequest extends RegisterRequest {
   @ApiProperty({
