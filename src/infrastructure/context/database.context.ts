@@ -15,6 +15,7 @@ import { SuggestionsComplaints } from '../entities/suggestions-complaints/sugges
 import { FaqQuestion } from '../entities/faq/faq_question';
 import { StaticPage } from '../entities/static-pages/static-pages.entity';
 import { ContactUs } from '../entities/contact-us/contact-us.entity';
+import { City } from '../entities/school/city.entity';
 
 
 
@@ -32,7 +33,8 @@ WatchRequest,
   SuggestionsComplaints,
   FaqQuestion,
   StaticPage,
-  ContactUs
+  ContactUs,
+    City
   
 ];
 
