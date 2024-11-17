@@ -7,6 +7,8 @@ import {
   OneToOne,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Factory } from 'nestjs-seeder';
 import { randNum } from 'src/core/helpers/cast.helper';
@@ -79,7 +81,11 @@ export class User extends AuditableEntity {
   @OneToMany(() => WatchUser, (watchUser) => watchUser.parent)
   children: WatchUser[];
 
-  @OneToMany(() => WatchUser, (watchUser) => watchUser.parent)
+  // @OneToMany(() => WatchUser, (watchUser) => watchUser.parent)
+  // clients: WatchUser[];
+
+  @ManyToMany(() => WatchUser, (watchUser) => watchUser.drivers)
+  @JoinTable({ name: 'watch_user_driver' })
   clients: WatchUser[];
 
   @Column({ nullable: true, length: 500 })

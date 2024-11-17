@@ -9,8 +9,8 @@ export class WatchUserResponse  extends UserResponse{
     @Transform(( value ) => value.obj.school?{id: value.obj.school.id, name: value.obj.school.name, avatar: toUrl(value.obj.school.avatar)}:null)
     school: School;
     @Expose()
-    @Transform(( value ) => value.obj.driver?plainToInstance(UserResponse, value.obj.driver, { excludeExtraneousValues: true }):null)
-    driver: UserResponse;
+    @Transform(( value ) => value.obj.driver?plainToInstance(UserResponse, value.obj.drivers, { excludeExtraneousValues: true }):null)
+    drivers: UserResponse[];
     @Expose()
     @Transform(( value ) => value.obj.parent?plainToInstance(UserResponse, value.obj.parent, { excludeExtraneousValues: true }):null)
     parent: string;

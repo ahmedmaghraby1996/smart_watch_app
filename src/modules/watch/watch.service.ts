@@ -43,7 +43,7 @@ export class WatchService extends BaseService<WatchUser> {
       where: {id },
       relations:{
         user:true,
-        watch_user: { parent: true, driver: true,school: true },
+        watch_user: { parent: true, drivers: true,school: true },
       },
       withDeleted:true
     });
@@ -73,16 +73,16 @@ export class WatchService extends BaseService<WatchUser> {
     return await this._repo.find({
       where: [
         { parent_id: this.request.user.id },
-        { driver_id: this.request.user.id },
+        { drivers:{ id:this.request.user.id} },
       ],
-      relations:{parent: true, driver: true,school: true}
+      relations:{parent: true, drivers: true,school: true}
     });
   }
 
   async getSchoolWatchUsers() {
     return await this._repo.find({
       where: { school_id: this.request.user.school_id },
-      relations:{parent: true, driver: true,school: true}
+      relations:{parent: true, drivers: true,school: true}
     });
   }
 
@@ -99,11 +99,11 @@ export class WatchService extends BaseService<WatchUser> {
   }
   async makeRequest(id: string) {
     const watch = await this._repo.findOne({
-      where:[ { id: id , parent_id: this.request.user.id},{ id: id , driver_id: this.request.user.id}]
+      where:[ { id: id , parent_id: this.request.user.id},{ id: id , drivers:{ id:this.request.user.id}}]
       
     });
     if (!watch) throw new BadRequestException('message.not_found');
-    const count = await this._repo
+    const count = await this.watchRequest_repo
     .createQueryBuilder('watch_request')
     .where('DATE(watch_request.created_at) = CURDATE()')
     .getCount();
@@ -122,10 +122,10 @@ export class WatchService extends BaseService<WatchUser> {
     return await this.watchRequest_repo.find({
       where: [
         { watch_user: { parent_id: this.request.user.id } },
-        { watch_user: { driver_id: this.request.user.id } },
+        { watch_user: { drivers: { id: this.request.user.id} } },
       ],
       relations: {
-        watch_user: { parent: true, driver: true },
+        watch_user: { parent: true, drivers: true },
       },
     });
   }
@@ -134,7 +134,7 @@ export class WatchService extends BaseService<WatchUser> {
     return await this.watchRequest_repo.find({
       where: [{ watch_user: { school_id: this.request.user.school_id } }],
       relations: {
-        watch_user: { parent: true, driver: true },
+        watch_user: { parent: true, drivers: true },
       },
     });
   }

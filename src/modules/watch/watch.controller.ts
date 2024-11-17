@@ -41,7 +41,12 @@ import { watch } from 'fs';
 import { IMEI_entity } from 'src/infrastructure/entities/watch-user/IMEI.entity';
 import { IMEIService, WatchRequestService } from './watch-request.service';
 import { PaginatedRequest } from 'src/core/base/requests/paginated.request';
-import { applyQueryFilters, applyQueryIncludes, applyQueryISDeleted, applyQuerySort } from 'src/core/helpers/service-related.helper';
+import {
+  applyQueryFilters,
+  applyQueryIncludes,
+  applyQueryISDeleted,
+  applyQuerySort,
+} from 'src/core/helpers/service-related.helper';
 import { PaginatedResponse } from 'src/core/base/responses/paginated.response';
 import { WatchRequestResponse } from './dto/response/watch-request.response';
 import { UserResponse } from '../user/dto/response/user-response';
@@ -78,23 +83,22 @@ export class WatchController {
   @Roles(Role.ADMIN)
   @Post('edit/:id/:IMEI')
   async editIMEI(@Param('IMEI') IMEI: string, @Param('id') id: string) {
-    const IEMI=await this._service.IMEI_repo.findOne({where:{id:id}});
-    if(!IEMI) throw new Error('IMEI not exist');
-    IEMI.IMEI=IMEI;
-    return new ActionResponse(
-      await this._service.IMEI_repo.save(IEMI),
-    );
+    const IEMI = await this._service.IMEI_repo.findOne({ where: { id: id } });
+    if (!IEMI) throw new Error('IMEI not exist');
+    IEMI.IMEI = IMEI;
+    return new ActionResponse(await this._service.IMEI_repo.save(IEMI));
   }
 
   @Roles(Role.ADMIN)
   @Delete('delete-IMEI/:id')
-  async deleteIMEI( @Param('id') id: string) {
-    const IEMI=await this._service.IMEI_repo.findOne({where:{id:id},relations:{watch_user:true}});
-    if(!IEMI) throw new Error('IMEI not exist');
-    if(IEMI.watch_user) throw new Error('IMEI has watch user');
-    return new ActionResponse(
-      await this._service.IMEI_repo.delete(IEMI.id),
-    );
+  async deleteIMEI(@Param('id') id: string) {
+    const IEMI = await this._service.IMEI_repo.findOne({
+      where: { id: id },
+      relations: { watch_user: true },
+    });
+    if (!IEMI) throw new Error('IMEI not exist');
+    if (IEMI.watch_user) throw new Error('IMEI has watch user');
+    return new ActionResponse(await this._service.IMEI_repo.delete(IEMI.id));
   }
 
   @Roles(Role.ADMIN)
@@ -103,28 +107,34 @@ export class WatchController {
     applyQueryIncludes(query, 'watch_user');
     const IMEI = await this._IMEI_service.findAll(query);
     const total = await this._IMEI_service.count(query);
-    const result = IMEI.map((IMEI) =>{ return{id: IMEI.id, IMEI: IMEI.IMEI ,watch_user: plainToInstance(WatchUserResponse, IMEI.watch_user, {
-      
-    })}})
+    const result = IMEI.map((IMEI) => {
+      return {
+        id: IMEI.id,
+        IMEI: IMEI.IMEI,
+        watch_user: plainToInstance(WatchUserResponse, IMEI.watch_user, {}),
+      };
+    });
     return new PaginatedResponse(result, { meta: { total: total, ...query } });
   }
-  
- 
+
   @Get('get-IMEI/:id')
   async getIEMI(@Param('id') id: string) {
-    const IMEI = await this._IMEI_service._repo.findOne({where:{id:id},relations:{watch_user:{parent:true,school:true,driver:true}}});
-    return new ActionResponse({id:IMEI.id,IMEI:IMEI.IMEI,watch_user:plainToInstance(WatchUserResponse,IMEI.watch_user)});
+    const IMEI = await this._IMEI_service._repo.findOne({
+      where: { id: id },
+      relations: { watch_user: { parent: true, school: true, drivers: true } },
+    });
+    return new ActionResponse({
+      id: IMEI.id,
+      IMEI: IMEI.IMEI,
+      watch_user: plainToInstance(WatchUserResponse, IMEI.watch_user),
+    });
   }
-
-
-  
 
   @Roles(Role.PARENT)
   @Get('check/:IMEI')
   async checkWatch(@Param('IMEI') IMEI: string) {
     return new ActionResponse(await this._service.checkWatch(IMEI));
   }
-
 
   @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('avatarFile'))
   @ApiConsumes('multipart/form-data')
@@ -155,17 +165,21 @@ export class WatchController {
   @Roles(Role.PARENT, Role.DRIVER)
   @Get('/get-users')
   async getWatchUsers() {
-    return new ActionResponse(plainToInstance( WatchUserResponse,await this._service.getWatchUsers()));
+    return new ActionResponse(
+      plainToInstance(WatchUserResponse, await this._service.getWatchUsers()),
+    );
   }
 
   @Roles(Role.PARENT)
   @Delete('/delete-watch-user/:watch_user_id')
   async deleteWatchUsers(@Param('watch_user_id') watch_user_id: string) {
-    return new ActionResponse(await this._service._repo.softDelete({id:watch_user_id,parent_id: this.request.user.id}));
+    return new ActionResponse(
+      await this._service._repo.softDelete({
+        id: watch_user_id,
+        parent_id: this.request.user.id,
+      }),
+    );
   }
-
-
-
 
   @Roles(Role.ADMIN)
   @Get('/get-admin-requests')
@@ -173,12 +187,10 @@ export class WatchController {
     applyQueryIncludes(query, 'user');
     applyQueryIncludes(query, 'watch_user#school.driver.parent');
     applyQuerySort(query, 'created_at=desc');
-  
- const requests = await this._request_service.findAll(query);
- const total = await this._request_service.count(query);
- const result = plainToInstance(WatchRequestResponse, requests, {
-   
- })
+
+    const requests = await this._request_service.findAll(query);
+    const total = await this._request_service.count(query);
+    const result = plainToInstance(WatchRequestResponse, requests, {});
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
   @Roles(Role.PARENT, Role.DRIVER, Role.SECURITY)
@@ -188,77 +200,86 @@ export class WatchController {
     applyQuerySort(query, 'created_at=desc');
     applyQueryISDeleted(query);
     applyQueryIncludes(query, 'watch_user#school.driver.parent');
-    const role=this.request.user.roles[0];
-    switch(role){
+    const role = this.request.user.roles[0];
+    switch (role) {
       case Role.DRIVER:
-        applyQueryFilters(query,`watch_user.driver_id=${this.request.user.id}`);
+        applyQueryFilters(
+          query,
+          `watch_user.driver_id=${this.request.user.id}`,
+        );
         break;
       case Role.PARENT:
-        applyQueryFilters(query,`watch_user.parent_id=${this.request.user.id}`);
+        applyQueryFilters(
+          query,
+          `watch_user.parent_id=${this.request.user.id}`,
+        );
         break;
-        case Role.SECURITY:
-        applyQueryFilters(query,`watch_user.school_id=${this.request.user.school_id}`);
+      case Role.SECURITY:
+        applyQueryFilters(
+          query,
+          `watch_user.school_id=${this.request.user.school_id}`,
+        );
         break;
-        default:
-          applyQueryFilters(query,`watch_user.parent_id=${this.request.user.id}`);
-          break;
+      default:
+        applyQueryFilters(
+          query,
+          `watch_user.parent_id=${this.request.user.id}`,
+        );
+        break;
     }
 
- const requests = await this._request_service.findAll(query);
- const total = await this._request_service.count(query);
- const result = plainToInstance(WatchRequestResponse, requests, {
-   
- })
+    const requests = await this._request_service.findAll(query);
+    const total = await this._request_service.count(query);
+    const result = plainToInstance(WatchRequestResponse, requests, {});
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
-  @Roles(Role.PARENT, Role.DRIVER, Role.SECURITY,Role.School,Role.ADMIN)
+  @Roles(Role.PARENT, Role.DRIVER, Role.SECURITY, Role.School, Role.ADMIN)
   @Get('/get-users-requests/:request_id')
   async getSignleWatchUsersRequests(@Param('request_id') request_id: string) {
-const request=await this._service.getSingleRequest(request_id);
-const response=plainToInstance(WatchRequestResponse, request);
-return new ActionResponse(response);
-   
+    const request = await this._service.getSingleRequest(request_id);
+    const response = plainToInstance(WatchRequestResponse, request);
+    return new ActionResponse(response);
   }
 
-  @Roles(Role.SECURITY,Role.School)
-
+  @Roles(Role.SECURITY, Role.School)
   @Get('/get-school-users-requests')
   async getSchoolWatchUsersRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
     applyQueryIncludes(query, 'watch_user#school.driver.parent');
-    applyQueryFilters(query,`watch_user.school_id=${this.request.user.school_id}`);
+    applyQueryFilters(
+      query,
+      `watch_user.school_id=${this.request.user.school_id}`,
+    );
 
- const requests = await this._request_service.findAll(query);
- const total = await this._request_service.count(query);
- const result = plainToInstance(WatchRequestResponse, requests, {
-   
- })
+    const requests = await this._request_service.findAll(query);
+    const total = await this._request_service.count(query);
+    const result = plainToInstance(WatchRequestResponse, requests, {});
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
 
-  
-
- 
   @Roles(Role.School)
   @Get('/get-school-users')
   async getSchoolWatchUsers(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'school');
     applyQueryIncludes(query, 'driver');
     applyQueryIncludes(query, 'parent');
-    applyQueryFilters(query,`school_id=${this.request.user.school_id}`);
- const watch_users = await this._service.findAll(query);
- const total = await this._service.count(query);
- const result = plainToInstance(WatchUserResponse, watch_users, {
-   
- })
+    applyQueryFilters(query, `school_id=${this.request.user.school_id}`);
+    const watch_users = await this._service.findAll(query);
+    const total = await this._service.count(query);
+    const result = plainToInstance(WatchUserResponse, watch_users, {});
     return new PaginatedResponse(result, { meta: { total, ...query } });
- 
   }
 
-
   @Get('schools')
-  async getSchools(@Query("name") name: string) {
-    return new ActionResponse((await this._service.getSchools(name)).map((school) => {
-      return { id: school.id, name: school.name , avatar: toUrl(school.avatar)};}));
+  async getSchools(@Query('name') name: string) {
+    return new ActionResponse(
+      (await this._service.getSchools(name)).map((school) => {
+        return {
+          id: school.id,
+          name: school.name,
+          avatar: toUrl(school.avatar),
+        };
+      }),
+    );
   }
 }

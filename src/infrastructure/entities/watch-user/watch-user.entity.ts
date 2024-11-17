@@ -1,5 +1,5 @@
 import { Gender } from 'src/infrastructure/data/enums/gender.enum';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { School } from '../school/school.entity';
 import { AuditableEntity } from 'src/infrastructure/base/auditable.entity';
 import { IMEI_entity } from './IMEI.entity';
@@ -23,12 +23,15 @@ export class WatchUser extends AuditableEntity {
   phone:string
 
 
-  @ManyToOne(() => User, (user) => user.clients)
-  @JoinColumn({ name: 'driver_id' })
-  driver: User;
+  // @ManyToOne(() => User, (user) => user.clients)
+  // @JoinColumn({ name: 'driver_id' })
+  // driver: User;
 
-  @Column({ nullable: true })
-  driver_id: string;
+  // @Column({ nullable: true })
+  // driver_id: string;
+
+  @ManyToMany(() => User, (user) => user.clients)
+  drivers: User[];
 
   @OneToOne(() => IMEI_entity, (imei) => imei.watch_user)
   @JoinColumn({ name: 'imei_id' })
