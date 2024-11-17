@@ -36,6 +36,10 @@ export class RegisterRequest {
   @IsOptional()
   @IsString()
   school_id:string
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  city_id:string
 
   @ApiPropertyOptional()
   @IsOptional()

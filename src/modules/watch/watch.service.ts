@@ -66,8 +66,9 @@ export class WatchService extends BaseService<WatchUser> {
       avatar,
       parent_id: this.request.user.id,
     });
+    const driver_ids=req.driver_ids.split(',');
     watchUser.IMEI = watch;
-    const drivers=await this.user_repo.find({where:{id:In(req.driver_ids)}});
+    const drivers=await this.user_repo.find({where:{id:In(driver_ids)}});
     watchUser.drivers=drivers;
     await this._repo.save(watchUser);
     return watchUser;

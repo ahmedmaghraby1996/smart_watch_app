@@ -23,11 +23,13 @@ export class AddWatchUserRequest {
   @ApiProperty()
   @IsString()
   school_id: string;
-
-  @ApiProperty({required: false,type: 'array',items: {type: 'string'}})
-  @IsArray()
-  @IsOptional()
-  driver_ids: string[];
+  
+  @ApiPropertyOptional({
+    type: [String],
+    required: false,
+    example: ['id1', 'id2'],
+  })
+  driver_ids: string;
 
   @ApiProperty({ type: 'file', required: false })
   avatarFile: Express.Multer.File;

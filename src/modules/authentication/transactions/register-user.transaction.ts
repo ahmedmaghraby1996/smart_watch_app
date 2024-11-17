@@ -15,11 +15,11 @@ import { plainToInstance } from 'class-transformer';
 
 import { Wallet } from 'src/infrastructure/entities/wallet/wallet.entity';
 import { School } from 'src/infrastructure/entities/school/school.entity';
+import { City } from 'src/infrastructure/entities/school/city.entity';
 
 @Injectable()
 export class RegisterUserTransaction extends BaseTransaction<
   RegisterRequest,
-  
   User
 > {
   constructor(
@@ -34,7 +34,7 @@ export class RegisterUserTransaction extends BaseTransaction<
   // the important thing here is to use the manager that we've created in the base class
   protected async execute(
     req: RegisterRequest,
- 
+
     context: EntityManager,
   ): Promise<User> {
     try {
@@ -56,7 +56,7 @@ export class RegisterUserTransaction extends BaseTransaction<
           { buffer: resizedImage, originalname: req.avatarFile.originalname },
           { path: 'avatars' },
         );
-       
+
         // set avatar path
         user.avatar = path;
       }
@@ -66,27 +66,34 @@ export class RegisterUserTransaction extends BaseTransaction<
         randomPassword + this._config.get('app.key'),
         10,
       );
-      if(req.role === Role.SECURITY)
-      user.school_id= req.school_id;
+      if (req.role === Role.SECURITY) user.school_id = req.school_id;
       user.username = user.phone;
       // set user role
       user.roles = [req.role];
       // save user
       const savedUser = await context.save(User, user);
 
-
       // create driver setting if user is a driver
       if (req.role === Role.School) {
-     const school =  await context.save(School, new School({
-          name:savedUser.name,
-          avatar:savedUser.avatar,
-         
-        }));
+        const count = await context
+          .createQueryBuilder(School, 'school')
+          .where('school.city_id = :city_id', { city_id: req.city_id })
+          .getCount();
+
+        const city = await context.findOneBy(City, { id: req.city_id });
+        if (!city) throw new BadRequestException('message.city_not_found');
+        const school = await context.save(
+          School,
+          new School({
+            name: savedUser.name,
+            avatar: savedUser.avatar,
+            city_id: city.id,
+            city_code: city.code + '_' + count,
+          }),
+        );
         savedUser.school = school;
         await context.save(savedUser);
       }
-
-
 
       // return user
       return savedUser;
