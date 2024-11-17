@@ -13,7 +13,8 @@ import { WatchRequest } from 'src/infrastructure/entities/watch-user/watch-reque
 import { ConfirmRequest } from './dto/requests/confirm-request';
 import { RequestStatus } from 'src/infrastructure/data/enums/reservation-status.eum';
 import { School } from 'src/infrastructure/entities/school/school.entity';
-import { ILike } from 'typeorm';
+import { ILike, In } from 'typeorm';
+import { User } from 'src/infrastructure/entities/user/user.entity';
 
 @Injectable()
 export class WatchService extends BaseService<WatchUser> {
@@ -26,6 +27,7 @@ export class WatchService extends BaseService<WatchUser> {
     public watchRequest_repo: Repository<WatchRequest>,
     @InjectRepository(School) public school_repo: Repository<School>,
     @Inject(REQUEST) private readonly request: Request,
+    @InjectRepository(User  ) public user_repo: Repository<User>,
   ) {
     super(repo);
   }
@@ -65,6 +67,8 @@ export class WatchService extends BaseService<WatchUser> {
       parent_id: this.request.user.id,
     });
     watchUser.IMEI = watch;
+    const drivers=await this.user_repo.find({where:{id:In(req.driver_ids)}});
+    watchUser.drivers=drivers;
     await this._repo.save(watchUser);
     return watchUser;
   }

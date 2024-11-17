@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Gender } from 'src/infrastructure/data/enums/gender.enum';
 
 export class AddWatchUserRequest {
@@ -24,10 +24,10 @@ export class AddWatchUserRequest {
   @IsString()
   school_id: string;
 
-  @ApiProperty({required: false})
-  @IsString()
+  @ApiProperty({required: false,type: 'array',items: {type: 'string'}})
+  @IsArray({each: true})
   @IsOptional()
-  driver_id: string;
+  driver_ids: string[];
 
   @ApiProperty({ type: 'file', required: false })
   avatarFile: Express.Multer.File;
