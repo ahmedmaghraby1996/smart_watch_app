@@ -78,10 +78,10 @@ export class UserController {
     const usersResponse = await Promise.all(
       users.map(async (user) => {
         const familyMembersCount = await this.userService._repo.count({
-          where: { roles: Role.DRIVER, user_id: this.request.user.id },
+          where: { roles: Role.DRIVER, user_id: user.id },
         });
         const watchUsersCount = await this.watchUserRepo.count({
-          where: { parent_id: this.request.user.id },
+          where: { parent_id: user.id },
         });
         return plainToInstance(UserResponse, {
           name: user.name,
