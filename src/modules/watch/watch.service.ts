@@ -94,9 +94,9 @@ export class WatchService extends BaseService<WatchUser> {
 
   async confirmRequest(req: ConfirmRequest) {
     const request = await this.watchRequest_repo.findOne({
-      where: { id: req.request_id ,code: req.code},
+      where: { id: req.request_id },
     });
-    if (!request) throw new BadRequestException('invalid code');
+    // if (!request) throw new BadRequestException('invalid code');
     request.status = RequestStatus.COMPLETED;
     await this.watchRequest_repo.save(request);
     return request;

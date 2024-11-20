@@ -2,9 +2,11 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Get,
   HttpStatus,
   Inject,
   Post,
+  Query,
   UploadedFile,
   UploadedFiles,
   UseGuards,
@@ -31,6 +33,9 @@ import { Role } from 'src/infrastructure/data/enums/role.enum';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { FamilyMemberRequest } from './dto/requests/family-member.request';
+import { InjectRepository } from '@nestjs/typeorm';
+import { City } from 'src/infrastructure/entities/school/city.entity';
+import { Repository } from 'typeorm/repository/Repository';
 
 
 
@@ -40,6 +45,8 @@ export class AuthenticationController {
   constructor(
     @Inject(AuthenticationService)
     private readonly authService: AuthenticationService,
+    @InjectRepository(City) 
+    private readonly cityRepository: Repository<City>,
   ) {}
 
   @Post(Router.Auth.Signin)
@@ -137,4 +144,11 @@ export class AuthenticationController {
     });
     return new ActionResponse<AuthResponse>(result);
   }
+
+  @Get('/cities')
+  async getCities() {
+    return new ActionResponse(await this.cityRepository.find());
+    
+  }
+
 }

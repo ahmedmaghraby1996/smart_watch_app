@@ -43,7 +43,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadValidator } from 'src/core/validators/upload.validator';
 import { RegisterResponse } from '../authentication/dto/responses/register.response';
 import { UpdateProfileRequest } from './dto/update-profile-request';
-import { ILike } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
+import { WatchUser } from 'src/infrastructure/entities/watch-user/watch-user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { toUrl } from 'src/core/helpers/file.helper';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -58,25 +61,44 @@ export class UserController {
   constructor(
     private userService: UserService,
     @Inject(REQUEST) private request: Request,
+    @InjectRepository(WatchUser) private watchUserRepo: Repository<WatchUser>,
   ) {}
 
   @Roles(Role.ADMIN, Role.School)
   @Get()
   async getAll(@Query() query: PaginatedRequest) {
+    applyQueryFilters(query, `roles!=${Role.DRIVER}`);
     if (this.request.user.roles[0] == Role.School) {
       applyQueryFilters(query, `school_id=${this.request.user.school_id}`);
       applyQueryFilters(query, `roles=${Role.SECURITY}`);
     }
+
     applyQueryIncludes(query, 'school');
     const users = await this.userService.findAll(query);
-    const usersResponse = users.map((user) =>
-      plainToInstance(
-        UserResponse,
-        { ...user, school: user.school },
-        { excludeExtraneousValues: true },
-      ),
+    const usersResponse = await Promise.all(
+      users.map(async (user) => {
+        const familyMembersCount = await this.userService._repo.count({
+          where: { roles: Role.DRIVER, user_id: this.request.user.id },
+        });
+        const watchUsersCount = await this.watchUserRepo.count({
+          where: { parent_id: this.request.user.id },
+        });
+        return plainToInstance(UserResponse, {
+          name: user.name,
+          email: user.email,
+          gender: user.gender,
+          phone: user.phone,
+          avatar: user.avatar,
+          role: user.roles[0],
+          created_at: user.created_at,
+          familyMembersCount,
+          watchUsersCount,
+          school: user.school,
+        });
+      }),
     );
     const total = await this.userService.count(query);
+
     return new PaginatedResponse(usersResponse, { meta: { total, ...query } });
   }
 
@@ -99,12 +121,12 @@ export class UserController {
       where: [
         {
           roles: Role.DRIVER,
-          user_id:this.request.user.id,
+          user_id: this.request.user.id,
           phone: ILike(`%${filter}%`),
         },
         {
           roles: Role.DRIVER,
-          user_id:this.request.user.id,
+          user_id: this.request.user.id,
           name: ILike(`%${filter}%`),
         },
       ],
@@ -166,8 +188,10 @@ export class UserController {
         await this.userService._repo.findOne({
           where: { id: id },
           relations: { school: true },
-        }),{
-          excludeExtraneousValues: true,}
+        }),
+        {
+          excludeExtraneousValues: true,
+        },
       ),
     );
   }
