@@ -67,7 +67,7 @@ export class UserController {
   @Roles(Role.ADMIN, Role.School)
   @Get()
   async getAll(@Query() query: PaginatedRequest) {
-    applyQueryFilters(query, `roles!=${Role.DRIVER}`);
+    // applyQueryFilters(query, `roles!=${Role.DRIVER}`);
     if (this.request.user.roles[0] == Role.School) {
       applyQueryFilters(query, `school_id=${this.request.user.school_id}`);
       applyQueryFilters(query, `roles=${Role.SECURITY}`);
