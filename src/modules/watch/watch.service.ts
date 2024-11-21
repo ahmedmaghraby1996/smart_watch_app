@@ -15,6 +15,8 @@ import { RequestStatus } from 'src/infrastructure/data/enums/reservation-status.
 import { School } from 'src/infrastructure/entities/school/school.entity';
 import { ILike, In } from 'typeorm';
 import { User } from 'src/infrastructure/entities/user/user.entity';
+import { WatchGateway } from 'src/integration/gateways/watch.gateway';
+import { WatchRequestResponse } from './dto/response/watch-request.response';
 
 @Injectable()
 export class WatchService extends BaseService<WatchUser> {
@@ -28,6 +30,7 @@ export class WatchService extends BaseService<WatchUser> {
     @InjectRepository(School) public school_repo: Repository<School>,
     @Inject(REQUEST) private readonly request: Request,
     @InjectRepository(User  ) public user_repo: Repository<User>,
+    @Inject() public watchGateway:WatchGateway
   ) {
     super(repo);
   }
@@ -121,6 +124,8 @@ export class WatchService extends BaseService<WatchUser> {
 
     request.code = Math.floor(100000 + Math.random() * 900000);
     await this.watchRequest_repo.save(request);
+    const requestResposne= plainToInstance(WatchRequestResponse,await this.getSingleRequest(request.id));
+    this.watchGateway.server.emit('new-request', requestResposne);
     return request;
   }
   async getWatchRequests() {
