@@ -23,8 +23,14 @@ export class UserResponse {
   @Expose()
   created_at: Date;
   @Expose()
-  @Transform(( value ) => {
-    return value.obj.school ? { id: value.obj.school.id, name: value.obj.school.name, avatar: toUrl(value.obj.school.avatar) }
+  @Transform((value) => {
+    return value.obj.school
+      ? {
+          id: value.obj.school.id,
+          name: value.obj.school.name,
+          avatar: toUrl(value.obj.school.avatar),
+          code: value.obj.school.code,
+        }
       : null;
   })
   school: School;
