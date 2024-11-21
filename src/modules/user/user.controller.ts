@@ -84,6 +84,7 @@ export class UserController {
           where: { parent_id: user.id },
         });
         return plainToInstance(UserResponse, {
+          id: user.id,
           name: user.name,
           email: user.email,
           gender: user.gender,
