@@ -261,7 +261,7 @@ export class WatchController {
   @Get('/get-school-users')
   async getSchoolWatchUsers(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'school');
-    applyQueryIncludes(query, 'driver');
+    applyQueryIncludes(query, 'drivers');
     applyQueryIncludes(query, 'parent');
     applyQueryFilters(query, `school_id=${this.request.user.school_id}`);
     const watch_users = await this._service.findAll(query);
