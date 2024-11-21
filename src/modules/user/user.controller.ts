@@ -182,16 +182,28 @@ export class UserController {
 
   @Get('/:id')
   async getUserById(@Param('id') id: string) {
+    const user=   await this.userService._repo.findOne({
+      where: { id: id },
+      relations: { school: true ,family: true,children: true},
+    });
     return new ActionResponse(
       plainToInstance(
         UserResponse,
-        await this.userService._repo.findOne({
-          where: { id: id },
-          relations: { school: true },
-        }),
-        {
-          excludeExtraneousValues: true,
-        },
+     {
+      id: user.id,
+       name: user.name,
+       email: user.email,
+       gender: user.gender,
+       phone: user.phone,
+       avatar: user.avatar,
+       role: user.roles[0],
+       created_at: user.created_at,
+       family: plainToInstance(UserResponse, user.family, { excludeExtraneousValues: true }),
+       children:plainToInstance(UserResponse, user.family, { excludeExtraneousValues: true }),
+       school: user.school,
+     },
+       
+      
       ),
     );
   }
