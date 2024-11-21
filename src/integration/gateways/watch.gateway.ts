@@ -16,8 +16,12 @@ export class WatchGateway
 
   handleConnection(client: any) {
     console.log('watch connected', client.id);
-    // set the driver as online
-  }
+    const userId = client.handshake.query.user_id as string; // User ID passed as query parameter
+    if (!userId) {
+      client.disconnect(); // Disconnect if no userId is provided
+      console.log('Client disconnected: Missing userId');
+      return;
+  }}
 
   handleDisconnect(client: any) {
     console.log(`watch disconnected ${client.id}`);
@@ -26,5 +30,9 @@ export class WatchGateway
 
   afterInit(server: any) {
     console.log(`Socket is live ${server.name}`);
+  }
+
+ newRequest(users:string[],data: any) {
+    this.server.to(users).emit('new-request', data);
   }
 }

@@ -30,7 +30,7 @@ export class WatchService extends BaseService<WatchUser> {
     @InjectRepository(School) public school_repo: Repository<School>,
     @Inject(REQUEST) private readonly request: Request,
     @InjectRepository(User  ) public user_repo: Repository<User>,
-  public watchGateway:WatchGateway
+    @Inject() public watchGateway:WatchGateway
   ) {
     super(repo);
   }
@@ -125,7 +125,7 @@ export class WatchService extends BaseService<WatchUser> {
     request.code = Math.floor(100000 + Math.random() * 900000);
     await this.watchRequest_repo.save(request);
     const requestResposne= plainToInstance(WatchRequestResponse,await this.getSingleRequest(request.id));
-    this.watchGateway.server.emit('new-request', requestResposne);
+    this.watchGateway.server.emit(`new-request-${requestResposne.watch_user.school.id}`, request);
     return request;
   }
   async getWatchRequests() {
