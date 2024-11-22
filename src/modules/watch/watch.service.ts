@@ -30,7 +30,7 @@ export class WatchService extends BaseService<WatchUser> {
     @InjectRepository(School) public school_repo: Repository<School>,
     @Inject(REQUEST) private readonly request: Request,
     @InjectRepository(User  ) public user_repo: Repository<User>,
-    @Inject() public watchGateway:WatchGateway
+  public watchGateway:WatchGateway
   ) {
     super(repo);
   }
