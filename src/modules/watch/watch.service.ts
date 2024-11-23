@@ -138,7 +138,7 @@ export class WatchService extends BaseService<WatchUser> {
  
     const requestResposne = plainToInstance(
       WatchRequestResponse,
-      await this.getSingleRequest(request?.id??watch_request.id),
+      await this.getSingleRequest(request?.id==null?watch_request.id:request.id),
     );
     this.watchGateway.server.emit(
       `new-request-${requestResposne.watch_user.school.id}`,
