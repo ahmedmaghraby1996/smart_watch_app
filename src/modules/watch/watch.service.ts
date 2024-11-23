@@ -117,7 +117,7 @@ export class WatchService extends BaseService<WatchUser> {
       where: { watch_user_id: watch.id, status: RequestStatus.PENDNING },
     });
     const  request = new WatchRequest();
-    if (watch_request) {
+    if (watch_request!=null) {
       watch_request.created_at = new Date();
       await this.watchRequest_repo.save(watch_request);
     } else {
