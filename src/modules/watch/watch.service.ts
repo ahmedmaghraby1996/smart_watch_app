@@ -103,7 +103,7 @@ export class WatchService extends BaseService<WatchUser> {
 
   async confirmRequest(req: ConfirmRequest) {
     const watch_request = await this.watchRequest_repo.findOne({
-      where: { id: req.request_id },
+      where: { id: req.request_id },relations: { watch_user: true },
     });
 
     // if (!request) throw new BadRequestException('invalid code');
@@ -133,7 +133,7 @@ export class WatchService extends BaseService<WatchUser> {
     const request = await this.watchRequest_repo.findOne({
       where: { watch_user_id: watch.id, status: RequestStatus.PENDNING },
     });
-
+console.log(watch);
     if (request != null) {
       request.created_at = new Date();
       await this.watchRequest_repo.save(request);
