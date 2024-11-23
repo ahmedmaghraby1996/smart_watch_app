@@ -130,14 +130,14 @@ export class WatchService extends BaseService<WatchUser> {
       ],
     });
     if (!watch) throw new BadRequestException('message.not_found');
-    const request = await this.watchRequest_repo.findOne({
+    let request = await this.watchRequest_repo.findOne({
       where: { watch_user_id: watch.id, status: RequestStatus.PENDNING },
     });
-console.log(watch);
     if (request != null) {
       request.created_at = new Date();
       await this.watchRequest_repo.save(request);
     } else {
+       request = new WatchRequest();
       const count = await this.watchRequest_repo
         .createQueryBuilder('watch_request')
         .where('DATE(watch_request.created_at) = CURDATE()')
@@ -150,6 +150,7 @@ console.log(watch);
       //generate random code 6 digit
 
       request.code = Math.floor(100000 + Math.random() * 900000);
+      console.log(request);
       await this.watchRequest_repo.save(request);
     }
 
