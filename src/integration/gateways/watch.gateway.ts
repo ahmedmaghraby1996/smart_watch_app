@@ -16,12 +16,8 @@ export class WatchGateway
 
   handleConnection(client: any) {
     console.log('watch connected', client.id);
-    const userId = client.handshake.query.user_id as string; // User ID passed as query parameter
-    if (!userId) {
-      client.disconnect(); // Disconnect if no userId is provided
-      console.log('Client disconnected: Missing userId');
-      return;
-  }}
+
+  }
 
   handleDisconnect(client: any) {
     console.log(`watch disconnected ${client.id}`);
