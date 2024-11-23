@@ -27,6 +27,10 @@ export class SendToUsersNotificationRequest {
   @IsNotEmpty()
   @IsString()
   title_en: string;
+
+  constructor(partial: Partial<SendToUsersNotificationRequest>) {
+    Object.assign(this, partial);
+  }
 }
 
 export class SendToAllUsersNotificationRequest {
@@ -62,6 +66,8 @@ export class SendToAllUsersNotificationRequest {
   @IsOptional()
   @IsArray()
   users_id: string[];
-
+constructor(partial: Partial<SendToAllUsersNotificationRequest>) {
+  Object.assign(this, partial);
+}
 
 }

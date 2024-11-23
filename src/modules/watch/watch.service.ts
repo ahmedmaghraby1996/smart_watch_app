@@ -17,6 +17,10 @@ import { ILike, In } from 'typeorm';
 import { User } from 'src/infrastructure/entities/user/user.entity';
 import { WatchGateway } from 'src/integration/gateways/watch.gateway';
 import { WatchRequestResponse } from './dto/response/watch-request.response';
+import { NotificationService } from '../notification/services/notification.service';
+import { NotificationEntity } from 'src/infrastructure/entities/notification/notification.entity';
+import { SendToUsersNotificationRequest } from '../notification/dto/requests/send-to-users-notification.request';
+import { Role } from 'src/infrastructure/data/enums/role.enum';
 
 @Injectable()
 export class WatchService extends BaseService<WatchUser> {
@@ -29,6 +33,7 @@ export class WatchService extends BaseService<WatchUser> {
     public watchRequest_repo: Repository<WatchRequest>,
     @InjectRepository(School) public school_repo: Repository<School>,
     @Inject(REQUEST) private readonly request: Request,
+    private readonly notification_service: NotificationService,
     @InjectRepository(User) public user_repo: Repository<User>,
     public watchGateway: WatchGateway,
   ) {
@@ -113,13 +118,13 @@ export class WatchService extends BaseService<WatchUser> {
       ],
     });
     if (!watch) throw new BadRequestException('message.not_found');
-    const watch_request = await this.watchRequest_repo.findOne({
+    const request = await this.watchRequest_repo.findOne({
       where: { watch_user_id: watch.id, status: RequestStatus.PENDNING },
     });
-    const  request = new WatchRequest();
-    if (watch_request!=null) {
-      watch_request.created_at = new Date();
-      await this.watchRequest_repo.save(watch_request);
+
+    if (request != null) {
+      request.created_at = new Date();
+      await this.watchRequest_repo.save(request);
     } else {
       const count = await this.watchRequest_repo
         .createQueryBuilder('watch_request')
@@ -135,16 +140,28 @@ export class WatchService extends BaseService<WatchUser> {
       request.code = Math.floor(100000 + Math.random() * 900000);
       await this.watchRequest_repo.save(request);
     }
- 
+
     const requestResposne = plainToInstance(
       WatchRequestResponse,
-      await this.getSingleRequest(watch_request!=null?watch_request.id:request.id),
+      await this.getSingleRequest(request.id),
+    );
+    const security = await this.user_repo.find({
+      where: { school_id: watch.school_id },
+    });
+    await this.notification_service.sendToUsers(
+      new SendToUsersNotificationRequest({
+        message_ar: 'message.request_sent_ar',
+        message_en: 'message.request_sent_en',
+        title_ar: 'message.request_sent_ar',
+        title_en: 'message.request_sent_en',
+        users_id: security.map((user) => user.id),
+      }),
     );
     this.watchGateway.server.emit(
       `new-request-${requestResposne.watch_user.school.id}`,
       requestResposne,
     );
-    return watch_request!=null?watch_request:request;
+    return request;
   }
   async getWatchRequests() {
     return await this.watchRequest_repo.find({
