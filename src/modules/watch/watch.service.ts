@@ -29,8 +29,8 @@ export class WatchService extends BaseService<WatchUser> {
     public watchRequest_repo: Repository<WatchRequest>,
     @InjectRepository(School) public school_repo: Repository<School>,
     @Inject(REQUEST) private readonly request: Request,
-    @InjectRepository(User  ) public user_repo: Repository<User>,
-  public watchGateway:WatchGateway
+    @InjectRepository(User) public user_repo: Repository<User>,
+    public watchGateway: WatchGateway,
   ) {
     super(repo);
   }
@@ -38,26 +38,26 @@ export class WatchService extends BaseService<WatchUser> {
   async checkWatch(IMEI: string) {
     const watch = await this.IMEI_repo.findOne({
       where: { IMEI: IMEI },
-      relations: {watch_user: true},
+      relations: { watch_user: true },
     });
     if (!watch || watch.watch_user) return false;
     return true;
   }
-  async getSingleRequest(id:string){
+  async getSingleRequest(id: string) {
     return await this.watchRequest_repo.findOne({
-      where: {id },
-      relations:{
-        user:true,
-        watch_user: { parent: true, drivers: true,school: true },
+      where: { id },
+      relations: {
+        user: true,
+        watch_user: { parent: true, drivers: true, school: true },
       },
-      withDeleted:true
+      withDeleted: true,
     });
   }
 
   async addWatchUser(req: AddWatchUserRequest) {
     const watch = await this.IMEI_repo.findOne({
       where: { IMEI: req.IMEI },
-      relations: {watch_user: true},
+      relations: { watch_user: true },
     });
     if (!watch || watch.watch_user)
       throw new BadRequestException('message.IMEI_already_exist');
@@ -69,10 +69,12 @@ export class WatchService extends BaseService<WatchUser> {
       avatar,
       parent_id: this.request.user.id,
     });
-    const driver_ids=req.driver_ids.split(',');
+    const driver_ids = req.driver_ids.split(',');
     watchUser.IMEI = watch;
-    const drivers=await this.user_repo.find({where:{id:In(driver_ids)}});
-    watchUser.drivers=drivers;
+    const drivers = await this.user_repo.find({
+      where: { id: In(driver_ids) },
+    });
+    watchUser.drivers = drivers;
     await this._repo.save(watchUser);
     return watchUser;
   }
@@ -81,19 +83,18 @@ export class WatchService extends BaseService<WatchUser> {
     return await this._repo.find({
       where: [
         { parent_id: this.request.user.id },
-        { drivers:{ id:this.request.user.id} },
+        { drivers: { id: this.request.user.id } },
       ],
-      relations:{parent: true, drivers: true,school: true}
+      relations: { parent: true, drivers: true, school: true },
     });
   }
 
   async getSchoolWatchUsers() {
     return await this._repo.find({
       where: { school_id: this.request.user.school_id },
-      relations:{parent: true, drivers: true,school: true}
+      relations: { parent: true, drivers: true, school: true },
     });
   }
-
 
   async confirmRequest(req: ConfirmRequest) {
     const request = await this.watchRequest_repo.findOne({
@@ -103,36 +104,52 @@ export class WatchService extends BaseService<WatchUser> {
     request.status = RequestStatus.COMPLETED;
     await this.watchRequest_repo.save(request);
     return request;
-    
   }
   async makeRequest(id: string) {
     const watch = await this._repo.findOne({
-      where:[ { id: id , parent_id: this.request.user.id},{ id: id , drivers:{ id:this.request.user.id}}]
-      
+      where: [
+        { id: id, parent_id: this.request.user.id },
+        { id: id, drivers: { id: this.request.user.id } },
+      ],
     });
     if (!watch) throw new BadRequestException('message.not_found');
-    const count = await this.watchRequest_repo
-    .createQueryBuilder('watch_request')
-    .where('DATE(watch_request.created_at) = CURDATE()')
-    .getCount();
-    const number = generateOrderNumber(count);
-    const request = new WatchRequest();
-    request.watch_user_id = watch.id;
-    request.number=number;
-    request.user_id = this.request.user.id;
-    //generate random code 6 digit
+    const watch_request = await this.watchRequest_repo.findOne({
+      where: { watch_user_id: watch.id, status: RequestStatus.PENDNING },
+    });
+    const  request = new WatchRequest();
+    if (watch_request) {
+      watch_request.created_at = new Date();
+      await this.watchRequest_repo.save(watch_request);
+    } else {
+      const count = await this.watchRequest_repo
+        .createQueryBuilder('watch_request')
+        .where('DATE(watch_request.created_at) = CURDATE()')
+        .getCount();
+      const number = generateOrderNumber(count);
 
-    request.code = Math.floor(100000 + Math.random() * 900000);
+      request.watch_user_id = watch.id;
+      request.number = number;
+      request.user_id = this.request.user.id;
+      //generate random code 6 digit
+
+      request.code = Math.floor(100000 + Math.random() * 900000);
+    }
     await this.watchRequest_repo.save(request);
-    const requestResposne= plainToInstance(WatchRequestResponse,await this.getSingleRequest(request.id));
-    this.watchGateway.server.emit(`new-request-${requestResposne.watch_user.school.id}`, requestResposne);
+    const requestResposne = plainToInstance(
+      WatchRequestResponse,
+      await this.getSingleRequest(request.id),
+    );
+    this.watchGateway.server.emit(
+      `new-request-${requestResposne.watch_user.school.id}`,
+      requestResposne,
+    );
     return request;
   }
   async getWatchRequests() {
     return await this.watchRequest_repo.find({
       where: [
         { watch_user: { parent_id: this.request.user.id } },
-        { watch_user: { drivers: { id: this.request.user.id} } },
+        { watch_user: { drivers: { id: this.request.user.id } } },
       ],
       relations: {
         watch_user: { parent: true, drivers: true },
@@ -149,11 +166,11 @@ export class WatchService extends BaseService<WatchUser> {
     });
   }
 
-  async getSchools(name: string){
-  name==null?name="":name
-  return await this.school_repo.find({
-    where:{name:ILike(`%${name}%`)}
-  })
+  async getSchools(name: string) {
+    name == null ? (name = '') : name;
+    return await this.school_repo.find({
+      where: { name: ILike(`%${name}%`) },
+    });
   }
 }
 

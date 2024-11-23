@@ -156,7 +156,7 @@ export class WatchController {
     return new ActionResponse(await this._service.makeRequest(watch_user_id));
   }
 
-  @Roles(Role.SECURITY)
+  @Roles(Role.SECURITY,Role.PARENT,Role.School,Role.ADMIN)
   @Post('confirm-request')
   async confirmRequest(@Body() req: ConfirmRequest) {
     return new ActionResponse(await this._service.confirmRequest(req));
