@@ -125,7 +125,7 @@ export class WatchService extends BaseService<WatchUser> {
     request.code = Math.floor(100000 + Math.random() * 900000);
     await this.watchRequest_repo.save(request);
     const requestResposne= plainToInstance(WatchRequestResponse,await this.getSingleRequest(request.id));
-    this.watchGateway.server.emit(`new-request-${requestResposne.watch_user.school.id}`, request);
+    this.watchGateway.server.emit(`new-request-${requestResposne.watch_user.school.id}`, requestResposne);
     return request;
   }
   async getWatchRequests() {
