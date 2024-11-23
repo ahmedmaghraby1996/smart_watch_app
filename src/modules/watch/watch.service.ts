@@ -144,7 +144,7 @@ export class WatchService extends BaseService<WatchUser> {
       `new-request-${requestResposne.watch_user.school.id}`,
       requestResposne,
     );
-    return request;
+    return watch_request!=null?watch_request:request;
   }
   async getWatchRequests() {
     return await this.watchRequest_repo.find({
