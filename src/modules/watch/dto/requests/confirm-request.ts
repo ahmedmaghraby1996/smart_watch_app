@@ -7,9 +7,5 @@ export class ConfirmRequest {
     @IsString()
     request_id: string
 
-    @ApiProperty()
-    @Transform(({ value }) => Number(value))
-    @IsNumber()
-   
-    code: number
+
 }

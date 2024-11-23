@@ -65,7 +65,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
                 break;
             case UnprocessableEntityException: // and another
                 status = HttpStatus.UNPROCESSABLE_ENTITY
-                message = (exception as UnprocessableEntityException).getResponse();
+                message = (exception as UnprocessableEntityException).getResponse()["message"];
                 code = (exception as any).code;
                 break;
             default:
