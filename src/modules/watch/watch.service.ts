@@ -102,13 +102,25 @@ export class WatchService extends BaseService<WatchUser> {
   }
 
   async confirmRequest(req: ConfirmRequest) {
-    const request = await this.watchRequest_repo.findOne({
+    const watch_request = await this.watchRequest_repo.findOne({
       where: { id: req.request_id },
     });
+
     // if (!request) throw new BadRequestException('invalid code');
-    request.status = RequestStatus.COMPLETED;
-    await this.watchRequest_repo.save(request);
-    return request;
+    watch_request.status = RequestStatus.COMPLETED;
+    await this.watchRequest_repo.save(watch_request);
+    if (this.request.user.id != watch_request.watch_user.parent_id) {
+      await this.notification_service.sendToUsers(
+        new SendToUsersNotificationRequest({
+          message_ar: 'message.request_accepted_ar',
+          message_en: 'message.request_accepted_en',
+          title_ar: 'message.request_accepted_ar',
+          title_en: 'message.request_accepted_en',
+          users_id: [watch_request.watch_user.parent_id],
+        }),
+      );
+    }
+    return watch_request;
   }
   async makeRequest(id: string) {
     const watch = await this._repo.findOne({
