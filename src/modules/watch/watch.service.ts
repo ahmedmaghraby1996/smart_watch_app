@@ -133,11 +133,12 @@ export class WatchService extends BaseService<WatchUser> {
       //generate random code 6 digit
 
       request.code = Math.floor(100000 + Math.random() * 900000);
+      await this.watchRequest_repo.save(request);
     }
-    await this.watchRequest_repo.save(request);
+ 
     const requestResposne = plainToInstance(
       WatchRequestResponse,
-      await this.getSingleRequest(request.id),
+      await this.getSingleRequest(request.id??watch_request.id),
     );
     this.watchGateway.server.emit(
       `new-request-${requestResposne.watch_user.school.id}`,
