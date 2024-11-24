@@ -95,6 +95,7 @@ export class AuthenticationService {
           });
           return  {
             ...await this.userService._repo.save(newUser),
+            role:Role.PARENT,
             access_token: this.jwtService.sign(
               { username: userInfo.email, sub: userInfo.id },
               jwtSignOptions(this._config),
@@ -102,7 +103,7 @@ export class AuthenticationService {
           };
         } else
           return {
-            ...user,
+            ...user,role:Role.PARENT,
             access_token: this.jwtService.sign(
               { username: userInfo.email, sub: userInfo.id },
               jwtSignOptions(this._config),
@@ -174,7 +175,7 @@ export class AuthenticationService {
       user=  await  this.userService._repo.save(user);
       }
 
-      return { ...user, access_token };
+      return { ...user, access_token,role:Role.PARENT };
     } catch (error) {
       throw new UnauthorizedException(error.message);
     }
