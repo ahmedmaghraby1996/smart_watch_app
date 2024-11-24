@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Inject,
   Param,
+  Patch,
   Post,
   Query,
   UploadedFile,
@@ -32,7 +33,7 @@ import { ActionResponse } from 'src/core/base/responses/action.response';
 import { UploadValidator } from 'src/core/validators/upload.validator';
 import { RegisterRequest } from '../authentication/dto/requests/register.dto';
 import { RegisterResponse } from '../authentication/dto/responses/register.response';
-import { AddWatchUserRequest } from './dto/requests/add-watch-user.request';
+import { AddWatchUserRequest, EditWatchUserRequest } from './dto/requests/add-watch-user.request';
 import { Role } from 'src/infrastructure/data/enums/role.enum';
 import { Roles } from '../authentication/guards/roles.decorator';
 import { JwtAuthGuard } from '../authentication/guards/jwt-auth.guard';
@@ -149,6 +150,20 @@ export class WatchController {
     const user = await this._service.addWatchUser(req);
     return new ActionResponse(user);
   }
+  
+  @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('avatarFile'))
+  @ApiConsumes('multipart/form-data')
+  @Roles(Role.PARENT)
+  @Patch('edit-user')
+  async editWatchUser(
+    @Body() req: EditWatchUserRequest,
+    @UploadedFile(new UploadValidator().build())
+    avatarFile: Express.Multer.File,
+  ) {
+    req.avatarFile = avatarFile;
+    const user = await this._service.editWatchUser(req);
+    return new ActionResponse(user);
+  }
 
   @Roles(Role.PARENT, Role.DRIVER)
   @Post('make-request/:watch_user_id')
@@ -180,6 +195,7 @@ export class WatchController {
       }),
     );
   }
+  
 
   @Roles(Role.ADMIN)
   @Get('/get-admin-requests')

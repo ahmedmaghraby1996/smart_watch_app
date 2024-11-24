@@ -41,4 +41,12 @@ export class FileService {
             throw error;
         }
     }
+    async delete(fileLocation: string) {
+        try {
+          await this.storage.getDisk().delete(fileLocation);
+          return true;
+        } catch (error) {
+          throw error;
+        }
+      }
 }

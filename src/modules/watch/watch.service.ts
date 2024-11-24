@@ -5,7 +5,10 @@ import { BaseService } from 'src/core/base/service/service.base';
 import { IMEI_entity } from 'src/infrastructure/entities/watch-user/IMEI.entity';
 import { WatchUser } from 'src/infrastructure/entities/watch-user/watch-user.entity';
 import { Repository } from 'typeorm/repository/Repository';
-import { AddWatchUserRequest } from './dto/requests/add-watch-user.request';
+import {
+  AddWatchUserRequest,
+  EditWatchUserRequest,
+} from './dto/requests/add-watch-user.request';
 import { FileService } from '../file/file.service';
 import { plainToInstance } from 'class-transformer';
 import { Request } from 'express';
@@ -103,7 +106,8 @@ export class WatchService extends BaseService<WatchUser> {
 
   async confirmRequest(req: ConfirmRequest) {
     const watch_request = await this.watchRequest_repo.findOne({
-      where: { id: req.request_id },relations: { watch_user: true },
+      where: { id: req.request_id },
+      relations: { watch_user: true },
     });
 
     // if (!request) throw new BadRequestException('invalid code');
@@ -137,7 +141,7 @@ export class WatchService extends BaseService<WatchUser> {
       request.created_at = new Date();
       await this.watchRequest_repo.save(request);
     } else {
-       request = new WatchRequest();
+      request = new WatchRequest();
       const count = await this.watchRequest_repo
         .createQueryBuilder('watch_request')
         .where('DATE(watch_request.created_at) = CURDATE()')
@@ -201,6 +205,39 @@ export class WatchService extends BaseService<WatchUser> {
     name == null ? (name = '') : name;
     return await this.school_repo.find({
       where: { name: ILike(`%${name}%`) },
+    });
+  }
+
+  async editWatchUser(request: EditWatchUserRequest) {
+    const watch_user = await this._repo.findOne({
+      where: { id: request.id },
+    });
+    if (!watch_user) throw new BadRequestException('not found');
+
+    await this._repo.update(
+      watch_user.id,
+      plainToInstance(WatchUser, request, { excludeExtraneousValues: true }),
+    );
+    if (request.driver_ids?.length > 0) {
+      const drivers = await this.user_repo.find({
+        where: { id: In(request.driver_ids.split(',')) },
+      });
+      watch_user.drivers = drivers;
+    }
+
+    if (request.avatarFile) {
+      const avatar = await this.file_serivce.upload(
+        request.avatarFile,
+        'avatars',
+      );
+      await this.file_serivce.delete(watch_user.avatar);
+      watch_user.avatar = avatar;
+    }
+
+    await this._repo.save(watch_user);
+
+    return await this._repo.findOne({
+      where: { id: this.request.user.id },
     });
   }
 }
