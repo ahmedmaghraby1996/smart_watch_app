@@ -174,7 +174,7 @@ export class AuthenticationService {
 
       return { ...user, access_token };
     } catch (error) {
-      console.error('Error decoding Apple ID token:', error);
+      throw new UnauthorizedException(error.message);
     }
   }
 
