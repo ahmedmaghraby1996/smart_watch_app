@@ -66,8 +66,10 @@ export class AuthenticationController {
 
   @Post('google-sign-in')
   async googleSignin(@Body() req: GoogleSigninRequest) {
+    const user = await this.authService.googleSignin(req);
+    console.log(user);
     return new ActionResponse(
-      plainToInstance(AuthResponse, await this.authService.googleSignin(req), {
+      plainToInstance(AuthResponse, user, {
         excludeExtraneousValues: true,
       }),
     );
