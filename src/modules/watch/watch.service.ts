@@ -260,7 +260,7 @@ export class WatchService extends BaseService<WatchUser> {
     await this._repo.save(watch_user);
 
     return await this._repo.findOne({
-      where: { id: this.request.user.id },
+      where: { id:request.id},
     });
   }
 }
