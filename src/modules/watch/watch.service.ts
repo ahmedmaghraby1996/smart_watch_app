@@ -213,11 +213,34 @@ export class WatchService extends BaseService<WatchUser> {
       where: { id: request.id },
     });
     if (!watch_user) throw new BadRequestException('not found');
+    if (request.school_id) {
+      const school = await this.school_repo.findOne({
+        where: { id: request.school_id },
+      });
+      if(!school) throw new BadRequestException('school not found');
+      watch_user.school = school;
+    }
+    if(request.IMEI){
+    const isValidIMEI =  await this.checkWatch(request.IMEI);
+    if(!isValidIMEI) throw new BadRequestException('IMEI not valid');
+    const IMEI = await this.IMEI_repo.findOne({
+      where: { IMEI: request.IMEI },
+    })
+    watch_user.IMEI = IMEI;
+    }
+    if(request.phone){
+      watch_user.phone = request.phone;
+    }
+    if(request.name){
+      watch_user.name = request.name;
+    }
+    if(request.gender){
+      watch_user.gender = request.gender;
+    }
+    if(request.birth_date){
+      watch_user.birth_date = request.birth_date;
+    }
 
-    await this._repo.update(
-      watch_user.id,
-      plainToInstance(WatchUser, request, { excludeExtraneousValues: true }),
-    );
     if (request.driver_ids?.length > 0) {
       const drivers = await this.user_repo.find({
         where: { id: In(request.driver_ids.split(',')) },
