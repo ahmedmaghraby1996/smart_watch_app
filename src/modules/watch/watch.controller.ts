@@ -208,7 +208,7 @@ export class WatchController {
     const last_day = new Date(
       new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
     );
-    applyQueryFilters(query, `created_at>${last_day}`);
+    applyQueryFilters(query, `created_at>${last_day.toISOString().slice(0, 19).replace('T', ' ')}`);
 
     const requests = await this._request_service.findAll(query);
     const total = await this._request_service.count(query);
