@@ -77,9 +77,9 @@ export class AuthenticationController {
   @Post('apple-sign-in')
   async apppleSignin(@Body() req: GoogleSigninRequest) {
     const user = await this.authService.getAppleUserFromToken(req.token);
-    console.log(user);
+
     return new ActionResponse(
-      plainToInstance(AuthResponse, new AuthResponse(user), {
+      plainToInstance(AuthResponse, user, {
         excludeExtraneousValues: true,
       }),
     );
