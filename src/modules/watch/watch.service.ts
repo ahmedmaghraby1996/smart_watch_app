@@ -201,10 +201,10 @@ export class WatchService extends BaseService<WatchUser> {
     });
   }
 
-  async getSchools(name: string) {
-    name == null ? (name = '') : name;
+  async getSchools(code: string) {
+    code == null ? (code = '') : code;
     return await this.school_repo.find({
-      where: { name: ILike(`%${name}%`) },
+      where: { city_code: ILike(`%${code}%`) },
     });
   }
 
