@@ -1,5 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { GoogleSigninRequest, LoginRequest } from './dto/requests/signin.dto';
 import { Inject } from '@nestjs/common/decorators';
 import { ConfigService } from '@nestjs/config';
@@ -111,7 +111,7 @@ export class AuthenticationService {
       })
 
       .catch((error) => {
-        return error.response.data;
+        throw new UnauthorizedException(error.response.data.error); // error.response.data;
       });
   }
 
