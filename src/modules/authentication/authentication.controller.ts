@@ -67,7 +67,9 @@ export class AuthenticationController {
   @Post('google-sign-in')
   async googleSignin(@Body() req: GoogleSigninRequest) {
     return new ActionResponse(
-      plainToInstance(AuthResponse, await this.authService.googleSignin(req)),
+      plainToInstance(AuthResponse, await this.authService.googleSignin(req), {
+        excludeExtraneousValues: true,
+      }),
     );
   }
 
@@ -78,7 +80,8 @@ export class AuthenticationController {
         AuthResponse,
         new AuthResponse(
           await this.authService.getAppleUserFromToken(req.token),
-        ),
+          
+        ),{excludeExtraneousValues: true},
       ),
     );
   }
