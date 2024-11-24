@@ -169,7 +169,7 @@ export class AuthenticationService {
           roles: [Role.PARENT],
           email,
         });
-        await this.userService._repo.save(user);
+      user=  await  this.userService._repo.save(user);
       }
 
       return { ...user, access_token };
