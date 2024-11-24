@@ -16,7 +16,7 @@ import { WatchRequest } from 'src/infrastructure/entities/watch-user/watch-reque
 import { ConfirmRequest } from './dto/requests/confirm-request';
 import { RequestStatus } from 'src/infrastructure/data/enums/reservation-status.eum';
 import { School } from 'src/infrastructure/entities/school/school.entity';
-import { ILike, In } from 'typeorm';
+import { ILike, In, MoreThan } from 'typeorm';
 import { User } from 'src/infrastructure/entities/user/user.entity';
 import { WatchGateway } from 'src/integration/gateways/watch.gateway';
 import { WatchRequestResponse } from './dto/response/watch-request.response';
@@ -183,8 +183,22 @@ export class WatchService extends BaseService<WatchUser> {
   async getWatchRequests() {
     return await this.watchRequest_repo.find({
       where: [
-        { watch_user: { parent_id: this.request.user.id } },
-        { watch_user: { drivers: { id: this.request.user.id } } },
+        {
+          watch_user: {
+            parent_id: this.request.user.id,
+            created_at: MoreThan(
+              new Date(new Date(new Date().getTime() - 24 * 60 * 60 * 1000)),
+            ),
+          },
+        },
+        {
+          watch_user: {
+            drivers: { id: this.request.user.id },
+            created_at: MoreThan(
+              new Date(new Date(new Date().getTime() - 24 * 60 * 60 * 1000)),
+            ),
+          },
+        },
       ],
       relations: {
         watch_user: { parent: true, drivers: true },
@@ -194,7 +208,14 @@ export class WatchService extends BaseService<WatchUser> {
 
   async getSchoolWatchRequests() {
     return await this.watchRequest_repo.find({
-      where: [{ watch_user: { school_id: this.request.user.school_id } }],
+      where: [
+        {
+          watch_user: { school_id: this.request.user.school_id },
+          created_at: MoreThan(
+            new Date(new Date(new Date().getTime() - 24 * 60 * 60 * 1000)),
+          ),
+        },
+      ],
       relations: {
         watch_user: { parent: true, drivers: true },
       },
@@ -217,27 +238,27 @@ export class WatchService extends BaseService<WatchUser> {
       const school = await this.school_repo.findOne({
         where: { id: request.school_id },
       });
-      if(!school) throw new BadRequestException('school not found');
+      if (!school) throw new BadRequestException('school not found');
       watch_user.school = school;
     }
-    if(request.IMEI){
-    const isValidIMEI =  await this.checkWatch(request.IMEI);
-    if(!isValidIMEI) throw new BadRequestException('IMEI not valid');
-    const IMEI = await this.IMEI_repo.findOne({
-      where: { IMEI: request.IMEI },
-    })
-    watch_user.IMEI = IMEI;
+    if (request.IMEI) {
+      const isValidIMEI = await this.checkWatch(request.IMEI);
+      if (!isValidIMEI) throw new BadRequestException('IMEI not valid');
+      const IMEI = await this.IMEI_repo.findOne({
+        where: { IMEI: request.IMEI },
+      });
+      watch_user.IMEI = IMEI;
     }
-    if(request.phone){
+    if (request.phone) {
       watch_user.phone = request.phone;
     }
-    if(request.name){
+    if (request.name) {
       watch_user.name = request.name;
     }
-    if(request.gender){
+    if (request.gender) {
       watch_user.gender = request.gender;
     }
-    if(request.birth_date){
+    if (request.birth_date) {
       watch_user.birth_date = request.birth_date;
     }
 
@@ -260,7 +281,7 @@ export class WatchService extends BaseService<WatchUser> {
     await this._repo.save(watch_user);
 
     return await this._repo.findOne({
-      where: { id:request.id},
+      where: { id: request.id },
     });
   }
 }

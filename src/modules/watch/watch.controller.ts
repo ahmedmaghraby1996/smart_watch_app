@@ -33,7 +33,10 @@ import { ActionResponse } from 'src/core/base/responses/action.response';
 import { UploadValidator } from 'src/core/validators/upload.validator';
 import { RegisterRequest } from '../authentication/dto/requests/register.dto';
 import { RegisterResponse } from '../authentication/dto/responses/register.response';
-import { AddWatchUserRequest, EditWatchUserRequest } from './dto/requests/add-watch-user.request';
+import {
+  AddWatchUserRequest,
+  EditWatchUserRequest,
+} from './dto/requests/add-watch-user.request';
 import { Role } from 'src/infrastructure/data/enums/role.enum';
 import { Roles } from '../authentication/guards/roles.decorator';
 import { JwtAuthGuard } from '../authentication/guards/jwt-auth.guard';
@@ -150,7 +153,7 @@ export class WatchController {
     const user = await this._service.addWatchUser(req);
     return new ActionResponse(user);
   }
-  
+
   @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('avatarFile'))
   @ApiConsumes('multipart/form-data')
   @Roles(Role.PARENT)
@@ -171,7 +174,7 @@ export class WatchController {
     return new ActionResponse(await this._service.makeRequest(watch_user_id));
   }
 
-  @Roles(Role.SECURITY,Role.PARENT,Role.School,Role.ADMIN)
+  @Roles(Role.SECURITY, Role.PARENT, Role.School, Role.ADMIN)
   @Post('confirm-request')
   async confirmRequest(@Body() req: ConfirmRequest) {
     return new ActionResponse(await this._service.confirmRequest(req));
@@ -195,7 +198,6 @@ export class WatchController {
       }),
     );
   }
-  
 
   @Roles(Role.ADMIN)
   @Get('/get-admin-requests')
@@ -203,6 +205,10 @@ export class WatchController {
     applyQueryIncludes(query, 'user');
     applyQueryIncludes(query, 'watch_user#school.drivers.parent');
     applyQuerySort(query, 'created_at=desc');
+    const last_day = new Date(
+      new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+    );
+    applyQueryFilters(query, `created_at>${last_day}`);
 
     const requests = await this._request_service.findAll(query);
     const total = await this._request_service.count(query);
