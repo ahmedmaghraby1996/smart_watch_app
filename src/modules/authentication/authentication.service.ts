@@ -169,6 +169,7 @@ export class AuthenticationService {
           username: email,
           roles: [Role.PARENT],
           email,
+          name:""
         });
       user=  await  this.userService._repo.save(user);
       }
