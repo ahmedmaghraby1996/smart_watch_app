@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   ClassSerializerInterceptor,
   Controller,
@@ -7,6 +8,7 @@ import {
   Inject,
   Post,
   Query,
+  UnauthorizedException,
   UploadedFile,
   UploadedFiles,
   UseGuards,
@@ -67,7 +69,7 @@ export class AuthenticationController {
   @Post('google-sign-in')
   async googleSignin(@Body() req: GoogleSigninRequest) {
     const user = await this.authService.googleSignin(req);
-    if(!user) return new ActionResponse(user);
+    if(!user)  throw new UnauthorizedException(user);
     console.log(user);
     return new ActionResponse(
       plainToInstance(AuthResponse, user, {
