@@ -157,6 +157,7 @@ export class AuthenticationService {
       // Step 6: Extract user information from the decoded token payload
       const userId = decodedToken.payload.sub;
       const email = decodedToken.payload.email as string;
+      console.log(userId, email);
       const access_token = this.jwtService.sign(
         { username: email, sub: userId },
         jwtSignOptions(this._config),
