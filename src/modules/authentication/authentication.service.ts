@@ -90,10 +90,11 @@ export class AuthenticationService {
             ...userInfo,
             role: Role.PARENT,
             username: userInfo.email,
+            email: userInfo.email,
             avatar: userInfo.picture,
           });
-          return await {
-            ...this.userService._repo.save(newUser),
+          return  {
+            ...await this.userService._repo.save(newUser),
             access_token: this.jwtService.sign(
               { username: userInfo.email, sub: userInfo.id },
               jwtSignOptions(this._config),
