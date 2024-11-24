@@ -66,14 +66,14 @@ export class AuthenticationController {
   async googleSignin(
     @Body() req: GoogleSigninRequest,
   ) {
-    return new ActionResponse(  await this.authService.googleSignin(req));
+    return new ActionResponse( new AuthResponse( await this.authService.googleSignin(req)));
   }
 
   @Post("apple-sign-in")
   async apppleSignin(
     @Body() req: GoogleSigninRequest,
   ) {
-    return new ActionResponse(  await this.authService.getAppleUserFromToken(req.token));
+    return new ActionResponse( new AuthResponse( await this.authService.getAppleUserFromToken(req.token)));
   }
 
 

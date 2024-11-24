@@ -21,17 +21,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Wallet } from 'src/infrastructure/entities/wallet/wallet.entity';
 import { FirebaseAdminService } from '../notification/firebase-admin-service';
 import { User } from 'src/infrastructure/entities/user/user.entity';
-import * as jose from "jose";
+import * as jose from 'jose';
 import { Request } from 'express';
 import { REQUEST } from '@nestjs/core';
+import { access } from 'fs';
 
 @Injectable()
 export class AuthenticationService {
-
- 
   constructor(
     @Inject(UserService) private readonly userService: UserService,
-    
 
     @Inject(RegisterUserTransaction)
     private readonly registerUserTransaction: RegisterUserTransaction,
@@ -76,47 +74,65 @@ export class AuthenticationService {
     };
   }
   async googleSignin(req: GoogleSigninRequest) {
-  return  axios
+    return axios
       .get(
         `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${req.token}`,
       )
       .then(async (response) => {
         const userInfo = response.data;
-     
 
         const user = await this.userService._repo.findOneBy({
-        id: userInfo.id,
-        })
+          id: userInfo.id,
+        });
 
         if (!user) {
-          const newUser = new User({...userInfo,role: req.role,username: userInfo.email,avatar:userInfo.picture});
-          return await {...this.userService._repo.save(newUser),access_token: this.jwtService.sign({ username: userInfo.email, sub: userInfo.id }, jwtSignOptions(this._config))};
-        }
-        else
-        return {...user,access_token: this.jwtService.sign({ username: userInfo.email, sub: userInfo.id }, jwtSignOptions(this._config))};
+          const newUser = new User({
+            ...userInfo,
+            role: Role.PARENT,
+            username: userInfo.email,
+            avatar: userInfo.picture,
+          });
+          return await {
+            ...this.userService._repo.save(newUser),
+            access_token: this.jwtService.sign(
+              { username: userInfo.email, sub: userInfo.id },
+              jwtSignOptions(this._config),
+            ),
+          };
+        } else
+          return {
+            ...user,
+            access_token: this.jwtService.sign(
+              { username: userInfo.email, sub: userInfo.id },
+              jwtSignOptions(this._config),
+            ),
+          };
       })
-     
+
       .catch((error) => {
         return error.response.data;
       });
   }
 
-
-
-  async  getAppleUserFromToken(idToken,) {
+  async getAppleUserFromToken(idToken) {
     try {
       // Step 1: Fetch Apple's public keys
-      const { data: appleKeys } = await axios.get('https://appleid.apple.com/auth/keys');
-      
+      const { data: appleKeys } = await axios.get(
+        'https://appleid.apple.com/auth/keys',
+      );
+
       // Step 2: Decode the token header to identify which key was used
-      const decodedHeader = this.jwtService.decode(idToken, { complete: true }).header;
-      
+      const decodedHeader = this.jwtService.decode(idToken, {
+        complete: true,
+      }).header;
+
       // Step 3: Find the matching key by `kid`
-      const key = appleKeys.keys.find(k => k.kid === decodedHeader.kid);
-      if (!key) throw new Error('Apple public key not found for the given token.');
-      
+      const key = appleKeys.keys.find((k) => k.kid === decodedHeader.kid);
+      if (!key)
+        throw new Error('Apple public key not found for the given token.');
+
       let applePublicKey;
-  
+
       // Step 4: Check if `x5c` exists and use it if available
       if (key.x5c && key.x5c[0]) {
         applePublicKey = `-----BEGIN PUBLIC KEY-----\n${key.x5c[0]}\n-----END PUBLIC KEY-----`;
@@ -130,33 +146,36 @@ export class AuthenticationService {
         const rsaKey = await jose.importJWK(jwk, 'RS256');
         applePublicKey = rsaKey; // Now we have a usable RSA key object
       }
-  
+
       // Step 5: Verify the token using the constructed public key
       const decodedToken = await jose.jwtVerify(idToken, applePublicKey, {
         algorithms: ['RS256'],
         issuer: 'https://appleid.apple.com', // Verify the issuer as additional security
       });
-  
+
       // Step 6: Extract user information from the decoded token payload
       const userId = decodedToken.payload.sub;
-      const email = decodedToken.payload.email;
-  console.log('decodedToken',decodedToken.payload);
-  
-      // Return or save user data
-      return {
-        userId,
-        email,
+      const email = decodedToken.payload.email as string;
+      const access_token = this.jwtService.sign(
+        { username: email, sub: userId },
+        jwtSignOptions(this._config),
+      );
+      let user = await this.userService._repo.findOneBy({ id: userId });
+      if (!user) {
+        user = new User({
+          id: userId,
+          username: email,
+          roles: [Role.PARENT],
+          email,
+        });
+        await this.userService._repo.save(user);
+      }
 
-        avatar: null, // Apple doesn’t provide an avatar
-      };
+      return { ...user, access_token };
     } catch (error) {
       console.error('Error decoding Apple ID token:', error);
-  
-    }}
-
-
-
-  
+    }
+  }
 
   async register(req: any) {
     const user = await this.registerUserTransaction.run(req);
@@ -168,7 +187,7 @@ export class AuthenticationService {
     user.user_id = this.request.user.id;
     user.relation_type = req.relation_type;
     this.userService._repo.save(user);
-    
+
     return user;
   }
 

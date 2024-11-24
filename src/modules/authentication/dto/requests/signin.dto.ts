@@ -17,9 +17,9 @@ export class GoogleSigninRequest {
     @IsNotEmpty() @IsString()
     token: string;
 
-    @ApiProperty({ default: Role.PARENT, enum: [Role.PARENT, Role.SECURITY,Role.DRIVER ,Role.School], required: false })
-    @IsNotEmpty()
-    @IsOptional()
-    @IsEnum(Role)
-    role: Role;
+    // @ApiProperty({ default: Role.PARENT, enum: [Role.PARENT, Role.SECURITY,Role.DRIVER ,Role.School], required: false })
+    // @IsNotEmpty()
+    // @IsOptional()
+    // @IsEnum(Role)
+    // role: Role;
 }
