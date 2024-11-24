@@ -17,6 +17,9 @@ export class FamilyMemberRequest extends RegisterRequest {
       RelationType.MOTHER,
       RelationType.SISTER,
       RelationType.SISTER_IN_LAW,
+      RelationType.DRIVER,
+      RelationType.UNCLE,
+      RelationType.AUNT
     ],
   })
   @IsNotEmpty()
