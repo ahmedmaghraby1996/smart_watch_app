@@ -37,15 +37,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { City } from 'src/infrastructure/entities/school/city.entity';
 import { Repository } from 'typeorm/repository/Repository';
 
-
-
 @ApiTags(Router.Auth.ApiTag)
 @Controller(Router.Auth.Base)
 export class AuthenticationController {
   constructor(
     @Inject(AuthenticationService)
     private readonly authService: AuthenticationService,
-    @InjectRepository(City) 
+    @InjectRepository(City)
     private readonly cityRepository: Repository<City>,
   ) {}
 
@@ -56,40 +54,43 @@ export class AuthenticationController {
     const authData = await this.authService.login(
       await this.authService.validateUser(req),
     );
-    const result = plainToInstance(AuthResponse, {...authData,role:authData.roles[0]}, {
-      excludeExtraneousValues: true,
-    });
+    const result = plainToInstance(
+      AuthResponse,
+      { ...authData, role: authData.roles[0] },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
     return new ActionResponse<AuthResponse>(result);
   }
 
-  @Post("google-sign-in")
-  async googleSignin(
-    @Body() req: GoogleSigninRequest,
-  ) {
-    return new ActionResponse( new AuthResponse( await this.authService.googleSignin(req)));
+  @Post('google-sign-in')
+  async googleSignin(@Body() req: GoogleSigninRequest) {
+    return new ActionResponse(
+      plainToInstance(AuthResponse, await this.authService.googleSignin(req)),
+    );
   }
 
-  @Post("apple-sign-in")
-  async apppleSignin(
-    @Body() req: GoogleSigninRequest,
-  ) {
-    return new ActionResponse( new AuthResponse( await this.authService.getAppleUserFromToken(req.token)));
+  @Post('apple-sign-in')
+  async apppleSignin(@Body() req: GoogleSigninRequest) {
+    return new ActionResponse(
+      plainToInstance(
+        AuthResponse,
+        new AuthResponse(
+          await this.authService.getAppleUserFromToken(req.token),
+        ),
+      ),
+    );
   }
-
-
-
-
- 
 
   @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('avatarFile'))
   @ApiConsumes('multipart/form-data')
-  @Post(Router.Auth.Register )
+  @Post(Router.Auth.Register)
   async register(
     @Body() req: RegisterRequest,
     @UploadedFile(new UploadValidator().build())
     avatarFile: Express.Multer.File,
   ): Promise<ActionResponse<RegisterResponse>> {
-
     req.avatarFile = avatarFile;
     const user = await this.authService.register(req);
     const result = plainToInstance(RegisterResponse, user, {
@@ -105,13 +106,12 @@ export class AuthenticationController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('avatarFile'))
   @ApiConsumes('multipart/form-data')
-  @Post('register-family-member' )
+  @Post('register-family-member')
   async registerFamilyMember(
     @Body() req: FamilyMemberRequest,
     @UploadedFile(new UploadValidator().build())
     avatarFile: Express.Multer.File,
   ): Promise<ActionResponse<RegisterResponse>> {
-
     req.avatarFile = avatarFile;
     const user = await this.authService.registerFamilyMember(req);
     const result = plainToInstance(RegisterResponse, user, {
@@ -121,12 +121,6 @@ export class AuthenticationController {
       statusCode: HttpStatus.CREATED,
     });
   }
-
-
-
- 
-
-
 
   @Post(Router.Auth.SendOtp)
   async snedOtp(@Body() req: SendOtpRequest): Promise<ActionResponse<string>> {
@@ -148,7 +142,5 @@ export class AuthenticationController {
   @Get('/cities')
   async getCities() {
     return new ActionResponse(await this.cityRepository.find());
-    
   }
-
 }
