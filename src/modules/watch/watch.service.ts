@@ -69,8 +69,8 @@ export class WatchService extends BaseService<WatchUser> {
     });
     if (!watch || watch.watch_user)
       throw new BadRequestException('message.IMEI_already_exist');
-
-    const avatar = await this.file_serivce.upload(req.avatarFile, 'avatars');
+    
+    const avatar = req.avatarFile!=null? await this.file_serivce.upload(req.avatarFile, 'avatars'):null;
     delete req.avatarFile;
     const watchUser = plainToInstance(WatchUser, {
       ...req,
