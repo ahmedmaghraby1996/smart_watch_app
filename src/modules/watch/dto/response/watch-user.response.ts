@@ -14,4 +14,6 @@ export class WatchUserResponse  extends UserResponse{
     @Expose()
     @Transform(( value ) => value.obj.parent?plainToInstance(UserResponse, value.obj.parent, { excludeExtraneousValues: true }):null)
     parent: string;
+    @Expose()
+    IMEI: any
 }

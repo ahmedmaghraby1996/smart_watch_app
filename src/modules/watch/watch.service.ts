@@ -93,7 +93,7 @@ export class WatchService extends BaseService<WatchUser> {
         { parent_id: this.request.user.id },
         { drivers: { id: this.request.user.id } },
       ],
-      relations: { parent: true, drivers: true, school: true },
+      relations: { parent: true, drivers: true, school: true ,IMEI: true},
     });
   }
 
