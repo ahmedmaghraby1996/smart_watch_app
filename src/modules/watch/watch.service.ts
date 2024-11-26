@@ -276,7 +276,7 @@ export class WatchService extends BaseService<WatchUser> {
         where: { id: In(request.driver_ids.split(',')) },
       });
       watch_user.drivers = drivers;
-    } else request.driver_ids = null;
+    } else watch_user.drivers = null;
 
     if (request.avatarFile) {
       const avatar = await this.file_serivce.upload(
