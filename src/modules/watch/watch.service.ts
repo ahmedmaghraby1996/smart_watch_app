@@ -69,20 +69,27 @@ export class WatchService extends BaseService<WatchUser> {
     });
     if (!watch || watch.watch_user)
       throw new BadRequestException('message.IMEI_already_exist');
-    
-    const avatar = req.avatarFile!=null? await this.file_serivce.upload(req.avatarFile, 'avatars'):null;
+
+    const avatar =
+      req.avatarFile != null
+        ? await this.file_serivce.upload(req.avatarFile, 'avatars')
+        : null;
     delete req.avatarFile;
     const watchUser = plainToInstance(WatchUser, {
       ...req,
       avatar,
       parent_id: this.request.user.id,
     });
-    const driver_ids = req.driver_ids.split(',');
+    if (req.driver_ids?.length > 0) {
+      const driver_ids = req.driver_ids.split(',');
+
+      const drivers = await this.user_repo.find({
+        where: { id: In(driver_ids) },
+      });
+      watchUser.drivers = drivers;
+    }
+
     watchUser.IMEI = watch;
-    const drivers = await this.user_repo.find({
-      where: { id: In(driver_ids) },
-    });
-    watchUser.drivers = drivers;
     await this._repo.save(watchUser);
     return watchUser;
   }
@@ -93,7 +100,7 @@ export class WatchService extends BaseService<WatchUser> {
         { parent_id: this.request.user.id },
         { drivers: { id: this.request.user.id } },
       ],
-      relations: { parent: true, drivers: true, school: true ,IMEI: true},
+      relations: { parent: true, drivers: true, school: true, IMEI: true },
     });
   }
 
