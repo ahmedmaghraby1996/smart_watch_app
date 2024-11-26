@@ -249,11 +249,13 @@ export class WatchService extends BaseService<WatchUser> {
       watch_user.school = school;
     }
     if (request.IMEI) {
-      const isValidIMEI = await this.checkWatch(request.IMEI);
-      if (!isValidIMEI) throw new BadRequestException('IMEI not valid');
       const IMEI = await this.IMEI_repo.findOne({
-        where: { IMEI: request.IMEI },
+        where: [
+          { IMEI: request.IMEI, watch_user: null },
+          { IMEI: request.IMEI, watch_user: { id: watch_user.id } },
+        ],
       });
+      if (!IMEI) throw new BadRequestException('IMEI not available');
       watch_user.IMEI = IMEI;
     }
     if (request.phone) {
@@ -274,7 +276,7 @@ export class WatchService extends BaseService<WatchUser> {
         where: { id: In(request.driver_ids.split(',')) },
       });
       watch_user.drivers = drivers;
-    }
+    } else request.driver_ids = null;
 
     if (request.avatarFile) {
       const avatar = await this.file_serivce.upload(
