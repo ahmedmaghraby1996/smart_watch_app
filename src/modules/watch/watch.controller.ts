@@ -191,11 +191,14 @@ export class WatchController {
   @Roles(Role.PARENT)
   @Delete('/delete-watch-user/:watch_user_id')
   async deleteWatchUsers(@Param('watch_user_id') watch_user_id: string) {
+    const watch_user = await this._service._repo.findOneBy({
+      id: watch_user_id,
+    });
+    if (!watch_user) throw new Error('user not exist');
+    watch_user.IMEI = null;
+    await this._service._repo.save(watch_user);
     return new ActionResponse(
-      await this._service._repo.softDelete({
-        id: watch_user_id,
-        parent_id: this.request.user.id,
-      }),
+      await this._service._repo.softDelete(watch_user.id),
     );
   }
 
@@ -208,7 +211,10 @@ export class WatchController {
     const last_day = new Date(
       new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
     );
-    applyQueryFilters(query, `created_at>${last_day.toISOString().slice(0, 19).replace('T', ' ')}`);
+    applyQueryFilters(
+      query,
+      `created_at>${last_day.toISOString().slice(0, 19).replace('T', ' ')}`,
+    );
 
     const requests = await this._request_service.findAll(query);
     const total = await this._request_service.count(query);
