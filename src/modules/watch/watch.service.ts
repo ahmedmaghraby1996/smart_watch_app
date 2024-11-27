@@ -3,6 +3,7 @@ import { REQUEST } from '@nestjs/core';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from 'src/core/base/service/service.base';
 import { IMEI_entity } from 'src/infrastructure/entities/watch-user/IMEI.entity';
+import { v4 as uuidv4 } from 'uuid';
 import { WatchUser } from 'src/infrastructure/entities/watch-user/watch-user.entity';
 import { Repository } from 'typeorm/repository/Repository';
 import {
@@ -26,6 +27,7 @@ import { NotificationEntity } from 'src/infrastructure/entities/notification/not
 import { SendToUsersNotificationRequest } from '../notification/dto/requests/send-to-users-notification.request';
 import { Role } from 'src/infrastructure/data/enums/role.enum';
 import { validate } from 'class-validator';
+import { UUIDV4 } from 'sequelize';
 
 @Injectable()
 export class WatchService extends BaseService<WatchUser> {
@@ -314,7 +316,7 @@ export class WatchService extends BaseService<WatchUser> {
     for (let index = 0; index < jsonData.length; index++) {
       const imei = jsonData[index]['1111'].result;
       if (!(await this.IMEI_repo.findOne({ where: { IMEI: imei } }))) {
-        newWatches.push(new IMEI_entity({ IMEI: imei }));
+        newWatches.push(new IMEI_entity({ IMEI: imei, id: uuidv4()}));
       }
     }console.log(newWatches);
     return await this.IMEI_repo.save(newWatches);
