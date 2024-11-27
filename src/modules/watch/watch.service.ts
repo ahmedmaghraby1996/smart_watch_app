@@ -318,7 +318,7 @@ export class WatchService extends BaseService<WatchUser> {
       const {
         IMEI
       } = new IMEI_entity({
-        IMEI: productData.IMEI.result,});
+        IMEI: productData.IMEI['1111'].result,});
 
       return this.IMEI_repo.create({
         IMEI,
