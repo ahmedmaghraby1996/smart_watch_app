@@ -319,7 +319,7 @@ export class WatchService extends BaseService<WatchUser> {
         const { IMEI } = new IMEI_entity({
           IMEI: imei,
         });
-        if (await this.checkWatch(IMEI)){
+        if (await this.checkWatch(imei)){
           console.log('x');
           return this.IMEI_repo.create({
             IMEI:imei,
