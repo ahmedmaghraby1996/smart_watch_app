@@ -10,11 +10,12 @@ import {
   EditWatchUserRequest,
 } from './dto/requests/add-watch-user.request';
 import { FileService } from '../file/file.service';
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { Request } from 'express';
 import { WatchRequest } from 'src/infrastructure/entities/watch-user/watch-request.entity';
 import { ConfirmRequest } from './dto/requests/confirm-request';
 import { RequestStatus } from 'src/infrastructure/data/enums/reservation-status.eum';
+import { StorageManager } from 'src/integration/storage/storage.manager';
 import { School } from 'src/infrastructure/entities/school/school.entity';
 import { ILike, In, MoreThan } from 'typeorm';
 import { User } from 'src/infrastructure/entities/user/user.entity';
@@ -24,6 +25,7 @@ import { NotificationService } from '../notification/services/notification.servi
 import { NotificationEntity } from 'src/infrastructure/entities/notification/notification.entity';
 import { SendToUsersNotificationRequest } from '../notification/dto/requests/send-to-users-notification.request';
 import { Role } from 'src/infrastructure/data/enums/role.enum';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class WatchService extends BaseService<WatchUser> {
@@ -39,6 +41,7 @@ export class WatchService extends BaseService<WatchUser> {
     private readonly notification_service: NotificationService,
     @InjectRepository(User) public user_repo: Repository<User>,
     public watchGateway: WatchGateway,
+    @Inject(StorageManager) private readonly storageManager: StorageManager,
   ) {
     super(repo);
   }
@@ -292,6 +295,35 @@ export class WatchService extends BaseService<WatchUser> {
     return await this._repo.findOne({
       where: { id: request.id },
     });
+  }
+
+
+  
+  async importWatches(req: any) {
+    const file = await this.storageManager.store(req.file, {
+      path: 'product-export',
+    });
+    const jsonData = await this.file_serivce.importExcel(file);
+
+    // const CreateProductRequest = plainToClass(IMEI_entity, {
+    //   products: jsonData,
+    // });
+    const validationErrors = await validate(jsonData);
+    if (validationErrors.length > 0) {
+      throw new BadRequestException(JSON.stringify(validationErrors));
+    }
+
+    const newWatches = jsonData.map((productData) => {
+      const {
+        IMEI
+      } = plainToClass(IMEI_entity, productData);
+
+      return this.IMEI_repo.create({
+        IMEI,
+      });
+    });
+
+    return await this.IMEI_repo.save(newWatches);
   }
 }
 

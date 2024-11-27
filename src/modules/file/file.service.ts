@@ -1,9 +1,10 @@
 import { StorageService } from '@codebrew/nestjs-storage';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as fs from 'fs';
 import { join } from 'path';
 import * as sharp from 'sharp';
+import * as excelJs from 'exceljs';
 import { UploadFileRequest } from './dto/requests/upload-file.request';
 
 @Injectable()
@@ -47,6 +48,29 @@ export class FileService {
           return true;
         } catch (error) {
           throw error;
+        }
+      }
+      async importExcel(filePath: string) {
+        try {
+          const workbook = new excelJs.Workbook();
+          await workbook.xlsx.readFile(filePath);
+    
+          const sheet = workbook.getWorksheet(1); // Assuming there is only one sheet
+    
+          const jsonData = [];
+          sheet.eachRow((row, rowNumber) => {
+            if (rowNumber !== 1) {
+              // Skip the header row
+              const rowData = {};
+              row.eachCell((cell, colNumber) => {
+                rowData[String(sheet.getCell(1, colNumber).value)] = cell.value;
+              });
+              jsonData.push(rowData);
+            }
+          });
+          return jsonData;
+        } catch (error) {
+          throw new BadRequestException(error.message);
         }
       }
 }

@@ -57,6 +57,7 @@ import { UserResponse } from '../user/dto/response/user-response';
 import { WatchUserResponse } from './dto/response/watch-user.response';
 import { ConfirmRequest } from './dto/requests/confirm-request';
 import { toUrl } from 'src/core/helpers/file.helper';
+import { ImportImeiRequest } from './dto/requests/import-imei.request';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -82,6 +83,22 @@ export class WatchController {
     return new ActionResponse(
       await this._service.IMEI_repo.save(new IMEI_entity({ IMEI: IMEI })),
     );
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @Post('/import/IMEI')
+  async importProducts(
+    @Body() req: ImportImeiRequest,
+    @UploadedFile(new UploadValidator().build())
+    file: Express.Multer.File,
+  ) {
+    req.file = file;
+    const products = await this._service.importWatches(req);
+    return new ActionResponse(products);
   }
 
   @Roles(Role.ADMIN)
