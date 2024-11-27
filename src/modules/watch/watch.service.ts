@@ -314,7 +314,7 @@ export class WatchService extends BaseService<WatchUser> {
     }
     const newWatches = [];
     for (let index = 0; index < jsonData.length; index++) {
-      const imei = jsonData[index]['1111'].result;
+      const imei = jsonData[index]['IMEI'].result;
       if (!(await this.IMEI_repo.findOne({ where: { IMEI: imei } }))) {
         newWatches.push(new IMEI_entity({ IMEI: imei, id: uuidv4()}));
       }
