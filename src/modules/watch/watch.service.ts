@@ -297,8 +297,6 @@ export class WatchService extends BaseService<WatchUser> {
     });
   }
 
-
-  
   async importWatches(req: any) {
     const file = await this.storageManager.store(req.file, {
       path: 'product-export',
@@ -314,21 +312,31 @@ export class WatchService extends BaseService<WatchUser> {
     }
 
     console.log(jsonData);
-    const newWatches = jsonData.map((productData) => {
-      const {
-        IMEI
-      } = new IMEI_entity({
-        IMEI: productData['1111'].result,});
-
-      return this.IMEI_repo.create({
-        IMEI,
-      });
-    });
+    const newWatches = await Promise.all(
+      jsonData.map(async (productData) => {
+        const imei = productData['1111'].result;
+        const { IMEI } = new IMEI_entity({
+          IMEI: imei,
+        });
+        if (await this.checkWatch(IMEI))
+          return this.IMEI_repo.create({
+            IMEI,
+          });
+      }),
+    );
 
     return await this.IMEI_repo.save(newWatches);
   }
 }
 
+/*************  ✨ Codeium Command ⭐  *************/
+/**
+ * Generates an order number in the format of ##-**-@@-&&&&
+ * where ## is 100 - the year last 2 digits, ** is 100 - the month, @@ is 100 - the day, &&&& is the number of the order in that day
+ * @param {number} count the count of orders created today
+ * @returns {string} the generated order number
+ */
+/******  1000524a-f6c4-4f8b-b57b-27c2a3b83e95  *******/
 export const generateOrderNumber = (count: number) => {
   // number of digits matches ##-**-@@-&&&&, where ## is 100 - the year last 2 digits, ** is 100 - the month, @@ is 100 - the day, &&&& is the number of the order in that day
   const date = new Date();
