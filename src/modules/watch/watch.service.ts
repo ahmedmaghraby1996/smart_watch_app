@@ -317,7 +317,8 @@ export class WatchService extends BaseService<WatchUser> {
     const newWatches = jsonData.map((productData) => {
       const {
         IMEI
-      } = plainToClass(IMEI_entity, productData);
+      } = new IMEI_entity({
+        IMEI: productData,});
 
       return this.IMEI_repo.create({
         IMEI,
