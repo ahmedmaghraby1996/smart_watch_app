@@ -310,23 +310,13 @@ export class WatchService extends BaseService<WatchUser> {
     if (validationErrors.length > 0) {
       throw new BadRequestException(JSON.stringify(validationErrors));
     }
-
-   
-    const newWatches = await Promise.all(
-      jsonData.map(async (productData) => {
-        const imei = productData['1111'].result;
-        console.log(imei);
-        const { IMEI } = new IMEI_entity({
-          IMEI: imei,
-        });
-        if (await this.checkWatch(imei)){
-          console.log('x');
-          return this.IMEI_repo.create({
-            IMEI:imei,
-          });}
-      }),
-    );
-console.log(newWatches);
+    const newWatches = [];
+    for (let index = 0; index < jsonData.length; index++) {
+      const imei = jsonData[index]['1111'].result;
+      if (await this.checkWatch(imei)) {
+        newWatches.push(imei);
+      }
+    }
     return await this.IMEI_repo.save(newWatches);
   }
 }
