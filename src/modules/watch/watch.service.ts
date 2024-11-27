@@ -313,6 +313,7 @@ export class WatchService extends BaseService<WatchUser> {
       throw new BadRequestException(JSON.stringify(validationErrors));
     }
     const newWatches = [];
+    console.log(jsonData);
     for (let index = 0; index < jsonData.length; index++) {
       const imei = jsonData[index]['IMEI'].result;
       console.log(imei);
