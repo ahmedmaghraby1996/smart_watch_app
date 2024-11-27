@@ -316,7 +316,7 @@ export class WatchService extends BaseService<WatchUser> {
       if (!(await this.IMEI_repo.findOne({ where: { IMEI: imei } }))) {
         newWatches.push(new IMEI_entity({ IMEI: imei }));
       }
-    }
+    }console.log(newWatches);
     return await this.IMEI_repo.save(newWatches);
   }
 }
