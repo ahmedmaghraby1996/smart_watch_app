@@ -308,10 +308,10 @@ export class WatchService extends BaseService<WatchUser> {
     // const CreateProductRequest = plainToClass(IMEI_entity, {
     //   products: jsonData,
     // });
-    // const validationErrors = await validate(jsonData);
-    // if (validationErrors.length > 0) {
-    //   throw new BadRequestException(JSON.stringify(validationErrors));
-    // }
+    const validationErrors = await validate(jsonData);
+    if (validationErrors.length > 0) {
+      throw new BadRequestException(JSON.stringify(validationErrors));
+    }
 
     console.log(jsonData);
     const newWatches = jsonData.map((productData) => {
