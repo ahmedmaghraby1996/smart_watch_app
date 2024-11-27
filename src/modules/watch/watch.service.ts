@@ -311,7 +311,7 @@ export class WatchService extends BaseService<WatchUser> {
       throw new BadRequestException(JSON.stringify(validationErrors));
     }
 
-    console.log(jsonData);
+   
     const newWatches = await Promise.all(
       jsonData.map(async (productData) => {
         const imei = productData['1111'].result;
@@ -324,7 +324,7 @@ export class WatchService extends BaseService<WatchUser> {
           });
       }),
     );
-
+console.log(newWatches);
     return await this.IMEI_repo.save(newWatches);
   }
 }
