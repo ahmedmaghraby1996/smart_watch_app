@@ -199,7 +199,12 @@ export class WatchService extends BaseService<WatchUser> {
           watch_user: {
             parent_id: this.request.user.id,
             created_at: MoreThan(
-              new Date(new Date(new Date().getTime() - 24 * 60 * 60 * 1000)),
+              new Date(
+                new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
+                  .toISOString()
+                  .slice(0, 19)
+                  .replace('T', ' '),
+              ),
             ),
           },
         },
@@ -207,7 +212,12 @@ export class WatchService extends BaseService<WatchUser> {
           watch_user: {
             drivers: { id: this.request.user.id },
             created_at: MoreThan(
-              new Date(new Date(new Date().getTime() - 24 * 60 * 60 * 1000)),
+              new Date(
+                new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
+                  .toISOString()
+                  .slice(0, 19)
+                  .replace('T', ' '),
+              ),
             ),
           },
         },
@@ -224,7 +234,12 @@ export class WatchService extends BaseService<WatchUser> {
         {
           watch_user: { school_id: this.request.user.school_id },
           created_at: MoreThan(
-            new Date(new Date(new Date().getTime() - 24 * 60 * 60 * 1000)),
+            new Date(
+              new Date(new Date().getTime() - 24 * 60 * 60 * 1000)
+                .toISOString()
+                .slice(0, 19)
+                .replace('T', ' '),
+            ),
           ),
         },
       ],
@@ -315,16 +330,20 @@ export class WatchService extends BaseService<WatchUser> {
     const newWatches = [];
     console.log(jsonData);
     for (let index = 0; index < jsonData.length; index++) {
-      const imei = typeof jsonData[index]['IMEI'] === 'object'
-      ? jsonData[index]['IMEI']?.result
-      : jsonData[index]['IMEI'];
-    
+      const imei =
+        typeof jsonData[index]['IMEI'] === 'object'
+          ? jsonData[index]['IMEI']?.result
+          : jsonData[index]['IMEI'];
+
       console.log(imei);
-   const imeiExists =   await this.IMEI_repo.findOne({ where: { IMEI: imei } })
+      const imeiExists = await this.IMEI_repo.findOne({
+        where: { IMEI: imei },
+      });
       if (!imeiExists) {
-        newWatches.push(new IMEI_entity({ IMEI: imei, id: uuidv4()}));
+        newWatches.push(new IMEI_entity({ IMEI: imei, id: uuidv4() }));
       }
-    }console.log(newWatches);
+    }
+    console.log(newWatches);
     return await this.IMEI_repo.save(newWatches);
   }
 }
