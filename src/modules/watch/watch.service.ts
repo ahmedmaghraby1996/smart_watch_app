@@ -315,6 +315,7 @@ export class WatchService extends BaseService<WatchUser> {
     const newWatches = await Promise.all(
       jsonData.map(async (productData) => {
         const imei = productData['1111'].result;
+        console.log(imei);
         const { IMEI } = new IMEI_entity({
           IMEI: imei,
         });
