@@ -4,6 +4,7 @@ import { Repository, DeleteResult, UpdateResult } from 'typeorm';
 import { BaseEntity } from 'src/infrastructure/base/base.entity';
 import { GlobalExceptionFilter } from 'src/core/filters/exceptions/global-exception.filter';
 import { PaginatedRequest } from '../requests/paginated.request';
+import { Json } from 'sequelize/types/utils';
 
 export interface IBaseService<T extends BaseEntity> {
   findAll(): Promise<T[]>;
@@ -45,7 +46,7 @@ export abstract class BaseService<T extends BaseEntity> implements IBaseService<
     if (options.order) query = { ...query, order: options.order };
     if (options.relations) query = { ...query, relations: options.relations };
     if (options.select) query = { ...query, select: options.select };
-console.log(query)
+console.log(JSON.stringify(query));
     return await this._repo.find(query);
   }
 
