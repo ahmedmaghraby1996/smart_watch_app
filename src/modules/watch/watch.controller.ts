@@ -243,6 +243,15 @@ export class WatchController {
   async getWatchUsersRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
     applyQuerySort(query, 'created_at=desc');
+    applyQuerySort(query, 'created_at=desc');
+    const last_day = new Date(
+      new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+    );
+    applyQueryFilters(
+      query,
+      `created_at>${last_day.toISOString().slice(0, 19).replace('T', ' ')}`,
+    );
+
     applyQueryISDeleted(query);
     applyQueryIncludes(query, 'watch_user#school.drivers.parent');
     const role = this.request.user.roles[0];
