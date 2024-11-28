@@ -197,15 +197,17 @@ export class WatchService extends BaseService<WatchUser> {
     return await this.watchRequest_repo.find({
       where: [
         {
+          created_at: MoreThan(oneDayAgo),
           watch_user: {
             parent_id: this.request.user.id,
-            created_at: MoreThan(oneDayAgo),
+         
           },
         },
         {
+          created_at: MoreThan(oneDayAgo),
           watch_user: {
             drivers: { id: this.request.user.id },
-            created_at: MoreThan(oneDayAgo),
+         
           },
         },
       ],
@@ -219,9 +221,9 @@ export class WatchService extends BaseService<WatchUser> {
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     return await this.watchRequest_repo.find({
       where: [
-        {
+        {   created_at: MoreThan(oneDayAgo),
           watch_user: { school_id: this.request.user.school_id },
-          created_at: MoreThan(oneDayAgo),
+        
         },
       ],
       relations: {
