@@ -243,7 +243,7 @@ export class WatchController {
   async getWatchUsersRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
     applyQuerySort(query, 'created_at=desc');
-    
+
     const last_day = new Date(
       new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
     );
@@ -259,7 +259,7 @@ export class WatchController {
       case Role.DRIVER:
         applyQueryFilters(
           query,
-          `watch_user.drivers.user_id=${this.request.user.id}`,
+          `watch_user.drivers.id=${this.request.user.id}`,
         );
         break;
       case Role.PARENT:
@@ -304,7 +304,13 @@ export class WatchController {
       query,
       `watch_user.school_id=${this.request.user.school_id}`,
     );
-
+    const last_day = new Date(
+      new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+    );
+    applyQueryFilters(
+      query,
+      `created_at>${last_day.toISOString().slice(0, 19).replace('T', ' ')}`,
+    );
     const requests = await this._request_service.findAll(query);
     const total = await this._request_service.count(query);
     const result = plainToInstance(WatchRequestResponse, requests, {});

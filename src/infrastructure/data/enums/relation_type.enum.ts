@@ -10,6 +10,6 @@ export enum RelationType {
     GRAND_MOTHER = 'GRAND_MOTHER',
     GRAND_FATHER_IN_LAW = 'GRAND_FATHER_IN_LAW',
     DRIVER = 'DRIVER',
-    AUNT='AUNT',
+    AUNT='AUNT',    
     UNCLE='UNCLE',
 }
