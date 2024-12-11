@@ -11,6 +11,7 @@ import { SuggestionsComplaintsModule } from './suggestions-complaints/suggestion
 import { StaticPageModule } from './static-page/static-page.module';
 import { ContactUsModule } from './contact-us/contact-us.module';
 import { FaqModule } from './faq/faq.module';
+import { SendEmailModule } from './send-email/send-email.module';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { FaqModule } from './faq/faq.module';
     StaticPageModule,
     ContactUsModule,
     FaqModule,
-   
+    SendEmailModule, 
     TransactionModule,
     WatchModule,
   ],
