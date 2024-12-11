@@ -7,6 +7,7 @@ import { AuthenticationModule } from 'src/modules/authentication/authentication.
 import { ContactUsModule } from 'src/modules/contact-us/contact-us.module';
 import { FaqModule } from 'src/modules/faq/faq.module';
 import { NotificationModule } from 'src/modules/notification/notification.module';
+import { SendEmailModule } from 'src/modules/send-email/send-email.module';
 import { StaticPageModule } from 'src/modules/static-page/static-page.module';
 import { SuggestionsComplaintsModule } from 'src/modules/suggestions-complaints/suggestions-complaints.module';
 
@@ -45,7 +46,8 @@ export default (app: INestApplication, config: ConfigService) => {
       StaticPageModule,
       ContactUsModule,
       FaqModule,
-      NotificationModule
+      NotificationModule,
+      SendEmailModule
       // TransactionModule,
     ],
     operationIdFactory,

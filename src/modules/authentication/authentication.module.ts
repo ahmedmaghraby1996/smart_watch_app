@@ -16,6 +16,7 @@ import { FcmIntegrationService } from 'src/integration/notify/fcm-integration.se
 
 import { TransactionService } from '../transaction/transaction.service';
 import { FirebaseAdminService } from '../notification/firebase-admin-service';
+import { SendEmailModule } from '../send-email/send-email.module';
 
 @Global()
 @Module({
@@ -27,6 +28,7 @@ import { FirebaseAdminService } from '../notification/firebase-admin-service';
     SendOtpTransaction,
     VerifyOtpTransaction,
     JwtService,
+    SendEmailModule,
     JwtStrategy,
     FileService,
     NotificationService,
