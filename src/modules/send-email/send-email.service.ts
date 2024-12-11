@@ -9,7 +9,7 @@ export class SendEmailService {
 
     constructor() {
         this.email = "nadneewatch2@gmail.com";
-        this.password = "Nada1133";
+        this.password = "ctkm tuqz rwpv adjb";
 
         this.transporter = nodemailer.createTransport({
             service: "gmail",
