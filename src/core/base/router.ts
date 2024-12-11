@@ -18,6 +18,11 @@ export abstract class Router {
     static SendOtp = 'send-otp';
     /** * verify-otp */
     static VerifyOtp = 'verify-otp';
+
+        /** request reset password */
+        static RequestResetPasswordEmail = 'request-reset-password';
+
+        static ResetPassword = 'reset-password/:token';
   }
 
   /**

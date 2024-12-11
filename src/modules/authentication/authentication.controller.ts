@@ -5,6 +5,7 @@ import {
   Get,
   HttpStatus,
   Inject,
+  Param,
   Post,
   Query,
   UploadedFile,
@@ -36,6 +37,8 @@ import { FamilyMemberRequest } from './dto/requests/family-member.request';
 import { InjectRepository } from '@nestjs/typeorm';
 import { City } from 'src/infrastructure/entities/school/city.entity';
 import { Repository } from 'typeorm/repository/Repository';
+import { RequestResetPassword } from './dto/requests/request-reset-password';
+import { ResetPasswordRequest } from './dto/requests/reset-password';
 
 @ApiTags(Router.Auth.ApiTag)
 @Controller(Router.Auth.Base)
@@ -145,4 +148,22 @@ export class AuthenticationController {
   async getCities() {
     return new ActionResponse(await this.cityRepository.find());
   }
+
+
+  @Post(Router.Auth.RequestResetPasswordEmail)
+  async requestResetPassword(@Body() req: RequestResetPassword): Promise<ActionResponse<boolean>> {
+    const result = await this.authService.requestResetPassword(req);
+
+    return new ActionResponse<boolean>(result);
+  }
+
+  @Post(Router.Auth.ResetPassword)
+  async resetPassword(@Param("token") resetToken: string, @Body() req: ResetPasswordRequest): Promise<ActionResponse<AuthResponse>> {
+    const result = await this.authService.resetPassword(resetToken, req);
+
+    return new ActionResponse<AuthResponse>(result);
+  }
+
+
+
 }

@@ -25,6 +25,9 @@ import * as jose from 'jose';
 import { Request } from 'express';
 import { REQUEST } from '@nestjs/core';
 import { access } from 'fs';
+import { ResetPasswordRequest } from './dto/requests/reset-password';
+import { RequestResetPassword } from './dto/requests/request-reset-password';
+import { SendEmailService } from '../send-email/send-email.service';
 
 @Injectable()
 export class AuthenticationService {
@@ -42,6 +45,7 @@ export class AuthenticationService {
     @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
     private readonly _firebase_admin_service: FirebaseAdminService,
     @Inject(REQUEST) private readonly request: Request,
+    @Inject(SendEmailService) private readonly sendEmailService: SendEmailService,
 
     @Inject(ConfigService) private readonly _config: ConfigService,
   ) {}
@@ -202,5 +206,44 @@ export class AuthenticationService {
 
   async verifyOtp(req: VerifyOtpRequest) {
     return await this.verifyOtpTransaction.run(req);
+  }
+
+  async resetPassword(resetToken: string, req: ResetPasswordRequest) {
+    const { newPassword } = req;
+    const payload = this.jwtService.verify(resetToken, { secret: this._config.get<string>('app.key') });
+    const user = await this.userService.findOne([
+      { username: payload.username },
+    ] as any);
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    user.password = await bcrypt.hash(newPassword + this._config.get('app.key'), 10);
+    await user.save();
+
+    const newPayload = { username: user.username, sub: user.id };
+    return {
+      ...user,
+      access_token: this.jwtService.sign(newPayload, jwtSignOptions(this._config)),
+    };
+  }
+
+
+  async requestResetPassword(req: RequestResetPassword) {
+    const user = await this.userService.findOne([
+      { email: req.email },
+    ] as any);
+
+    if (!user) {
+      throw new BadRequestException('Email not found');
+    }
+
+    const token = this.jwtService.sign({ username: user.username }, { secret: this._config.get<string>('app.key'), expiresIn: '1h' })
+    const resetPasswordUrl = 'https://dashboard.symlink.live/auth/reset-password/' + token;
+
+    await this.sendEmailService.sendResetPasswordEmail(user.email, resetPasswordUrl);
+
+    return true;
   }
 }
