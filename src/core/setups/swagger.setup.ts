@@ -17,6 +17,14 @@ import { UserModule } from 'src/modules/user/user.module';
 import { WatchModule } from 'src/modules/watch/watch.module';
 
 export default (app: INestApplication, config: ConfigService) => {
+/*************  ✨ Codeium Command ⭐  *************/
+  /**
+   * A factory function that generates operationId for swagger documentation.
+   * @param controllerKey The name of the controller
+   * @param methodKey The name of the method
+   * @returns The generated operationId
+   */
+/******  bbceeb6a-69d6-46fc-9298-c629f427f1ab  *******/
   const operationIdFactory = (controllerKey: string, methodKey: string) =>
     methodKey;
 
