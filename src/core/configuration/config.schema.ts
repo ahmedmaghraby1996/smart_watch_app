@@ -10,7 +10,7 @@ export const configSchema = joi.object({
   MYSQL_PORT: joi.number().required().default(3306),
   MYSQL_DATABASE: joi.string().required(),
   MYSQL_USERNAME: joi.string().required(),
-  // MYSQL_PASSWORD: joi.string().required(),
+  MYSQL_PASSWORD: joi.string().required(),
   MYSQL_SYNC: joi.boolean().required(),
   MYSQL_AUTOLOAD: joi.boolean().required(),
   JWT_EXPIRATION: joi.string().required().default('1d').regex(/^[0-9]+[smhdwMy]$/),
