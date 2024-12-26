@@ -18,9 +18,9 @@ import { plainToInstance } from 'class-transformer';
 import { StaticPageResponse } from './dto/response/static-page.response';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-@UseGuards(JwtAuthGuard, RolesGuard)
-@ApiBearerAuth()
-@Roles(Role.ADMIN, Role.PARENT, Role.SECURITY, Role.School, Role.DRIVER)
+// @UseGuards(JwtAuthGuard, RolesGuard)
+// @ApiBearerAuth()
+// @Roles(Role.ADMIN, Role.PARENT, Role.SECURITY, Role.School, Role.DRIVER)
 @ApiHeader({
     name: 'Accept-Language',
     required: false,
@@ -46,7 +46,7 @@ export class StaticPageController {
     @Get("/:static_page_type")
     async getStaticPage(@Param() param: GetStaticPage): Promise<ActionResponse<StaticPageResponse>> {
         let staticPage = await this.staticPageService.getStaticPageByType(param.static_page_type);
-        staticPage = this._i18nResponse.entity(staticPage, this.request.user.roles);
+        staticPage = this._i18nResponse.entity(staticPage);
         
         const result = plainToInstance(StaticPageResponse, staticPage, {
             excludeExtraneousValues: true
