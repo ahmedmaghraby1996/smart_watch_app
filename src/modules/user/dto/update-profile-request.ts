@@ -24,6 +24,18 @@ export class UpdateProfileRequest {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  password: string;
+
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  city_id: string;
+
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
   @IsEmail()
   @Unique('User')

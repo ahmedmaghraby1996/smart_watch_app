@@ -11,8 +11,10 @@ import { ImageManager } from 'src/integration/sharp/image.manager';
 import { StorageManager } from 'src/integration/storage/storage.manager';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
+import * as bcrypt from 'bcrypt';
 import { School } from 'src/infrastructure/entities/school/school.entity';
 import { Role } from 'src/infrastructure/data/enums/role.enum';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService extends BaseService<User> {
@@ -22,6 +24,8 @@ export class UserService extends BaseService<User> {
     @Inject(REQUEST) private readonly request: Request,
     @Inject(ImageManager) private readonly imageManager: ImageManager,
     @Inject(StorageManager) private readonly storageManager: StorageManager,
+    @Inject(ConfigService) private readonly _config: ConfigService,
+    
   ) {
     super(userRepo);
   }
@@ -41,6 +45,7 @@ export class UserService extends BaseService<User> {
       {},
     );
 
+    if(request.password && user.roles[0] == Role.ADMIN)  user.password = await bcrypt.hash(request.password + this._config.get('app.key'), 10);
     if (request.avatarFile) {
       const resizedImage = await this.imageManager.resize(request.avatarFile, {
         size: { width: 300, height: 300 },
