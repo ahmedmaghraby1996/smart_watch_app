@@ -73,7 +73,7 @@ export class WatchService extends BaseService<WatchUser> {
       relations: { watch_user: true },
     });
     if (!watch || watch.watch_user)
-      throw new BadRequestException('message.IMEI_already_exist');
+      throw new BadRequestException('invalid IMEI');
 
     const avatar =
       req.avatarFile != null
@@ -128,10 +128,10 @@ export class WatchService extends BaseService<WatchUser> {
     if (this.request.user.id != watch_request.watch_user.parent_id) {
       await this.notification_service.sendToUsers(
         new SendToUsersNotificationRequest({
-          message_ar: 'message.request_accepted_ar',
-          message_en: 'message.request_accepted_en',
-          title_ar: 'message.request_accepted_ar',
-          title_en: 'message.request_accepted_en',
+          message_ar: 'تم تأكيد الطب',
+          message_en: 'request has been confirmed',
+          title_ar: 'تم تأكيد الطب',
+          title_en: 'request has been confirmed',
           users_id: [watch_request.watch_user.parent_id],
         }),
       );
@@ -180,9 +180,9 @@ export class WatchService extends BaseService<WatchUser> {
     await this.notification_service.sendToUsers(
       new SendToUsersNotificationRequest({
         message_ar: 'تم تقديم طلب جديد',
-        message_en: 'message.request_sent_en',
+        message_en: 'request has been sent',
         title_ar: 'تم تقديم طلب جديد',
-        title_en: 'message.request_sent_en',
+        title_en: 'request has been sent',
         users_id: security.map((user) => user.id),
       }),
     );
