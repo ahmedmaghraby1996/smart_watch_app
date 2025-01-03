@@ -24,7 +24,7 @@ async function bootstrap() {
     Logger.log(`App running on ${app_env} environment`);
     SwaggerSetup(app, config);
   }
-  app.use(helmet()); 
+  // app.use(helmet()); 
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
