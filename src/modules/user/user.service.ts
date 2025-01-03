@@ -55,7 +55,7 @@ export class UserService extends BaseService<User> {
         },
       });
       const path = await this.storageManager.store(
-        { buffer: resizedImage, originalname: request.avatarFile.originalname },
+        { buffer: resizedImage, originalname: req.avatarFile.originalname },
         { path: 'avatars' },
       );
       user.avatar = path;
@@ -63,7 +63,7 @@ export class UserService extends BaseService<User> {
     await this.userRepo.save( user);
 
     return await this.userRepo.findOne( {
-      where: { id: this.request.user.id },
+      where: { id: user.id },
     });
   }
 }
