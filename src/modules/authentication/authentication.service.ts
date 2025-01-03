@@ -101,7 +101,7 @@ export class AuthenticationService {
             ...await this.userService._repo.save(newUser),
             role:Role.PARENT,
             access_token: this.jwtService.sign(
-              { username: userInfo.email, sub: userInfo.id },
+              { username: user.email, sub: user.id },
               jwtSignOptions(this._config),
             ),
           };
