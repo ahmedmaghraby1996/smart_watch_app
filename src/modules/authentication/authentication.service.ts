@@ -85,8 +85,8 @@ export class AuthenticationService {
       .then(async (response) => {
         const userInfo = response.data;
 
-        const user = await this.userService._repo.findOneBy({
-          id: userInfo.id,
+        const user = await this.userService._repo.findOne({
+          where: [{ id: userInfo.id },{ email: userInfo.email }],
         });
 
         if (!user) {
@@ -240,7 +240,7 @@ export class AuthenticationService {
     }
 
     const token = this.jwtService.sign({ username: user.username }, { secret: this._config.get<string>('app.key'), expiresIn: '1h' })
-    const resetPasswordUrl = 'https://dashboard.symlink.live/auth/reset-password/' + token;
+    const resetPasswordUrl = 'https://admin.nadnee.click/auth/reset-password/' + token;
 
     await this.sendEmailService.sendResetPasswordEmail(user.email, resetPasswordUrl);
 
