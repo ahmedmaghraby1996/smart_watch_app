@@ -45,12 +45,11 @@ export class StaticPageController {
 
     @Get("/:static_page_type")
     async getStaticPage(@Param() param: GetStaticPage): Promise<ActionResponse<StaticPageResponse>> {
-        let staticPage = await this.staticPageService.getStaticPageByType(param.static_page_type);
-        staticPage = this._i18nResponse.entity(staticPage);
-        
-        const result = plainToInstance(StaticPageResponse, staticPage, {
+        const staticPage = await this.staticPageService.getStaticPageByType(param.static_page_type);
+        const result = this._i18nResponse.entity(staticPage);
+        const response = plainToInstance(StaticPageResponse, {...result,content_ar:staticPage.content_ar,content_en:staticPage.content_en}, {
             excludeExtraneousValues: true
         });
-        return new ActionResponse<StaticPageResponse>(result);
+        return new ActionResponse<StaticPageResponse>(response);
     }
 }
