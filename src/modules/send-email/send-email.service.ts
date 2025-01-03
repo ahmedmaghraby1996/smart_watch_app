@@ -56,7 +56,7 @@ export class SendEmailService {
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 8px; background-color: #f9f9f9;">
                     <div style="text-align: center; margin-bottom: 20px;">
-                        // <img src="https://github.com/ahmedeid6842/music-store/assets/57197702/a9400fa0-b4f5-49bf-a9e7-0c69db2da95c" alt="Company Logo" style="max-width: 150px;">
+                        // <img src="https://admin.nadnee.click/_next/static/media/logo-login.bf648397.png" alt="Company Logo" style="max-width: 150px;">
                     </div>
                     <div style="background-color: #fff; padding: 20px; border-radius: 8px;">
                         ${param.body}
