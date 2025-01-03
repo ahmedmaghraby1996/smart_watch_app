@@ -58,6 +58,7 @@ import { WatchUserResponse } from './dto/response/watch-user.response';
 import { ConfirmRequest } from './dto/requests/confirm-request';
 import { toUrl } from 'src/core/helpers/file.helper';
 import { ImportImeiRequest } from './dto/requests/import-imei.request';
+import { app } from 'firebase-admin';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -225,6 +226,7 @@ export class WatchController {
     applyQueryIncludes(query, 'user');
     applyQueryIncludes(query, 'watch_user#school.drivers.parent');
     applyQuerySort(query, 'created_at=desc');
+    applyQueryISDeleted(query);
     const last_day = new Date(
       new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
     );
