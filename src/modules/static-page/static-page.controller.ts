@@ -59,7 +59,7 @@ export class StaticPageController {
     );
     const admin_data = staticPage;
     staticPage = this._i18nResponse.entity(staticPage);
-
+console.log(admin_data);
     const result = plainToInstance(
       StaticPageResponse,
       {
