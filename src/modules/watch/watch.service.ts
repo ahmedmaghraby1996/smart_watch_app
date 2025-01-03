@@ -179,9 +179,9 @@ export class WatchService extends BaseService<WatchUser> {
     });
     await this.notification_service.sendToUsers(
       new SendToUsersNotificationRequest({
-        message_ar: 'message.request_sent_ar',
+        message_ar: 'تم تقديم طلب جديد',
         message_en: 'message.request_sent_en',
-        title_ar: 'message.request_sent_ar',
+        title_ar: 'تم تقديم طلب جديد',
         title_en: 'message.request_sent_en',
         users_id: security.map((user) => user.id),
       }),

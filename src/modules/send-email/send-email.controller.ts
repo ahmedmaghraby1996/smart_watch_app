@@ -29,3 +29,4 @@ export class SendEmailController {
         return new ActionResponse<boolean>(result)
     }
 }
+    
