@@ -24,21 +24,7 @@ async function bootstrap() {
     Logger.log(`App running on ${app_env} environment`);
     SwaggerSetup(app, config);
   }
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-inline'"], // Allow inline scripts if needed
-          styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles
-          imgSrc: ["'self'", "data:"], // Allow self-hosted and data URIs
-          connectSrc: ["'self'"],
-          fontSrc: ["'self'", "https:"], // Allow fonts from self and secure sources
-        },
-      },
-      crossOriginResourcePolicy: { policy: "same-origin" }, // Allow resources from the same server
-    }),
-  );
+  
   // app.use(helmet()); 
   app.useGlobalPipes(
     new ValidationPipe({
