@@ -85,8 +85,8 @@ export class AuthenticationService {
       .then(async (response) => {
         const userInfo = response.data;
 
-        const user = await this.userService._repo.findOneBy({
-          id: userInfo.id,
+        const user = await this.userService._repo.findOne({
+          where: [{ id: userInfo.id },{ email: userInfo.email }],
         });
 
         if (!user) {
