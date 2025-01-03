@@ -245,7 +245,7 @@ export class WatchController {
   async getWatchUsersRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
     applyQuerySort(query, 'created_at=desc');
-
+    applyQueryISDeleted(query);
     const last_day = new Date(
       new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
     );
@@ -306,6 +306,7 @@ export class WatchController {
       query,
       `watch_user.school_id=${this.request.user.school_id}`,
     );
+    applyQueryISDeleted(query);
     const last_day = new Date(
       new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
     );
