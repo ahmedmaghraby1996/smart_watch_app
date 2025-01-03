@@ -57,7 +57,9 @@ export class StaticPageController {
     let staticPage = await this.staticPageService.getStaticPageByType(
       param.static_page_type,
     );
-    const admin_data = staticPage;
+    const admin_data =  await this.staticPageService.getStaticPageByType(
+        param.static_page_type,
+      );
     staticPage = this._i18nResponse.entity(staticPage);
 console.log(admin_data);
     const result = plainToInstance(
