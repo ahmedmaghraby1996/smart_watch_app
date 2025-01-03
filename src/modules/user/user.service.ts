@@ -38,16 +38,16 @@ export class UserService extends BaseService<User> {
     if(user.roles[0] == Role.School) await this.schoolRepo.softRemove(user.school);
     return await this.userRepo.softRemove(user);
   }
-  async updateProfile(id,request: UpdateProfileRequest) {
+  async updateProfile(id,req: UpdateProfileRequest) {
     const user = plainToInstance(
       User,
-      { ...request, id: id?? this.request.user.id },
+      { ...req, id: id?? this.request.user.id },
       {},
     );
-
-    if(request.password && user.roles[0] == Role.ADMIN)  user.password = await bcrypt.hash(request.password + this._config.get('app.key'), 10);
-    if (request.avatarFile) {
-      const resizedImage = await this.imageManager.resize(request.avatarFile, {
+    // if(req.city_id){user.school.city_id = req.city_id;}
+    if(req.password && this.request.user.roles[0] == Role.ADMIN)  user.password = await bcrypt.hash(req.password + this._config.get('app.key'), 10);
+    if (req.avatarFile) {
+      const resizedImage = await this.imageManager.resize(req.avatarFile, {
         size: { width: 300, height: 300 },
         options: {
           fit: sharp.fit.cover,
