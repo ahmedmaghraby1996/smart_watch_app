@@ -20,7 +20,7 @@ export class WatchRequestResponse {
     user: UserResponse
 
     @Expose()
-    @Transform(( value ) => value.obj.watch_user?.parent?.id===value.obj.user.id?true:false) 
+    @Transform(( value ) => value.obj.watch_user?.parent?.id===value.obj.user?.id?true:false) 
     is_parent: boolean
     @Expose()
     @Transform(( value ) => plainToInstance(UserResponse, value.obj.watch_user, { excludeExtraneousValues: true })) 
