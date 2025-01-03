@@ -1,6 +1,11 @@
 import {
-    Body,
-    Controller, Get, Inject, Param, Patch, UseGuards
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Patch,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../authentication/guards/jwt-auth.guard';
@@ -22,34 +27,50 @@ import { Request } from 'express';
 // @ApiBearerAuth()
 // @Roles(Role.ADMIN, Role.PARENT, Role.SECURITY, Role.School, Role.DRIVER)
 @ApiHeader({
-    name: 'Accept-Language',
-    required: false,
-    description: 'Language header: en, ar',
+  name: 'Accept-Language',
+  required: false,
+  description: 'Language header: en, ar',
 })
 @ApiTags('Satic Page')
 @Controller('static-page')
 export class StaticPageController {
-    constructor(
-        private readonly staticPageService: StaticPageService,
-        private readonly _i18nResponse: I18nResponse,
-        @Inject(REQUEST) private readonly request: Request,
-    ) { }
+  constructor(
+    private readonly staticPageService: StaticPageService,
+    private readonly _i18nResponse: I18nResponse,
+    @Inject(REQUEST) private readonly request: Request,
+  ) {}
 
-    @Patch()
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.ADMIN)
-    async updateStaticPage(@Body() req: UpdateStaticPageRequest): Promise<ActionResponse<StaticPage>> {
-        const result = await this.staticPageService.updateStaticPageByType(req);
-        return new ActionResponse<StaticPage>(result);
-    }
+  @Patch()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  async updateStaticPage(
+    @Body() req: UpdateStaticPageRequest,
+  ): Promise<ActionResponse<StaticPage>> {
+    const result = await this.staticPageService.updateStaticPageByType(req);
+    return new ActionResponse<StaticPage>(result);
+  }
 
-    @Get("/:static_page_type")
-    async getStaticPage(@Param() param: GetStaticPage): Promise<ActionResponse<StaticPageResponse>> {
-        const staticPage = await this.staticPageService.getStaticPageByType(param.static_page_type);
-        const result = this._i18nResponse.entity(staticPage);
-        const response = plainToInstance(StaticPageResponse, {...result,content_ar:staticPage.content_ar,content_en:staticPage.content_en}, {
-            excludeExtraneousValues: true
-        });
-        return new ActionResponse<StaticPageResponse>(response);
-    }
+  @Get('/:static_page_type')
+  async getStaticPage(
+    @Param() param: GetStaticPage,
+  ): Promise<ActionResponse<StaticPageResponse>> {
+    let staticPage = await this.staticPageService.getStaticPageByType(
+      param.static_page_type,
+    );
+    const admin_data = staticPage;
+    staticPage = this._i18nResponse.entity(staticPage);
+
+    const result = plainToInstance(
+      StaticPageResponse,
+      {
+        ...staticPage,
+        content_ar: admin_data.content_ar,
+        content_en: admin_data.content_en,
+      },
+      {
+        excludeExtraneousValues: true,
+      },
+    );
+    return new ActionResponse<StaticPageResponse>(result);
+  }
 }
