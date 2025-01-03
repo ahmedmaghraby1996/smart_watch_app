@@ -11,11 +11,14 @@ import { ImageManager } from 'src/integration/sharp/image.manager';
 import { StorageManager } from 'src/integration/storage/storage.manager';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
+import { School } from 'src/infrastructure/entities/school/school.entity';
+import { Role } from 'src/infrastructure/data/enums/role.enum';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService extends BaseService<User> {
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
+    @InjectRepository(School) private readonly schoolRepo: Repository<School>,
     @Inject(REQUEST) private readonly request: Request,
     @Inject(ImageManager) private readonly imageManager: ImageManager,
     @Inject(StorageManager) private readonly storageManager: StorageManager,
@@ -24,10 +27,11 @@ export class UserService extends BaseService<User> {
   }
 
   async deleteUser(id: string) {
-    const user = await this.findOne(id);
+    const user = await this._repo.findOne({ where: { id: id } ,relations:{school:true}});
     if (!user) throw new NotFoundException('user not found');
     user.username = 'deleted_' + user.username+"_"+randNum(4);
     await this.update(user);
+    if(user.roles[0] == Role.School) await this.schoolRepo.softRemove(user.school);
     return await this.userRepo.softRemove(user);
   }
   async updateProfile(id,request: UpdateProfileRequest) {
