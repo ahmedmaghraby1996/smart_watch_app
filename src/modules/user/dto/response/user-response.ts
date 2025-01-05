@@ -30,6 +30,7 @@ export class UserResponse {
           name: value.obj.school.name,
           avatar: toUrl(value.obj.school.avatar),
           city_code: value.obj.school.city_code,
+          city_id: value.obj.school.city_id
         }
       : null;
   })
