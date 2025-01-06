@@ -65,7 +65,7 @@ export class UserController {
   ) {}
 
   @Roles(Role.ADMIN, Role.School)
-  @Get()
+  @Get("")
   async getAll(@Query() query: PaginatedRequest) {
     // applyQueryFilters(query, `roles!=${Role.DRIVER}`);
     if (this.request.user.roles[0] == Role.School) {

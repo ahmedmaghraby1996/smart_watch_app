@@ -23,7 +23,7 @@ export class SendEmailService {
     async sendResetPasswordEmail(email: string, resetPasswordUrl: string) {
         return await this.sendMessage({
             to: email,
-            header: 'Symlink - Password Reset URL',
+            header: 'Nadnee - Password Reset URL',
             body: `
             <h2>Password Reset</h2>
             <p>Dear User,</p>
@@ -32,7 +32,7 @@ export class SendEmailService {
             <p>Please note that this password reset link is confidential. Do not share this link with anyone.</p>
             <p>If you did not request this change, please ignore this email.</p>
             <p>This password reset link will expire after 1 hour.</p>
-            <p>Best Regards,<br>Symlink.</p>
+            <p>Best Regards,<br>Nadnee.</p>
         `});
     }
 
