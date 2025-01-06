@@ -25,27 +25,38 @@ export class UserService extends BaseService<User> {
     @Inject(ImageManager) private readonly imageManager: ImageManager,
     @Inject(StorageManager) private readonly storageManager: StorageManager,
     @Inject(ConfigService) private readonly _config: ConfigService,
-    
   ) {
     super(userRepo);
   }
 
   async deleteUser(id: string) {
-    const user = await this._repo.findOne({ where: { id: id } ,relations:{school:true}});
+    const user = await this._repo.findOne({
+      where: { id: id },
+      relations: { school: true },
+    });
     if (!user) throw new NotFoundException('user not found');
-    user.username = 'deleted_' + user.username+"_"+randNum(4);
+    user.username = 'deleted_' + user.username + '_' + randNum(4);
     await this.update(user);
-    if(user.roles[0] == Role.School) await this.schoolRepo.softRemove(user.school);
+    if (user.roles[0] == Role.School)
+      await this.schoolRepo.softRemove(user.school);
     return await this.userRepo.softRemove(user);
   }
-  async updateProfile(id,req: UpdateProfileRequest) {
+  async updateProfile(id, req: UpdateProfileRequest) {
     const user = plainToInstance(
       User,
-      { ...req, id: id?? this.request.user.id },
+      { ...req, id: id ?? this.request.user.id },
       {},
     );
     // if(req.city_id){user.school.city_id = req.city_id;}
-    if(req.password && this.request.user.roles[0] == Role.ADMIN)  user.password = await bcrypt.hash(req.password + this._config.get('app.key'), 10);
+    if (
+      req.password &&
+      (this.request.user.roles[0] == Role.ADMIN ||
+        this.request.user.roles[0] == Role.School)
+    )
+      user.password = await bcrypt.hash(
+        req.password + this._config.get('app.key'),
+        10,
+      );
     if (req.avatarFile) {
       const resizedImage = await this.imageManager.resize(req.avatarFile, {
         size: { width: 300, height: 300 },
@@ -60,9 +71,9 @@ export class UserService extends BaseService<User> {
       );
       user.avatar = path;
     }
-    await this.userRepo.save( user);
+    await this.userRepo.save(user);
 
-    return await this.userRepo.findOne( {
+    return await this.userRepo.findOne({
       where: { id: user.id },
     });
   }
