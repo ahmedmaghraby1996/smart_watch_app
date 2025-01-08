@@ -5,7 +5,8 @@ import { School } from './school.entity';
 @Entity()
 export class City extends BaseEntity {
   @Column()
-  name: string;
+  name_ar: string;
+  name_en: string;
 
   @Column({ unique: true })
   code: string;

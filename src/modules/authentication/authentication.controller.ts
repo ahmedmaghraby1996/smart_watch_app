@@ -39,6 +39,7 @@ import { City } from 'src/infrastructure/entities/school/city.entity';
 import { Repository } from 'typeorm/repository/Repository';
 import { RequestResetPassword } from './dto/requests/request-reset-password';
 import { ResetPasswordRequest } from './dto/requests/reset-password';
+import { I18nResponse } from 'src/core/helpers/i18n.helper';
 
 @ApiTags(Router.Auth.ApiTag)
 @Controller(Router.Auth.Base)
@@ -48,6 +49,8 @@ export class AuthenticationController {
     private readonly authService: AuthenticationService,
     @InjectRepository(City)
     private readonly cityRepository: Repository<City>,
+    
+    @Inject(I18nResponse) private readonly _i18nResponse: I18nResponse,
   ) {}
 
   @Post(Router.Auth.Signin)
@@ -143,10 +146,11 @@ export class AuthenticationController {
     });
     return new ActionResponse<AuthResponse>(result);
   }
+//accept header
 
   @Get('/cities')
   async getCities() {
-    return new ActionResponse(await this.cityRepository.find());
+    return new ActionResponse( this._i18nResponse.entity( await this.cityRepository.find()));
   }
 
 
