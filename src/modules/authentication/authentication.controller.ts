@@ -17,7 +17,7 @@ import {
   FileFieldsInterceptor,
   FileInterceptor,
 } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 import { ActionResponse } from 'src/core/base/responses/action.response';
 import { Router } from 'src/core/base/router';
@@ -147,8 +147,20 @@ export class AuthenticationController {
     return new ActionResponse<AuthResponse>(result);
   }
 //accept header
-
+@ApiHeader({
+  name: 'Accept-Language',
+  required: false,
+  description: 'Language header: en, ar',
+})
   @Get('/cities')
+/*************  ✨ Codeium Command ⭐  *************/
+  /**
+   * @summary Get all cities
+   * @description Get all cities, localized by Accept-Language header
+   * @returns {ActionResponse<City[]>} ActionResponse containing an array of City entities
+   * @throws {BadRequestException} If the accept language header is not supported
+   */
+/******  627a6e4d-255c-4627-90f4-20b6c1d374fd  *******/
   async getCities() {
     return new ActionResponse( this._i18nResponse.entity( await this.cityRepository.find()));
   }
