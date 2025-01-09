@@ -43,7 +43,7 @@ import { RequestResetPassword } from './dto/requests/request-reset-password';
 import { ResetPasswordRequest } from './dto/requests/reset-password';
 import { I18nResponse } from 'src/core/helpers/i18n.helper';
 import { CreateCityRequest, UpdateCityRequest } from './dto/requests/create-city.request';
-import { DELETE } from 'sequelize/types/query-types';
+
 
 @ApiTags(Router.Auth.ApiTag)
 @Controller(Router.Auth.Base)
