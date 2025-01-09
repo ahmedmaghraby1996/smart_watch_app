@@ -16,7 +16,7 @@ export class UploadValidator {
       options?.fileType ??
       /^image\/(jpg|jpeg|png|svg\+xml)$|application\/(xlsx|pdf|msword|vnd.openxmlformats-officedocument.wordprocessingml.document|vnd.android.package-archive|doc|docx|vnd.ms-excel|vnd.openxmlformats-officedocument.spreadsheetml.sheet)$|audio\/(mp3|wav|ogg|x-m4a)$/i;
   
-    this.fileSize = (options?.fileSize ?? 3) * 1024 * 1024;
+    this.fileSize = (options?.fileSize ?? 15) * 1024 * 1024;
     this.required = options?.required ?? false;
   }
 

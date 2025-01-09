@@ -153,14 +153,6 @@ export class AuthenticationController {
   description: 'Language header: en, ar',
 })
   @Get('/cities')
-/*************  ✨ Codeium Command ⭐  *************/
-  /**
-   * @summary Get all cities
-   * @description Get all cities, localized by Accept-Language header
-   * @returns {ActionResponse<City[]>} ActionResponse containing an array of City entities
-   * @throws {BadRequestException} If the accept language header is not supported
-   */
-/******  627a6e4d-255c-4627-90f4-20b6c1d374fd  *******/
   async getCities() {
     return new ActionResponse( this._i18nResponse.entity( await this.cityRepository.find()));
   }

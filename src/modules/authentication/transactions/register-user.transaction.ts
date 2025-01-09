@@ -78,6 +78,7 @@ export class RegisterUserTransaction extends BaseTransaction<
         const count = await context
           .createQueryBuilder(School, 'school')
           .where('school.city_id = :city_id', { city_id: req.city_id })
+          .withDeleted()
           .getCount();
 
         const city = await context.findOneBy(City, { id: req.city_id });
@@ -88,7 +89,7 @@ export class RegisterUserTransaction extends BaseTransaction<
             name: savedUser.name,
             avatar: savedUser.avatar,
             city_id: city.id,
-            city_code: city.code + '_' + count,
+            city_code: city.code + count,
           }),
         );
         savedUser.school = school;
