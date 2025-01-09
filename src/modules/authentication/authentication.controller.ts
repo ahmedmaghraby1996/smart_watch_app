@@ -7,6 +7,7 @@ import {
   Inject,
   Param,
   Post,
+  Put,
   Query,
   UploadedFile,
   UploadedFiles,
@@ -40,6 +41,7 @@ import { Repository } from 'typeorm/repository/Repository';
 import { RequestResetPassword } from './dto/requests/request-reset-password';
 import { ResetPasswordRequest } from './dto/requests/reset-password';
 import { I18nResponse } from 'src/core/helpers/i18n.helper';
+import { CreateCityRequest, UpdateCityRequest } from './dto/requests/create-city.request';
 
 @ApiTags(Router.Auth.ApiTag)
 @Controller(Router.Auth.Base)
@@ -154,9 +156,56 @@ export class AuthenticationController {
 })
   @Get('/cities')
   async getCities() {
-    return new ActionResponse( this._i18nResponse.entity( await this.cityRepository.find()));
+    const cities = await this.cityRepository.find()
+    const result = this._i18nResponse.entity(cities);
+    return new ActionResponse(cities.map((city) => {
+      return {
+        id: city.id,
+        //get  name from result
+        name: result.find((item) => item.id === city.id).name,
+        name_ar: city.name_ar,
+        name_en: city.name_en,
+        order_by: city.order_by,
+      
+      }} ));
   }
 
+
+    @Post('create/city')
+    async createCity(@Body() req: CreateCityRequest) {
+      const city = await this.cityRepository.save(req);
+      this.resortCities();
+      return new ActionResponse( city);
+      
+    }
+
+    @Put('edit/city')
+    async updateCity(@Body() req: UpdateCityRequest) {
+      const city = await this.cityRepository.update(req.id, req);
+      this.resortCities();
+      return new ActionResponse(  city);
+      
+    }
+
+    async resortCities() {
+      await this.cityRepository.query(`
+          WITH RankedCities AS (
+              SELECT id, ROW_NUMBER() OVER (ORDER BY order_by ASC) AS new_order
+              FROM cities
+          )
+          UPDATE cities
+          SET order_by = RankedCities.new_order
+          FROM RankedCities
+          WHERE cities.id = RankedCities.id;
+      `);
+  
+      // Return updated cities, if needed
+      const cities = await this.cityRepository.find({ order: { order_by: 'ASC' } });
+      return new ActionResponse(cities);
+  }
+  
+
+  
 
   @Post(Router.Auth.RequestResetPasswordEmail)
   async requestResetPassword(@Body() req: RequestResetPassword): Promise<ActionResponse<boolean>> {

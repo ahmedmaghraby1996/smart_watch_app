@@ -10,6 +10,8 @@ export class City extends BaseEntity {
   @Column()
   name_en: string;
 
+  @Column()
+  order_by: number;
   @Column({ unique: true })
   code: string;
   @ManyToOne(() => School, (school) => school.city)
