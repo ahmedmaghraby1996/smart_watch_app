@@ -21,7 +21,7 @@ export class RegisterRequest {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsStrongPassword()
+  // @IsStrongPassword()
   password: string;
 
 
