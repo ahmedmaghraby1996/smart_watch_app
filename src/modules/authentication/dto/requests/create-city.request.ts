@@ -32,11 +32,12 @@ export class UpdateCityRequest {
     id: string;
     @ApiProperty()
     @IsString()
+    @IsOptional()
     name_ar: string;
 
     @ApiProperty()
     @IsString()
-    
+    @IsOptional()
     name_en: string;
 
     @ApiProperty()
