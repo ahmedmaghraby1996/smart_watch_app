@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Inject,
@@ -42,6 +43,7 @@ import { RequestResetPassword } from './dto/requests/request-reset-password';
 import { ResetPasswordRequest } from './dto/requests/reset-password';
 import { I18nResponse } from 'src/core/helpers/i18n.helper';
 import { CreateCityRequest, UpdateCityRequest } from './dto/requests/create-city.request';
+import { DELETE } from 'sequelize/types/query-types';
 
 @ApiTags(Router.Auth.ApiTag)
 @Controller(Router.Auth.Base)
@@ -190,6 +192,18 @@ export class AuthenticationController {
       const city = await this.cityRepository.update(req.id, req);
      await this.resortCities();
       return new ActionResponse(  city);
+      
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBearerAuth()
+@Roles(Role.ADMIN)
+    @Delete('delete/city/:id')
+    async delete(@Param('id') id: string) {
+      const city = await this.cityRepository.softDelete(id);
+      await this.resortCities();
+      return new ActionResponse(  city);
+      
       
     }
 
