@@ -171,6 +171,9 @@ export class AuthenticationController {
   }
 
 
+@UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBearerAuth()
+@Roles(Role.ADMIN)
     @Post('create/city')
     async createCity(@Body() req: CreateCityRequest) {
       const city = await this.cityRepository.save(req);
@@ -179,6 +182,9 @@ export class AuthenticationController {
       
     }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+@ApiBearerAuth()
+@Roles(Role.ADMIN)
     @Put('edit/city')
     async updateCity(@Body() req: UpdateCityRequest) {
       const city = await this.cityRepository.update(req.id, req);
