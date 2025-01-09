@@ -156,8 +156,8 @@ export class AuthenticationController {
 })
   @Get('/cities')
   async getCities() {
-    const cities = await this.cityRepository.find()
-    const result = this._i18nResponse.entity(cities);
+    const cities = await this.cityRepository.find({order: {order_by: 'ASC'}});
+    const result = this._i18nResponse.entity( await this.cityRepository.find({order: {order_by: 'ASC'}}));
     return new ActionResponse(cities.map((city) => {
       return {
         id: city.id,
