@@ -89,7 +89,7 @@ export class RegisterUserTransaction extends BaseTransaction<
             name: savedUser.name,
             avatar: savedUser.avatar,
             city_id: city.id,
-            city_code: city.code + count,
+            city_code: generateFormattedNumber(city.code, count, 4),
           }),
         );
         savedUser.school = school;
@@ -107,3 +107,10 @@ export class RegisterUserTransaction extends BaseTransaction<
     }
   }
 }
+
+function generateFormattedNumber(prefix, number, numDigits) {
+  const formattedValue = `${prefix}${number.toString().padStart(numDigits, '0')}`;
+  return formattedValue;
+}
+
+
