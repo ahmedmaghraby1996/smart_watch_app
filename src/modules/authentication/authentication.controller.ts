@@ -195,14 +195,14 @@ export class AuthenticationController {
 
     async resortCities() {
       await this.cityRepository.query(`
-          WITH RankedCities AS (
+          WITH city AS (
               SELECT id, ROW_NUMBER() OVER (ORDER BY order_by ASC) AS new_order
               FROM cities
           )
           UPDATE cities
-          SET order_by = RankedCities.new_order
-          FROM RankedCities
-          WHERE cities.id = RankedCities.id;
+          SET order_by = city.new_order
+          FROM city
+          WHERE cities.id = city.id;
       `);
   
       // Return updated cities, if needed
