@@ -177,7 +177,7 @@ export class AuthenticationController {
     @Post('create/city')
     async createCity(@Body() req: CreateCityRequest) {
       const city = await this.cityRepository.save(req);
-      this.resortCities();
+    await  this.resortCities();
       return new ActionResponse( city);
       
     }
@@ -188,7 +188,7 @@ export class AuthenticationController {
     @Put('edit/city')
     async updateCity(@Body() req: UpdateCityRequest) {
       const city = await this.cityRepository.update(req.id, req);
-      this.resortCities();
+     await this.resortCities();
       return new ActionResponse(  city);
       
     }
