@@ -168,6 +168,7 @@ export class AuthenticationController {
         name_ar: city.name_ar,
         name_en: city.name_en,
         order_by: city.order_by,
+        code: city.code
       
       }} ));
   }
