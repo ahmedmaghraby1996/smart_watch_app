@@ -35,8 +35,8 @@ export class School extends AuditableEntity {
   @Column()
   city_code:string
 
-   @Column({enum:AcademicStage,nullable:true})
-   academic_stage:AcademicStage
+  @Column({enum:AcademicStage,type:'enum'})
+  academic_stage:AcademicStage
   constructor(partial: Partial<School>) {
     super();
     Object.assign(this, partial);

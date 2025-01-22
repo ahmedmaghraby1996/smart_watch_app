@@ -14,7 +14,7 @@ export class Grade extends BaseEntity {
 
  @Column()
  order_by:number
- @Column({enum:AcademicStage})
+ @Column({enum:AcademicStage,type:'enum'})
  academic_stage:AcademicStage
 
 

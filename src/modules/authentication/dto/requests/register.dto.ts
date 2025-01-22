@@ -38,9 +38,9 @@ export class RegisterRequest {
   @IsString()
   school_id:string
 
-  @ApiPropertyOptional({isArray:true})
-  @IsOptional()
-  grades_ids:string[]
+  // @ApiPropertyOptional({isArray:true})
+  // @IsOptional()
+  // grades_ids:string[]
 
   @ApiProperty({ default: AcademicStage.PRIMARY, enum: [AcademicStage.ELEMENTARY,AcademicStage.KINDERGARTEN,AcademicStage.PRIMARY,AcademicStage.HIGH_SCHOOL] })
   @IsNotEmpty()
