@@ -16,6 +16,7 @@ import { FaqQuestion } from '../entities/faq/faq_question';
 import { StaticPage } from '../entities/static-pages/static-pages.entity';
 import { ContactUs } from '../entities/contact-us/contact-us.entity';
 import { City } from '../entities/school/city.entity';
+import { Grade } from '../entities/school/grade.entity';
 
 
 
@@ -34,7 +35,8 @@ WatchRequest,
   FaqQuestion,
   StaticPage,
   ContactUs,
-    City
+    City,
+    Grade
   
 ];
 
