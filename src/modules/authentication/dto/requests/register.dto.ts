@@ -45,7 +45,7 @@ export class RegisterRequest {
   @ApiProperty({ default: AcademicStage.PRIMARY, enum: [AcademicStage.ELEMENTARY,AcademicStage.KINDERGARTEN,AcademicStage.PRIMARY,AcademicStage.HIGH_SCHOOL] })
   @IsNotEmpty()
   @IsEnum(AcademicStage)
-  role: AcademicStage;
+  academic_stage: AcademicStage;
   
   @ApiPropertyOptional()
   @IsOptional()
