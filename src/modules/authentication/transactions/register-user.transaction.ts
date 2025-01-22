@@ -98,9 +98,9 @@ export class RegisterUserTransaction extends BaseTransaction<
       }
       if(req.role==Role.SECURITY){
 
-        const classes=await context.find(Grade,{where:{id:In(req.grades_ids)}})
+        // const classes=await context.find(Grade,{where:{id:In(req.grades_ids)}})
         savedUser.school_id=req.school_id
-        savedUser.grades=classes
+        // savedUser.grades=classes
       }
 
       // return user
