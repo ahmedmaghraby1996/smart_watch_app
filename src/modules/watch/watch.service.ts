@@ -28,6 +28,7 @@ import { SendToUsersNotificationRequest } from '../notification/dto/requests/sen
 import { Role } from 'src/infrastructure/data/enums/role.enum';
 import { validate } from 'class-validator';
 import { UUIDV4 } from 'sequelize';
+import { Grade } from 'src/infrastructure/entities/school/grade.entity';
 
 @Injectable()
 export class WatchService extends BaseService<WatchUser> {
@@ -42,6 +43,7 @@ export class WatchService extends BaseService<WatchUser> {
     @Inject(REQUEST) private readonly request: Request,
     private readonly notification_service: NotificationService,
     @InjectRepository(User) public user_repo: Repository<User>,
+    @InjectRepository(Grade) public grade_repo: Repository<Grade>,
     public watchGateway: WatchGateway,
     @Inject(StorageManager) private readonly storageManager: StorageManager,
   ) {
@@ -105,14 +107,14 @@ export class WatchService extends BaseService<WatchUser> {
         { parent_id: this.request.user.id },
         { drivers: { id: this.request.user.id } },
       ],
-      relations: { parent: true, drivers: true, school: true, IMEI: true },
+      relations: { parent: true, drivers: true, school: true, IMEI: true ,grade:true },
     });
   }
 
   async getSchoolWatchUsers() {
     return await this._repo.find({
       where: { school_id: this.request.user.school_id },
-      relations: { parent: true, drivers: true, school: true },
+      relations: { parent: true, drivers: true, school: true ,grade:true},
     });
   }
 
@@ -212,7 +214,7 @@ export class WatchService extends BaseService<WatchUser> {
         },
       ],
       relations: {
-        watch_user: { parent: true, drivers: true },
+        watch_user: { parent: true, drivers: true ,grade:true},
       },
     });
   }
@@ -227,7 +229,7 @@ export class WatchService extends BaseService<WatchUser> {
         },
       ],
       relations: {
-        watch_user: { parent: true, drivers: true },
+        watch_user: { parent: true, drivers: true ,grade:true },
       },
     });
   }
@@ -250,6 +252,13 @@ export class WatchService extends BaseService<WatchUser> {
       });
       if (!school) throw new BadRequestException('school not found');
       watch_user.school = school;
+    }
+    if(request.grade_id){
+      const grade = await this.grade_repo.findOne({
+        where: { id: request.grade_id },
+      })
+      if(!grade) throw new BadRequestException('grade not found')
+      watch_user.grade = grade
     }
     if (request.IMEI) {
       const IMEI = await this.IMEI_repo.findOne({

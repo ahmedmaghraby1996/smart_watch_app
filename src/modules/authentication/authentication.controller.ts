@@ -242,5 +242,17 @@ SET city.order_by = RankedCities.new_order;
   }
 
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @Roles(Role.PARENT,Role.School)
+      @Get('school/grades/:school_id')
+      async getSchoolGrades(@Param('school_id') school_id: string) {
+        const grades=await this.authService.getSchoolGrades(school_id);
+        const result = this._i18nResponse.entity(grades);
+        return new ActionResponse(result);
+      
+        
+      }
+
 
 }

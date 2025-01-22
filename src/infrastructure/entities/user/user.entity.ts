@@ -24,6 +24,7 @@ import { WatchUser } from '../watch-user/watch-user.entity';
 import { School } from '../school/school.entity';
 import { WatchRequest } from '../watch-user/watch-request.entity';
 import { SuggestionsComplaints } from '../suggestions-complaints/suggestions-complaints.entity';
+import { Grade } from '../school/grade.entity';
 
 @Entity()
 export class User extends AuditableEntity {
@@ -98,6 +99,11 @@ export class User extends AuditableEntity {
   school: School;
   @Column({ nullable: true })
   school_id: string;
+
+  @ManyToMany(()=>Grade,)
+  @JoinTable()
+  grades: Grade[]
+
   @Column({ type: 'enum', enum: Language, default: Language.EN })
   language: Language;
 

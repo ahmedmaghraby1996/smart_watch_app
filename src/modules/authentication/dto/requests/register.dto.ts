@@ -36,6 +36,11 @@ export class RegisterRequest {
   @IsOptional()
   @IsString()
   school_id:string
+
+  @ApiPropertyOptional({isArray:true})
+  @IsOptional()
+  grades_ids:string[]
+  
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()

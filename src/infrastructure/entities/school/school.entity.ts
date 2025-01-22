@@ -11,6 +11,7 @@ import { WatchUser } from '../watch-user/watch-user.entity';
 import { User } from '../user/user.entity';
 import { OwnedEntity } from 'src/infrastructure/base/owned.entity';
 import { City } from './city.entity';
+import { AcademicStage } from 'src/infrastructure/data/enums/academic-stage.enum';
 
 @Entity()
 export class School extends AuditableEntity {
@@ -34,6 +35,8 @@ export class School extends AuditableEntity {
   @Column()
   city_code:string
 
+   @Column({enum:AcademicStage,nullable:true})
+   academic_stage:AcademicStage
   constructor(partial: Partial<School>) {
     super();
     Object.assign(this, partial);

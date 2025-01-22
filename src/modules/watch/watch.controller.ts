@@ -58,7 +58,9 @@ import { WatchUserResponse } from './dto/response/watch-user.response';
 import { ConfirmRequest } from './dto/requests/confirm-request';
 import { toUrl } from 'src/core/helpers/file.helper';
 import { ImportImeiRequest } from './dto/requests/import-imei.request';
+
 import { app } from 'firebase-admin';
+import { User } from 'src/infrastructure/entities/user/user.entity';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -74,6 +76,7 @@ export class WatchController {
     private readonly _service: WatchService,
     private readonly _request_service: WatchRequestService,
     private readonly _IMEI_service: IMEIService,
+    @InjectRepository(User) private userRepo: Repository<User>,
 
     @Inject(REQUEST) private readonly request: Request,
   ) {}
@@ -270,12 +273,16 @@ export class WatchController {
           `watch_user.parent_id=${this.request.user.id}`,
         );
         break;
-      case Role.SECURITY:
+      case Role.SECURITY:{
+        const grades= await this.userRepo.find({
+          where: { id: this.request.user.id },
+          relations: { grades: true },
+        })
         applyQueryFilters(
           query,
-          `watch_user.school_id=${this.request.user.school_id}`,
+          `watch_user.gradee_id=${grades.map((grade)=>grade.id)}`,
         );
-        break;
+        break;}
       default:
         applyQueryFilters(
           query,

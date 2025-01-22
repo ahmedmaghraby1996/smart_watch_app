@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, In } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { RegisterRequest } from '../dto/requests/register.dto';
 import { User } from 'src/infrastructure/entities/user/user.entity';
@@ -16,6 +16,7 @@ import { plainToInstance } from 'class-transformer';
 import { Wallet } from 'src/infrastructure/entities/wallet/wallet.entity';
 import { School } from 'src/infrastructure/entities/school/school.entity';
 import { City } from 'src/infrastructure/entities/school/city.entity';
+import { Grade } from 'src/infrastructure/entities/school/grade.entity';
 
 @Injectable()
 export class RegisterUserTransaction extends BaseTransaction<
@@ -66,7 +67,7 @@ export class RegisterUserTransaction extends BaseTransaction<
         randomPassword + this._config.get('app.key'),
         10,
       );
-      if (req.role === Role.SECURITY) user.school_id = req.school_id;
+      
       user.username = user.phone;
       // set user role
       user.roles = [req.role];
@@ -94,6 +95,12 @@ export class RegisterUserTransaction extends BaseTransaction<
         );
         savedUser.school = school;
         await context.save(savedUser);
+      }
+      if(req.role==Role.SECURITY){
+
+        const classes=await context.find(Grade,{where:{id:In(req.grades_ids)}})
+        savedUser.school_id=req.school_id
+        savedUser.grades=classes
       }
 
       // return user

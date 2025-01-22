@@ -6,6 +6,7 @@ import { IMEI_entity } from './IMEI.entity';
 import { OwnedEntity } from 'src/infrastructure/base/owned.entity';
 import { User } from '../user/user.entity';
 import { WatchRequest } from './watch-request.entity';
+import { Grade } from '../school/grade.entity';
 
 @Entity()
 export class WatchUser extends AuditableEntity {
@@ -53,4 +54,11 @@ export class WatchUser extends AuditableEntity {
 
   @Column({ nullable: true })
   school_id: string;
+
+  @ManyToOne(() => Grade)
+  @JoinColumn()
+  grade: Grade;
+
+  @Column({ nullable: true })
+  grade_id: string;
 }

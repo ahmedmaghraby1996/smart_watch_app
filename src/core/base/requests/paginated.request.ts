@@ -4,6 +4,7 @@ import { IsNumber, IsOptional } from 'class-validator';
 import { toRightNumber } from 'src/core/helpers/cast.helper';
 import {
   ILike,
+  In,
   LessThan,
   LessThanOrEqual,
   Like,
@@ -102,6 +103,10 @@ export class PaginatedRequest {
 
           const [key, value] = filterPart.split(operator);
           switch (operator) {
+            //case Include  line In() make it a character not a letter
+            case'^':
+              whereFilter = { ...whereFilter, [key]: In(value  as unknown as any) };
+            
             case '#':
               whereFilter = { ...whereFilter, [key]: ILike(`%${value}%`) };
             case '<':
@@ -217,6 +222,9 @@ export class PaginatedRequest {
 
       const [key, value] = filter.split(operator);
       switch (operator) {
+        //case Include  line In() make it a character not a letter
+        case'^':
+          return { [key]: In(value  as unknown as any) };
         case '<':
           return { [key]: LessThan(value) };
         case '>':
@@ -234,6 +242,7 @@ export class PaginatedRequest {
   }
 
   private getOperator(statement: string): string {
+    if (statement.includes('^')) return '^';
     if (statement.includes('#')) return '#';
     if (statement.includes('<=')) return '<=';
     if (statement.includes('>=')) return '>=';

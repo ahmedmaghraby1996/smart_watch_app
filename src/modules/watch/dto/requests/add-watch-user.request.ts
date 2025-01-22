@@ -23,6 +23,10 @@ export class AddWatchUserRequest {
   @ApiProperty()
   @IsString()
   school_id: string;
+
+  @ApiProperty()
+  @IsString()
+  grade_id: string;
   
   @ApiPropertyOptional({
     type: [String],
@@ -66,6 +70,10 @@ export class EditWatchUserRequest {
   @IsOptional()
   @IsString()
   school_id: string;
+  @ApiProperty({required: false})
+  @IsOptional()
+  @IsString()
+  grade_id: string;
   
   @ApiPropertyOptional({
     type: [String],

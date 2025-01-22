@@ -1,5 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { GoogleSigninRequest, LoginRequest } from './dto/requests/signin.dto';
 import { Inject } from '@nestjs/common/decorators';
 import { ConfigService } from '@nestjs/config';
@@ -28,6 +28,8 @@ import { access } from 'fs';
 import { ResetPasswordRequest } from './dto/requests/reset-password';
 import { RequestResetPassword } from './dto/requests/request-reset-password';
 import { SendEmailService } from '../send-email/send-email.service';
+import { School } from 'src/infrastructure/entities/school/school.entity';
+import { Grade } from 'src/infrastructure/entities/school/grade.entity';
 
 @Injectable()
 export class AuthenticationService {
@@ -47,6 +49,8 @@ export class AuthenticationService {
     @Inject(REQUEST) private readonly request: Request,
     @Inject(SendEmailService) private readonly sendEmailService: SendEmailService,
 
+    @InjectRepository(School) private readonly schoolRepo: Repository<School>,
+    @InjectRepository(Grade) private readonly gradeRepo: Repository<Grade>,
     @Inject(ConfigService) private readonly _config: ConfigService,
   ) {}
 
@@ -245,5 +249,13 @@ export class AuthenticationService {
     await this.sendEmailService.sendResetPasswordEmail(user.email, resetPasswordUrl);
 
     return true;
+  }
+
+  async getSchoolGrades(schoolId: string) {
+    const school = await this.schoolRepo.findOne({ where: { id: schoolId } });
+    if (!school) {
+      throw new NotFoundException('school not found');}
+const grades=await this.gradeRepo.find({ where: { academic_stage:school.academic_stage } });
+return grades;
   }
 }
