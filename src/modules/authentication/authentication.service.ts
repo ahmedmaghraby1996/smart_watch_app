@@ -15,7 +15,7 @@ import { jwtSignOptions } from 'src/core/setups/jwt.setup';
 import axios from 'axios';
 import { Role } from 'src/infrastructure/data/enums/role.enum';
 
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Wallet } from 'src/infrastructure/entities/wallet/wallet.entity';
@@ -30,6 +30,7 @@ import { RequestResetPassword } from './dto/requests/request-reset-password';
 import { SendEmailService } from '../send-email/send-email.service';
 import { School } from 'src/infrastructure/entities/school/school.entity';
 import { Grade } from 'src/infrastructure/entities/school/grade.entity';
+import { AddSecurityGradeRequest } from './dto/requests/add-security-garde.request';
 
 @Injectable()
 export class AuthenticationService {
@@ -258,4 +259,20 @@ export class AuthenticationService {
 const grades=await this.gradeRepo.find({ where: { academic_stage:school.academic_stage } });
 return grades;
   }
+
+
+  async addSecurityGrade(req: AddSecurityGradeRequest) {
+    const user = await this.userService.findOne(req.user_id);
+    const grades = await this.gradeRepo.find({ where: { id: In(req.grades_ids) } });
+    
+    
+    user.grades = grades;
+    await user.save();
+  }
+
+  // async removeSecurityGrade(req: AddSecurityGradeRequest) {
+  //   const user = await this.userService.findOne(req.user_id);
+  //   const grades = await this.gradeRepo.find({ where: { id: In(req.grades_ids) } });
+  //   user.grades = user.grades.filter((grade) => !grades.includes(grade));
+  // }
 }

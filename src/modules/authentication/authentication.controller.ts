@@ -43,6 +43,7 @@ import { RequestResetPassword } from './dto/requests/request-reset-password';
 import { ResetPasswordRequest } from './dto/requests/reset-password';
 import { I18nResponse } from 'src/core/helpers/i18n.helper';
 import { CreateCityRequest, UpdateCityRequest } from './dto/requests/create-city.request';
+import { AddSecurityGradeRequest } from './dto/requests/add-security-garde.request';
 
 
 @ApiTags(Router.Auth.ApiTag)
@@ -253,6 +254,17 @@ SET city.order_by = RankedCities.new_order;
       
         
       }
+      @UseGuards(JwtAuthGuard, RolesGuard)
+      @ApiBearerAuth()
+      @Roles(Role.School)
+    
+      @Post('add/security/grade')
+      async addSecurityGrade(@Body() req: AddSecurityGradeRequest) {
+        const result = await this.authService.addSecurityGrade(req);
+        return new ActionResponse(result);
+      }
+      
+
 
 
 }
