@@ -280,7 +280,7 @@ export class WatchController {
         })
         applyQueryFilters(
           query,
-          `watch_user.gradee_id=${grades.map((grade)=>grade.id)}`,
+          `watch_user.grade_id=${grades.map((grade)=>grade.id)}`,
         );
         break;}
       default:
