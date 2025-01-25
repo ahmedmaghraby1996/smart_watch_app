@@ -230,7 +230,7 @@ export class WatchController {
   @Get('/get-admin-requests')
   async getWatchRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
-    applyQueryIncludes(query, 'watch_user#school.drivers.parent');
+    applyQueryIncludes(query, 'watch_user#school.drivers.parent.grade');
     applyQuerySort(query, 'created_at=desc');
     applyQueryISDeleted(query);
     const last_day = new Date(
@@ -262,7 +262,7 @@ export class WatchController {
     );
 
     applyQueryISDeleted(query);
-    applyQueryIncludes(query, 'watch_user#school.drivers.parent');
+    applyQueryIncludes(query, 'watch_user#school.drivers.parent.grade');
     const role = this.request.user.roles[0];
     switch (role) {
       case Role.DRIVER:
@@ -314,7 +314,8 @@ export class WatchController {
   @Get('/get-school-users-requests')
   async getSchoolWatchUsersRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
-    applyQueryIncludes(query, 'watch_user#school.drivers.parent');
+
+    applyQueryIncludes(query, 'watch_user#school.drivers.parent.grade');
     applyQueryFilters(
       query,
       `watch_user.school_id=${this.request.user.school_id}`,
