@@ -63,7 +63,7 @@ export class WatchService extends BaseService<WatchUser> {
       where: { id },
       relations: {
         user: true,
-        watch_user: { parent: true, drivers: true, school: true },
+        watch_user: { parent: true, drivers: true, school: true ,grade:true},
       },
       withDeleted: true,
     });
