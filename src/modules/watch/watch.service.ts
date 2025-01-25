@@ -192,6 +192,15 @@ export class WatchService extends BaseService<WatchUser> {
       `new-request-${requestResposne.watch_user.school.id}`,
       requestResposne,
     );
+    const securities= await this.user_repo.find({
+      where: { school_id: watch.school_id ,grades:{id:watch.grade_id}},
+    })
+    securities.forEach((user) => {
+      this.watchGateway.server.emit(
+        `new-request-${user.id}`,
+        requestResposne,
+      )
+    })
     return request;
   }
   async getWatchRequests() {

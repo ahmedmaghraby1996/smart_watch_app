@@ -1,4 +1,5 @@
 import { Expose, plainToInstance, Transform } from "class-transformer";
+import { Grade } from "src/infrastructure/entities/school/grade.entity";
 import { UserResponse } from "src/modules/user/dto/response/user-response";
 
 export class WatchRequestResponse {
@@ -32,5 +33,8 @@ export class WatchRequestResponse {
     @Transform(( value ) => plainToInstance(UserResponse, value.obj.watch_user?.parent, { excludeExtraneousValues: true }))
     parent: UserResponse
 
+    @Expose()
+    @Transform(( value ) => {return {id:value.obj.watch_user.garde.id,name:value.obj.watch_user.garde.name}})
+    grade: Grade
     
 }
