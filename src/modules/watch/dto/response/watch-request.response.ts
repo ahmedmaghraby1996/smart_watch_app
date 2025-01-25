@@ -34,7 +34,7 @@ export class WatchRequestResponse {
     parent: UserResponse
 
     @Expose()
-    @Transform(( value ) => {return {id:value.obj.watch_user.garde.id,name:value.obj.watch_user.garde.name}})
+    @Transform(( value ) => {return {id:value.obj.watch_user.grade.id,name:value.obj.watch_user.grade.name}})
     grade: Grade
     
 }
