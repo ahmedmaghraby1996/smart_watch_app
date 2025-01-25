@@ -47,6 +47,7 @@ import { ILike, Repository } from 'typeorm';
 import { WatchUser } from 'src/infrastructure/entities/watch-user/watch-user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { toUrl } from 'src/core/helpers/file.helper';
+import { I18nResponse } from 'src/core/helpers/i18n.helper';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -62,6 +63,7 @@ export class UserController {
     private userService: UserService,
     @Inject(REQUEST) private request: Request,
     @InjectRepository(WatchUser) private watchUserRepo: Repository<WatchUser>,
+    @Inject(I18nResponse) private readonly _i18nResponse: I18nResponse,
   ) {}
 
   @Roles(Role.ADMIN, Role.School)
@@ -206,6 +208,14 @@ export class UserController {
        
       
       ),
+    );
+  }
+  @Get('/:id/grades')
+  async getUserGrades(@Param('id') id: string) {
+    const grades = await this.userService.getUserGrades(id);
+    const response = this._i18nResponse.entity(grades);
+    return new ActionResponse(
+      response,
     );
   }
 }

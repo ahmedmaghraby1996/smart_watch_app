@@ -42,7 +42,7 @@ export class RegisterRequest {
   // @IsOptional()
   // grades_ids:string[]
 
-  @ApiProperty({required: false, default: AcademicStage.PRIMARY, enum: [AcademicStage.ELEMENTARY,AcademicStage.KINDERGARTEN,AcademicStage.PRIMARY,AcademicStage.HIGH_SCHOOL] })
+  @ApiProperty({required: false, default: AcademicStage.Primary, enum: [AcademicStage.Primary,AcademicStage.Kindergarten,AcademicStage.Primary,AcademicStage.Secondary] })
   // @IsNotEmpty()
   @IsOptional()
   @IsEnum(AcademicStage)

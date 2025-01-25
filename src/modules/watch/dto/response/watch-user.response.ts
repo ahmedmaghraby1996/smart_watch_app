@@ -6,7 +6,7 @@ import { UserResponse } from "src/modules/user/dto/response/user-response";
 export class WatchUserResponse  extends UserResponse{
   
     @Expose()
-    @Transform(( value ) => value.obj.school?{id: value.obj.school.id, name: value.obj.school.name, avatar: toUrl(value.obj.school.avatar)}:null)
+    @Transform(( value ) => value.obj.school?{id: value.obj.school.id,stage:value.obj.garde.name, name: value.obj.school.name, avatar: toUrl(value.obj.school.avatar)}:null)
     school: School;
     @Expose()
     @Transform(( value ) => value.obj.drivers?plainToInstance(UserResponse, value.obj.drivers, { excludeExtraneousValues: true }):null)

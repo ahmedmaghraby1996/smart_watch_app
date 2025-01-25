@@ -61,6 +61,8 @@ import { ImportImeiRequest } from './dto/requests/import-imei.request';
 
 import { app } from 'firebase-admin';
 import { User } from 'src/infrastructure/entities/user/user.entity';
+import { I18n } from 'nestjs-i18n';
+import { I18nResponse } from 'src/core/helpers/i18n.helper';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -77,6 +79,7 @@ export class WatchController {
     private readonly _request_service: WatchRequestService,
     private readonly _IMEI_service: IMEIService,
     @InjectRepository(User) private userRepo: Repository<User>,
+   @Inject(I18nResponse) private readonly _i18nResponse: I18nResponse,
 
     @Inject(REQUEST) private readonly request: Request,
   ) {}
@@ -240,7 +243,8 @@ export class WatchController {
 
     const requests = await this._request_service.findAll(query);
     const total = await this._request_service.count(query);
-    const result = plainToInstance(WatchRequestResponse, requests, {});
+    const response =this._i18nResponse.entity(requests)
+    const result = plainToInstance(WatchRequestResponse, response, {});
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
   @Roles(Role.PARENT, Role.DRIVER, Role.SECURITY)
@@ -274,13 +278,13 @@ export class WatchController {
         );
         break;
       case Role.SECURITY:{
-        const grades= await this.userRepo.find({
+        const grades= await this.userRepo.findOne({
           where: { id: this.request.user.id },
           relations: { grades: true },
         })
         applyQueryFilters(
           query,
-          `watch_user.grade_id=${grades.map((grade)=>grade.id)}`,
+          `watch_user.grade_id=${grades.grades.map((grade)=>grade.id)}`,
         );
         break;}
       default:
@@ -293,14 +297,16 @@ export class WatchController {
 
     const requests = await this._request_service.findAll(query);
     const total = await this._request_service.count(query);
-    const result = plainToInstance(WatchRequestResponse, requests, {});
+    const response =this._i18nResponse.entity(requests)
+    const result = plainToInstance(WatchRequestResponse, response, {});
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
   @Roles(Role.PARENT, Role.DRIVER, Role.SECURITY, Role.School, Role.ADMIN)
   @Get('/get-users-requests/:request_id')
   async getSignleWatchUsersRequests(@Param('request_id') request_id: string) {
     const request = await this._service.getSingleRequest(request_id);
-    const response = plainToInstance(WatchRequestResponse, request);
+    const result = this._i18nResponse.entity(request);
+    const response = plainToInstance(WatchRequestResponse, result);
     return new ActionResponse(response);
   }
 
@@ -323,7 +329,8 @@ export class WatchController {
     );
     const requests = await this._request_service.findAll(query);
     const total = await this._request_service.count(query);
-    const result = plainToInstance(WatchRequestResponse, requests, {});
+    const response =this._i18nResponse.entity(requests)
+    const result = plainToInstance(WatchRequestResponse, response, {});
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
 
@@ -336,7 +343,8 @@ export class WatchController {
     applyQueryFilters(query, `school_id=${this.request.user.school_id}`);
     const watch_users = await this._service.findAll(query);
     const total = await this._service.count(query);
-    const result = plainToInstance(WatchUserResponse, watch_users, {});
+    const response =this._i18nResponse.entity(watch_users)
+    const result = plainToInstance(WatchUserResponse, response, {});
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
 
@@ -348,8 +356,10 @@ export class WatchController {
           id: school.id,
           name: school.name,
           avatar: toUrl(school.avatar),
+          academic_stage: school.academic_stage,
         };
       }),
     );
+
   }
 }
