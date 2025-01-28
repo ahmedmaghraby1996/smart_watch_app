@@ -212,7 +212,7 @@ export class WatchController {
     );
   }
 
-  @Roles(Role.PARENT)
+  @Roles(Role.PARENT,Role.ADMIN)
   @Delete('/delete-watch-user/:watch_user_id')
   async deleteWatchUsers(@Param('watch_user_id') watch_user_id: string) {
     const watch_user = await this._service._repo.findOneBy({

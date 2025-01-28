@@ -29,6 +29,7 @@ import { Role } from 'src/infrastructure/data/enums/role.enum';
 import { validate } from 'class-validator';
 import { UUIDV4 } from 'sequelize';
 import { Grade } from 'src/infrastructure/entities/school/grade.entity';
+import { I18nResponse } from 'src/core/helpers/i18n.helper';
 
 @Injectable()
 export class WatchService extends BaseService<WatchUser> {
@@ -45,6 +46,7 @@ export class WatchService extends BaseService<WatchUser> {
     @InjectRepository(User) public user_repo: Repository<User>,
     @InjectRepository(Grade) public grade_repo: Repository<Grade>,
     public watchGateway: WatchGateway,
+    @Inject(I18nResponse) private readonly _i18nResponse: I18nResponse,
     @Inject(StorageManager) private readonly storageManager: StorageManager,
   ) {
     super(repo);
@@ -172,9 +174,9 @@ export class WatchService extends BaseService<WatchUser> {
       await this.watchRequest_repo.save(request);
     }
 
-    const requestResposne = plainToInstance(
+    const requestResposne =  plainToInstance(
       WatchRequestResponse,
-      await this.getSingleRequest(request.id),
+    this._i18nResponse.entity(  await this.getSingleRequest(request.id)),
     );
     const security = await this.user_repo.find({
       where: { school_id: watch.school_id },
