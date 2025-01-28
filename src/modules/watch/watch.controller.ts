@@ -283,7 +283,8 @@ export class WatchController {
           relations: { grades: true },
         });
         const grades_string =
-          grades.grades.map((grade) => grade.id).toString().replace(",", "-");
+          grades.grades.map((grade) => grade.id).toString().replace(",", "_");
+          console.log(grades.grades);
           console.log(grades_string);
         applyQueryFilters(
           query,
