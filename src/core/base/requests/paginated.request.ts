@@ -107,7 +107,7 @@ export class PaginatedRequest {
             
             //case Include  line In() make it a character not a letter
             case'/':
-              whereFilter = { ...whereFilter, [key]: In(value  as unknown as any) };
+              whereFilter = { ...whereFilter, [key]: In(value.split(',')) };
             
             case '#':
               whereFilter = { ...whereFilter, [key]: ILike(`%${value}%`) };
@@ -226,7 +226,7 @@ export class PaginatedRequest {
       switch (operator) {
         //case Include  line In() make it a character not a letter
         case'/':
-          return { [key]: In(value  as unknown as any) };
+          return { [key]: In(value.split(',')) };
         case '<':
           return { [key]: LessThan(value) };
         case '>':
@@ -244,7 +244,7 @@ export class PaginatedRequest {
   }
 
   private getOperator(statement: string): string {
-    if (statement.includes('/')) return '^';
+    if (statement.includes('/')) return '/';
     if (statement.includes('#')) return '#';
     if (statement.includes('<=')) return '<=';
     if (statement.includes('>=')) return '>=';

@@ -282,13 +282,11 @@ export class WatchController {
           where: { id: this.request.user.id },
           relations: { grades: true },
         });
-        const grades_string =
-        grades.grades.map((grade) => grade.id).toString().replace(/,/g, "_");
-          console.log(grades.grades);
-          console.log(grades_string);
+   
+         
         applyQueryFilters(
           query,
-          `watch_user.grade_id=${grades_string}`,
+          `watch_user.grade_id/${grades.grades}`,
         );
         break;
       }
