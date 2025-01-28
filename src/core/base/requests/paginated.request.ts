@@ -102,9 +102,11 @@ export class PaginatedRequest {
           const operator = this.getOperator(filterPart);
 
           const [key, value] = filterPart.split(operator);
+          console.log(key, value);
           switch (operator) {
+            
             //case Include  line In() make it a character not a letter
-            case'^':
+            case'/':
               whereFilter = { ...whereFilter, [key]: In(value  as unknown as any) };
             
             case '#':
@@ -223,7 +225,7 @@ export class PaginatedRequest {
       const [key, value] = filter.split(operator);
       switch (operator) {
         //case Include  line In() make it a character not a letter
-        case'^':
+        case'/':
           return { [key]: In(value  as unknown as any) };
         case '<':
           return { [key]: LessThan(value) };
@@ -242,7 +244,7 @@ export class PaginatedRequest {
   }
 
   private getOperator(statement: string): string {
-    if (statement.includes('^')) return '^';
+    if (statement.includes('/')) return '^';
     if (statement.includes('#')) return '#';
     if (statement.includes('<=')) return '<=';
     if (statement.includes('>=')) return '>=';
