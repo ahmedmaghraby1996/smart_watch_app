@@ -277,19 +277,17 @@ export class WatchController {
           `watch_user.parent_id=${this.request.user.id}`,
         );
         break;
-      case Role.SECURITY: {
-        const grades = await this.userRepo.findOne({
+      case Role.SECURITY:{
+        const grades= await this.userRepo.findOne({
           where: { id: this.request.user.id },
           relations: { grades: true },
-        });
-   
-         
+        })
+        console.log(grades.grades.map((grade)=>grade.id).toString().replace(/,/g,'_'));
         applyQueryFilters(
           query,
-          `watch_user.grade_id/${grades.grades}`,
+          `watch_user.grade_id=${grades.grades.map((grade) => grade.id).toString().replace(/,/g, "_")}`,
         );
-        break;
-      }
+        break;}
       default:
         applyQueryFilters(
           query,

@@ -107,7 +107,7 @@ export class PaginatedRequest {
             
             //case Include  line In() make it a character not a letter
             case'/':
-              whereFilter = { ...whereFilter, [key]: In(value.split(',')) };
+              whereFilter = { ...whereFilter, [key]: In(value.split('_')) };
             
             case '#':
               whereFilter = { ...whereFilter, [key]: ILike(`%${value}%`) };
@@ -226,7 +226,7 @@ export class PaginatedRequest {
       switch (operator) {
         //case Include  line In() make it a character not a letter
         case'/':
-          return { [key]: In(value.split(',')) };
+          return { [key]: In(value.split('_')) };
         case '<':
           return { [key]: LessThan(value) };
         case '>':
