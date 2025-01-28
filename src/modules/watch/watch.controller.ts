@@ -268,7 +268,7 @@ export class WatchController {
       case Role.DRIVER:
         applyQueryFilters(
           query,
-          `watch_user.drivers.id=${"d9ef631e-dcee-4f54-a997-e2ca4788b25c"}`,
+          `watch_user.drivers.id=${this.request.user.id}`,
         );
         break;
       case Role.PARENT:
@@ -285,7 +285,7 @@ export class WatchController {
         console.log(grades.grades.map((grade)=>grade.id).toString().replace(/,/g,'_'));
         applyQueryFilters(
           query,
-          `watch_user.grade_id=${grades.grades.map((grade) => grade.id).toString().replace(/,/g, "_")}`,
+          `watch_user.grade_id=d9ef631e-dcee-4f54-a997-e2ca4788b25c`,
         );
         break;}
       default:
