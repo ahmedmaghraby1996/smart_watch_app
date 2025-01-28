@@ -284,7 +284,7 @@ export class WatchController {
         })
         applyQueryFilters(
           query,
-          `watch_user.grade_id=${grades.grades.map((grade)=>grade.id).toString()}`,
+          `watch_user.grade_id=${"aasdasds"}`,
         );
         break;}
       default:
