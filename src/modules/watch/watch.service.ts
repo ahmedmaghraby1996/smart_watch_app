@@ -187,7 +187,7 @@ export class WatchService extends BaseService<WatchUser> {
         message_en: 'request has been sent',
         title_ar: 'تم تقديم طلب جديد',
         title_en: 'request has been sent',
-        users_id: security.filter((user) => user.grades.map((grade)=>grade.id).includes(watch.grade_id)).map((user) => user.id),
+        users_id: security.map((user) => user.id).filter((id)=>id==watch.grade_id),
       }),
     );
     this.watchGateway.server.emit(
