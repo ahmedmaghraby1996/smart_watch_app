@@ -285,7 +285,7 @@ export class WatchController {
         console.log(grades.grades.map((grade)=>grade.id).toString().replace(/,/g,'_'));
         applyQueryFilters(
           query,
-          `watch_user.grade_id#${grades.grades.map((grade) => grade.id).toString().replace(/,/g, "_")}`,
+          `watch_user.grade_id/${grades.grades.map((grade) => grade.id).toString().replace(/,/g, "_")}`,
         );
         break;}
       default:
