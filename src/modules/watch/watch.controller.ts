@@ -285,7 +285,7 @@ export class WatchController {
         console.log(grades.grades.map((grade)=>grade.id).toString().replace(/,/g,'_'));
         applyQueryFilters(
           query,
-          `watch_user.grade_id=d9ef631e-dcee-4f54-a997-e2ca4788b25c`,
+          `watch_user.grade_id=d9ef631e-dcee-4f54-a997-e2ca4788b25c_123234234d22`,
         );
         break;}
       default:
