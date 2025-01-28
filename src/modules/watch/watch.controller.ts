@@ -282,9 +282,10 @@ export class WatchController {
           where: { id: this.request.user.id },
           relations: { grades: true },
         })
+        console.log(grades.grades.map((grade)=>grade.id).toString());
         applyQueryFilters(
           query,
-          `watch_user.grade_id=${"aasdasds"}`,
+          `watch_user.grade_id=${grades.grades.map((grade)=>grade.id).toString()}`,
         );
         break;}
       default:
