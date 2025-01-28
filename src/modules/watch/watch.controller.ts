@@ -268,7 +268,7 @@ export class WatchController {
       case Role.DRIVER:
         applyQueryFilters(
           query,
-          `watch_user.drivers.id=${this.request.user.id}`,
+          `watch_user.drivers.id=${"d9ef631e-dcee-4f54-a997-e2ca4788b25c"}`,
         );
         break;
       case Role.PARENT:
