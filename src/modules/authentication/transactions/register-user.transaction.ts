@@ -91,6 +91,7 @@ export class RegisterUserTransaction extends BaseTransaction<
             avatar: savedUser.avatar,
             city_id: city.id,
             city_code: generateFormattedNumber(city.code, count, 4),
+            academic_stage:req.academic_stage
           }),
         );
         savedUser.school = school;
