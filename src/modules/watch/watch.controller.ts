@@ -283,6 +283,7 @@ export class WatchController {
           relations: { grades: true },
         })
         console.log(grades.grades.map((grade)=>grade.id).toString().replace(/,/g,'_'));
+        applyQueryFilters(query,`watch_user.school_id=${this.request.user.school_id}`)
         applyQueryFilters(
           query,
           `watch_user.grade_id/${grades.grades.map((grade) => grade.id).toString().replace(/,/g, "_")}`,
