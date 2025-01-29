@@ -348,7 +348,7 @@ export class WatchService extends BaseService<WatchUser> {
         newWatches.push(new IMEI_entity({ IMEI: imei, id: uuidv4() }));
       }
     }
-    console.log(newWatches);
+  
     return await this.IMEI_repo.save(newWatches);
   }
 }
