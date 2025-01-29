@@ -46,7 +46,7 @@ export abstract class BaseService<T extends BaseEntity> implements IBaseService<
     if (options.order) query = { ...query, order: options.order };
     if (options.relations) query = { ...query, relations: options.relations };
     if (options.select) query = { ...query, select: options.select };
-    if (options.isDeleted) query = { ...query, where: { is_deleted: true } };
+    if (options.isDeleted) query = { ...query, withDeleted: options.isDeleted };
 console.log(JSON.stringify(query));
     return await this._repo.find(query);
   }
