@@ -178,25 +178,23 @@ export class WatchService extends BaseService<WatchUser> {
       WatchRequestResponse,
     this._i18nResponse.entity(  await this.getSingleRequest(request.id)),
     );
-    const security = await this.user_repo.find({
-      where: { school_id: watch.school_id },
-    });
+    const securities= await this.user_repo.find({
+      where: { school_id: watch.school_id ,grades:{id:watch.grade_id}},
+    }) 
     await this.notification_service.sendToUsers(
       new SendToUsersNotificationRequest({
         message_ar: 'تم تقديم طلب جديد',
         message_en: 'request has been sent',
         title_ar: 'تم تقديم طلب جديد',
         title_en: 'request has been sent',
-        users_id: security.map((user) => user.id).filter((id)=>id==watch.grade_id),
+        users_id: securities.map((user) => user.id),
       }),
     );
     this.watchGateway.server.emit(
       `new-request-${requestResposne.watch_user.school.id}`,
       requestResposne,
     );
-    const securities= await this.user_repo.find({
-      where: { school_id: watch.school_id ,grades:{id:watch.grade_id}},
-    })
+
     securities.forEach((user) => {
       this.watchGateway.server.emit(
         `new-request-${user.id}`,

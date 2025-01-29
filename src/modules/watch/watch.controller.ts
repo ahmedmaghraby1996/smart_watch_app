@@ -149,7 +149,7 @@ export class WatchController {
   async getIEMI(@Param('id') id: string) {
     const IMEI = await this._IMEI_service._repo.findOne({
       where: { id: id },
-      relations: { watch_user: { parent: true, school: true, drivers: true } },
+      relations: { watch_user: { parent: true, school: true, drivers: true,grade:true } },
     });
     return new ActionResponse({
       id: IMEI.id,
