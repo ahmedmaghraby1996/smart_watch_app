@@ -181,6 +181,8 @@ export class WatchService extends BaseService<WatchUser> {
     const securities= await this.user_repo.find({
       where: { school_id: watch.school_id ,grades:{id:watch.grade_id}},
     }) 
+    const school=await this.user_repo.findOne({where:{school_id:watch.school_id}})
+    securities.push(school)
     await this.notification_service.sendToUsers(
       new SendToUsersNotificationRequest({
         message_ar: 'تم تقديم طلب جديد',
