@@ -17,6 +17,11 @@ export class WatchRequest extends OwnedEntity{
   @Column()
   watch_user_id: string
 
+  @Column({nullable:true})
+  school_id:string
+  @Column({nullable:true})
+  grade_id:string
+
   @Column({default:RequestStatus.PENDNING})
   status:RequestStatus
 

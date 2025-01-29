@@ -167,6 +167,8 @@ export class WatchService extends BaseService<WatchUser> {
       request.watch_user_id = watch.id;
       request.number = number;
       request.user_id = this.request.user.id;
+      request.school_id = watch.school_id;
+      request.grade_id=watch.grade_id
       //generate random code 6 digit
 
       request.code = Math.floor(100000 + Math.random() * 900000);
