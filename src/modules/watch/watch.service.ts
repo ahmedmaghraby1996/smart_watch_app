@@ -124,6 +124,7 @@ export class WatchService extends BaseService<WatchUser> {
     const watch_request = await this.watchRequest_repo.findOne({
       where: { id: req.request_id },
       relations: { watch_user: true },
+      withDeleted:true
     });
 
     // if (!request) throw new BadRequestException('invalid code');
