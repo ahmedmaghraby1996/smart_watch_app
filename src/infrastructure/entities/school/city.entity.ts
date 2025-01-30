@@ -11,7 +11,7 @@ export class City extends AuditableEntity {
   @Column()
   name_en: string;
 
-  @Column()
+  @Column({nullable:true})
   order_by: number;
   @Column({ unique: true })
   code: string;
