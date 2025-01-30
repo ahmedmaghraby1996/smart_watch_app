@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/infrastructure/entities/user/user.entity';
 import { Repository } from 'typeorm';
@@ -32,13 +32,16 @@ export class UserService extends BaseService<User> {
   async deleteUser(id: string) {
     const user = await this._repo.findOne({
       where: { id: id },
-      relations: { school: true },
+      relations: { school: true ,},
     });
     if (!user) throw new NotFoundException('user not found');
     user.username = 'deleted_' + user.username + '_' + randNum(4);
     await this.update(user);
-    if (user.roles[0] == Role.School)
-      await this.schoolRepo.softRemove(user.school);
+    if (user.roles[0] == Role.School){
+      const watchUsers=await this.schoolRepo.find({where:{watchUsers:{school_id:user.school_id}}})
+      if(watchUsers.length>0)
+        throw new BadRequestException('school has watch users');
+      await this.schoolRepo.softRemove(user.school);}
     return await this.userRepo.softRemove(user);
   }
   async updateProfile(id, req: UpdateProfileRequest) {
