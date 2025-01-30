@@ -110,7 +110,7 @@ export class WatchService extends BaseService<WatchUser> {
         { drivers: { id: this.request.user.id } },
       ],
       relations: { parent: true, drivers: true, school: true, IMEI: true ,grade:true },
-      withDeleted:true
+      
     });
   }
 
