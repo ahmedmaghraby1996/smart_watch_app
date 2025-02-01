@@ -263,7 +263,7 @@ return grades;
 
   async addSecurityGrade(req: AddSecurityGradeRequest) {
     const user = await this.userService.findOne(req.user_id);
-    const grades = await this.gradeRepo.find({ where: { id: In(req.grades_ids) } });
+    const grades = await this.gradeRepo.find({ where: { id: In(req.grades_ids) },order: { order_by: 'ASC' } });
     
     
     user.grades = grades;
