@@ -253,17 +253,17 @@ export class AuthenticationService {
   }
 
   async getSchoolGrades(schoolId: string) {
-    const school = await this.schoolRepo.findOne({ where: { id: schoolId } });
+    const school = await this.schoolRepo.findOne({ where: { id: schoolId } },);
     if (!school) {
       throw new NotFoundException('school not found');}
-const grades=await this.gradeRepo.find({ where: { academic_stage:school.academic_stage } });
+const grades=await this.gradeRepo.find({ where: { academic_stage:school.academic_stage }, order: { order_by: 'ASC' } });
 return grades;
   }
 
 
   async addSecurityGrade(req: AddSecurityGradeRequest) {
     const user = await this.userService.findOne(req.user_id);
-    const grades = await this.gradeRepo.find({ where: { id: In(req.grades_ids) },order: { order_by: 'ASC' } });
+    const grades = await this.gradeRepo.find({ where: { id: In(req.grades_ids) } });
     
     
     user.grades = grades;
