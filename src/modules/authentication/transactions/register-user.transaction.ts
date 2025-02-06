@@ -20,6 +20,7 @@ import { Grade } from 'src/infrastructure/entities/school/grade.entity';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { DayHours } from 'src/infrastructure/entities/school/day-hours';
+import { where } from 'sequelize';
 @Injectable()
 export class RegisterUserTransaction extends BaseTransaction<
   RegisterRequest,
@@ -43,7 +44,7 @@ export class RegisterUserTransaction extends BaseTransaction<
   ): Promise<User> {
     try {
       // upload avatar
-      const admin = this.request.user
+      const admin_id = this.request.user.id
       const user = new User(req);
       // upload avatar
       if (req.avatarFile) {
@@ -83,10 +84,10 @@ export class RegisterUserTransaction extends BaseTransaction<
       // create driver setting if user is a driver
       if(req.role==Role.SchoolAdmin){
        
-        if(!admin) throw new BadRequestException('must be admin');
+        if(!admin_id) throw new BadRequestException('must be admin');
       }
       if (req.role === Role.School) {
-        if(!admin) throw new BadRequestException('must be admin');
+        if(!admin_id) throw new BadRequestException('must be admin');
         const count = await context
           .createQueryBuilder(School, 'school')
           .where('school.city_id = :city_id', { city_id: req.city_id })
@@ -130,6 +131,7 @@ export class RegisterUserTransaction extends BaseTransaction<
         );
      
         savedUser.school = school;
+        const admin = await context.findOne(User,{where:{id:admin_id},relations:{school_users:true}})
         admin.school_users.push(savedUser);
 
         await context.save(savedUser);
