@@ -19,7 +19,7 @@ export class DayHours extends AuditableEntity {
     @Column()
     end_time: string
 
-    @Column()
+    @Column({default:true})
     is_active: boolean
 
     @ManyToOne(() => School, (school) => school.day_hours)
