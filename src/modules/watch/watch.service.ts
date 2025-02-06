@@ -183,7 +183,7 @@ export class WatchService extends BaseService<WatchUser> {
         { id: id, drivers: { id: this.request.user.id } },
       
       ],
-relations:{school:{day_hours:true},},
+relations:{school:{day_hours:true},},order:{school:{day_hours:{order_by:'ASC'}} }
     });
    
 
