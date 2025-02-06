@@ -11,5 +11,6 @@
     "registration_failed": "Registration failed",
     "vehicle_update_failed": "Vehicle update failed",
     "user_has_no_vehicle": "User has no vehicle",
-    "image_not_found": "Image not found"
+    "image_not_found": "Image not found",
+    "not_within_working_hours": "Not within working hours"
 }

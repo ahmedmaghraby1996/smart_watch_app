@@ -97,13 +97,14 @@ export class RegisterUserTransaction extends BaseTransaction<
         const city = await context.findOneBy(City, { id: req.city_id });
         if (!city) throw new BadRequestException('message.city_not_found');
         const weekdays = [
+          { en: "Sunday", ar: "الأحد" },
           { en: "Monday", ar: "الاثنين" },
           { en: "Tuesday", ar: "الثلاثاء" },
           { en: "Wednesday", ar: "الأربعاء" },
           { en: "Thursday", ar: "الخميس" },
           { en: "Friday", ar: "الجمعة" },
           { en: "Saturday", ar: "السبت" },
-          { en: "Sunday", ar: "الأحد" }
+        
         ];
         
        
