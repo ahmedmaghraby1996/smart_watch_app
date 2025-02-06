@@ -207,7 +207,7 @@ relations:{school:{day_hours:true},},
     const isWithinWorkingHours = ksaNow >= startTime && ksaNow < endTime;
     
     if (!isWithinWorkingHours) {
-      throw new BadRequestException('Not within working hours');
+      throw new BadRequestException(`Not within working hours , time in ksa now is : ${ksaNow},start time is : ${startTime},end time is : ${endTime}`);
     }
     
 
