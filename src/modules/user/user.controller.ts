@@ -183,6 +183,16 @@ export class UserController {
     );
   }
 
+  @Roles(Role.SchoolAdmin)
+  @Get('/schools')
+  
+  async getUserSchools() {
+    const schools = await this.userService.getUserSchools();
+    const response = plainToInstance(UserResponse, schools, { excludeExtraneousValues: true });
+    return new ActionResponse(
+      response,
+    );
+  }
   @Get('/:id')
   async getUserById(@Param('id') id: string) {
     const user=   await this.userService._repo.findOne({
@@ -210,16 +220,7 @@ export class UserController {
       ),
     );
   }
-@Roles(Role.SchoolAdmin)
-  @Get('/schools')
-  
-  async getUserSchools() {
-    const schools = await this.userService.getUserSchools();
-    const response = plainToInstance(UserResponse, schools, { excludeExtraneousValues: true });
-    return new ActionResponse(
-      response,
-    );
-  }
+
   @Get('/:id/grades')
   async getUserGrades(@Param('id') id: string) {
     const grades = await this.userService.getUserGrades(id);
