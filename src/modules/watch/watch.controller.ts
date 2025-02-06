@@ -198,7 +198,13 @@ export class WatchController {
     return new ActionResponse(await this._service.makeRequest(watch_user_id));
   }
 
-  @Roles(Role.SECURITY, Role.PARENT, Role.School, Role.ADMIN)
+  @Roles( Role.PARENT, Role.DRIVER, Role.ADMIN)
+  @Post('complete-request')
+  async completeRequest(@Body() req: ConfirmRequest) {
+    return new ActionResponse(await this._service.completeRequest(req));
+  }
+
+  @Roles( Role.School, Role.ADMIN,Role.SECURITY)
   @Post('confirm-request')
   async confirmRequest(@Body() req: ConfirmRequest) {
     return new ActionResponse(await this._service.confirmRequest(req));

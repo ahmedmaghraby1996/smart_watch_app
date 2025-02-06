@@ -93,7 +93,7 @@ export class UserService extends BaseService<User> {
     return user.school_users;
   }
   async getSchoolWorkHours() {
-    const user = await this._repo.findOne({ where: { id: this.request.user.id },relations:{school:{day_hours:true}} })
+    const user = await this._repo.findOne({ where: { id: this.request.user.id },relations:{school:{day_hours:true},},order:{school:{day_hours:{order_by:'ASC'}} }})
     return user.school.day_hours;
   }
   async updateSchoolWorkHours(req: UpdateSchoolWorkHoursRequest) {

@@ -129,7 +129,7 @@ export class WatchService extends BaseService<WatchUser> {
     });
 
     // if (!request) throw new BadRequestException('invalid code');
-    watch_request.status = RequestStatus.COMPLETED;
+    watch_request.status = RequestStatus.CONFIRMED;
     await this.watchRequest_repo.save(watch_request);
     if (this.request.user.id != watch_request.watch_user.parent_id) {
       await this.notification_service.sendToUsers(
@@ -141,6 +141,38 @@ export class WatchService extends BaseService<WatchUser> {
           users_id: [watch_request.watch_user.parent_id],
         }),
       );
+
+    }
+    const requestResposne =  plainToInstance(
+      WatchRequestResponse,
+    this._i18nResponse.entity(  await this.getSingleRequest(watch_request.id)),
+    );
+
+    this.watchGateway.server.emit(`request-confirmed-${watch_request.watch_user.parent_id}`, requestResposne);
+    
+    return watch_request;
+  }
+
+  async completeRequest(req: ConfirmRequest) {
+    const watch_request = await this.watchRequest_repo.findOne({
+      where: { id: req.request_id },
+      relations: { watch_user: true },
+      withDeleted:true
+    });
+
+    // if (!request) throw new BadRequestException('invalid code');
+    watch_request.status = RequestStatus.COMPLETED;
+    await this.watchRequest_repo.save(watch_request);
+    if (this.request.user.id != watch_request.watch_user.parent_id) {
+      await this.notification_service.sendToUsers(
+        new SendToUsersNotificationRequest({
+          message_ar: 'تم اكمال الطلب',
+          message_en: 'request has been completed',
+          title_ar: 'تم اكمال الطلب',
+          title_en: 'request has been completed',
+          users_id: [watch_request.watch_user.parent_id],
+        }),
+      );
     }
     return watch_request;
   }
@@ -149,8 +181,36 @@ export class WatchService extends BaseService<WatchUser> {
       where: [
         { id: id, parent_id: this.request.user.id },
         { id: id, drivers: { id: this.request.user.id } },
+      
       ],
+relations:{school:{day_hours:true},},
     });
+   
+
+    const now = new Date();
+    const ksaNow = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Riyadh' })); // Convert to KSA Time
+    
+    const dayOfWeek = ksaNow.getDay();
+    const dayHour = watch.school.day_hours[dayOfWeek];
+    
+    // Parse the start and end time strings into Date objects
+    const [startHour, startMinute] = dayHour.start_time.split(':').map(Number);
+    const [endHour, endMinute] = dayHour.end_time.split(':').map(Number);
+    
+    const startTime = new Date(ksaNow);
+    startTime.setHours(startHour, startMinute, 0, 0);
+    
+    const endTime = new Date(ksaNow);
+    endTime.setHours(endHour, endMinute, 0, 0);
+    
+    // Check if current KSA time is within working hours
+    const isWithinWorkingHours = ksaNow >= startTime && ksaNow < endTime;
+    
+    if (!isWithinWorkingHours) {
+      throw new BadRequestException('Not within working hours');
+    }
+    
+
     if (!watch) throw new BadRequestException('message.not_found');
     let request = await this.watchRequest_repo.findOne({
       where: { watch_user_id: watch.id, status: RequestStatus.PENDNING },
