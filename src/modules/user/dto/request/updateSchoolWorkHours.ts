@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsOptional, IsString, Matches } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsOptional, IsString, Matches } from "class-validator";
 
 export class UpdateSchoolWorkHoursRequest {
 
@@ -21,7 +21,7 @@ export class UpdateSchoolWorkHoursRequest {
   end_time: string;
 
   @ApiProperty()
-  @IsString()
+  @IsBoolean()
  
   @IsOptional()
   is_active: boolean;
