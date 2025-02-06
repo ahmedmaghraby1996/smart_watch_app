@@ -116,7 +116,7 @@ export class AuthenticationController {
 
   
 
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN,Role.SchoolAdmin)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('avatarFile'))
