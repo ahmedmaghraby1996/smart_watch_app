@@ -67,7 +67,7 @@ export class RegisterRequest {
   @IsOptional()
   avatarFile: Express.Multer.File;
 
-  @ApiProperty({ default: Role.PARENT, enum: [Role.PARENT, Role.SECURITY,Role.DRIVER ,Role.School] })
+  @ApiProperty({ default: Role.PARENT, enum: [Role.PARENT, Role.SECURITY,Role.DRIVER ,Role.School,Role.SchoolAdmin] })
   @IsNotEmpty()
   @IsEnum(Role)
   role: Role;

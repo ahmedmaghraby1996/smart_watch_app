@@ -139,6 +139,10 @@ export class User extends AuditableEntity {
 
   @Column({ nullable: true })
   relation_type: string;
+
+  @ManyToMany(()=>User,)
+  @JoinTable()
+  school_users: User[]
   constructor(partial: Partial<User>) {
     super();
     Object.assign(this, partial);

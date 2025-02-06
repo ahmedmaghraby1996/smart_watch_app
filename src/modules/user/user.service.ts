@@ -84,4 +84,9 @@ export class UserService extends BaseService<User> {
     const user = await this._repo.findOne({ where: { id: id },relations:{grades:true} });
     return user.grades;
   }
+
+  async getUserSchools() {
+    const user = await this._repo.findOne({ where: { id: this.request.user.id },relations:{school_users:{school:true}} });
+    return user.school_users;
+  }
 }

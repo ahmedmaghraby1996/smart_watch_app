@@ -17,6 +17,7 @@ import { StaticPage } from '../entities/static-pages/static-pages.entity';
 import { ContactUs } from '../entities/contact-us/contact-us.entity';
 import { City } from '../entities/school/city.entity';
 import { Grade } from '../entities/school/grade.entity';
+import { DayHours } from '../entities/school/day-hours';
 
 
 
@@ -36,8 +37,8 @@ WatchRequest,
   StaticPage,
   ContactUs,
     City,
-    Grade
-  
+    Grade,
+    DayHours
 ];
 
 export const DB_VIEWS = [];

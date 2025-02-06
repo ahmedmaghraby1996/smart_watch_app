@@ -17,7 +17,9 @@ import { Wallet } from 'src/infrastructure/entities/wallet/wallet.entity';
 import { School } from 'src/infrastructure/entities/school/school.entity';
 import { City } from 'src/infrastructure/entities/school/city.entity';
 import { Grade } from 'src/infrastructure/entities/school/grade.entity';
-
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { DayHours } from 'src/infrastructure/entities/school/day-hours';
 @Injectable()
 export class RegisterUserTransaction extends BaseTransaction<
   RegisterRequest,
@@ -28,6 +30,7 @@ export class RegisterUserTransaction extends BaseTransaction<
     @Inject(ConfigService) private readonly _config: ConfigService,
     @Inject(StorageManager) private readonly storageManager: StorageManager,
     @Inject(ImageManager) private readonly imageManager: ImageManager,
+    @Inject(REQUEST) private readonly request: Request,
   ) {
     super(dataSource);
   }
@@ -40,6 +43,7 @@ export class RegisterUserTransaction extends BaseTransaction<
   ): Promise<User> {
     try {
       // upload avatar
+      const admin = this.request.user
       const user = new User(req);
       // upload avatar
       if (req.avatarFile) {
@@ -74,8 +78,15 @@ export class RegisterUserTransaction extends BaseTransaction<
       // save user
       const savedUser = await context.save(User, user);
 
+    
+      
       // create driver setting if user is a driver
+      if(req.role==Role.SchoolAdmin){
+       
+        if(!admin) throw new BadRequestException('must be admin');
+      }
       if (req.role === Role.School) {
+        if(!admin) throw new BadRequestException('must be admin');
         const count = await context
           .createQueryBuilder(School, 'school')
           .where('school.city_id = :city_id', { city_id: req.city_id })
@@ -84,6 +95,28 @@ export class RegisterUserTransaction extends BaseTransaction<
 
         const city = await context.findOneBy(City, { id: req.city_id });
         if (!city) throw new BadRequestException('message.city_not_found');
+        const weekdays = [
+          { en: "Monday", ar: "الاثنين" },
+          { en: "Tuesday", ar: "الثلاثاء" },
+          { en: "Wednesday", ar: "الأربعاء" },
+          { en: "Thursday", ar: "الخميس" },
+          { en: "Friday", ar: "الجمعة" },
+          { en: "Saturday", ar: "السبت" },
+          { en: "Sunday", ar: "الأحد" }
+        ];
+        
+       
+        
+      const working_days= weekdays.map((day) => {
+        return new DayHours({
+          name_ar: day.ar,
+          name_en: day.en,
+          start_time: '08:00',
+          end_time: '14:00',
+          order_by: weekdays.indexOf(day)
+        })
+      })
+      
         const school = await context.save(
           School,
           new School({
@@ -91,11 +124,17 @@ export class RegisterUserTransaction extends BaseTransaction<
             avatar: savedUser.avatar,
             city_id: city.id,
             city_code: generateFormattedNumber(city.code, count, 4),
-            academic_stage:req.academic_stage
+            academic_stage:req.academic_stage,
+            day_hours:working_days
           }),
         );
+     
         savedUser.school = school;
+        admin.school_users.push(savedUser);
+
         await context.save(savedUser);
+        await context.save(admin);
+        
       }
       if(req.role==Role.SECURITY){
 

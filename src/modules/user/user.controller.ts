@@ -105,7 +105,7 @@ export class UserController {
     return new PaginatedResponse(usersResponse, { meta: { total, ...query } });
   }
 
-  @Roles(Role.ADMIN, Role.School, Role.SECURITY, Role.PARENT)
+  @Roles(Role.ADMIN, Role.School, Role.SECURITY, Role.PARENT, Role.DRIVER, Role.SchoolAdmin)
   @Get('profile')
   async getProile() {
     return new ActionResponse(
@@ -208,6 +208,16 @@ export class UserController {
        
       
       ),
+    );
+  }
+@Roles(Role.SchoolAdmin)
+  @Get('/schools')
+  
+  async getUserSchools() {
+    const schools = await this.userService.getUserSchools();
+    const response = plainToInstance(UserResponse, schools, { excludeExtraneousValues: true });
+    return new ActionResponse(
+      response,
     );
   }
   @Get('/:id/grades')

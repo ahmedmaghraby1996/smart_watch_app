@@ -3,6 +3,8 @@ import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -12,6 +14,7 @@ import { User } from '../user/user.entity';
 import { OwnedEntity } from 'src/infrastructure/base/owned.entity';
 import { City } from './city.entity';
 import { AcademicStage } from 'src/infrastructure/data/enums/academic-stage.enum';
+import { DayHours } from './day-hours';
 
 @Entity()
 export class School extends AuditableEntity {
@@ -37,6 +40,10 @@ export class School extends AuditableEntity {
 
   @Column({enum:AcademicStage,type:'enum'})
   academic_stage:AcademicStage
+
+  @ManyToMany(()=>DayHours)
+  @JoinTable()
+  day_hours:DayHours[]
   constructor(partial: Partial<School>) {
     super();
     Object.assign(this, partial);

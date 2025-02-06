@@ -114,6 +114,29 @@ export class AuthenticationController {
     });
   }
 
+  
+
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('avatarFile'))
+  @ApiConsumes('multipart/form-data')
+  @Post('register-school')
+  async registerSchool(
+    @Body() req: RegisterRequest,
+    @UploadedFile(new UploadValidator().build())
+    avatarFile: Express.Multer.File,
+  ): Promise<ActionResponse<RegisterResponse>> {
+    req.avatarFile = avatarFile;
+    const user = await this.authService.register(req);
+    const result = plainToInstance(RegisterResponse, user, {
+      excludeExtraneousValues: true,
+    });
+    return new ActionResponse<RegisterResponse>(result, {
+      statusCode: HttpStatus.CREATED,
+    });
+  }
+
   @Roles(Role.PARENT)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
