@@ -44,7 +44,7 @@ export class RegisterUserTransaction extends BaseTransaction<
   ): Promise<User> {
     try {
       // upload avatar
-      const admin_id = this.request.user.id
+      const admin_id = this.request?.user?.id
       const user = new User(req);
       // upload avatar
       if (req.avatarFile) {
