@@ -41,8 +41,8 @@ export class School extends AuditableEntity {
   @Column({enum:AcademicStage,type:'enum'})
   academic_stage:AcademicStage
 
-  @ManyToMany(()=>DayHours)
-  @JoinTable()
+  @OneToMany(()=>DayHours,(day_hours)=>day_hours.school)
+
   day_hours:DayHours[]
   constructor(partial: Partial<School>) {
     super();

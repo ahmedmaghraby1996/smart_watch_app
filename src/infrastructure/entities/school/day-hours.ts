@@ -1,5 +1,6 @@
 import { AuditableEntity } from "src/infrastructure/base/auditable.entity";
-import { Column, Entity } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { School } from "./school.entity";
 @Entity()
 export class DayHours extends AuditableEntity {
 
@@ -20,6 +21,13 @@ export class DayHours extends AuditableEntity {
 
     @Column()
     is_active: boolean
+
+    @ManyToOne(() => School, (school) => school.day_hours)
+    @JoinColumn()
+    school: School
+    @Column({nullable:true})
+    school_id:string
+    
 
     constructor(partial: Partial<DayHours>) {
         super();

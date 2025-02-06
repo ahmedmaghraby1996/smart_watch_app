@@ -108,15 +108,7 @@ export class RegisterUserTransaction extends BaseTransaction<
         
        
         
-      const working_days= weekdays.map((day) => {
-        return new DayHours({
-          name_ar: day.ar,
-          name_en: day.en,
-          start_time: '08:00',
-          end_time: '14:00',
-          order_by: weekdays.indexOf(day)
-        })
-      })
+
       
         const school = await context.save(
           School,
@@ -126,10 +118,22 @@ export class RegisterUserTransaction extends BaseTransaction<
             city_id: city.id,
             city_code: generateFormattedNumber(city.code, count, 4),
             academic_stage:req.academic_stage,
-            day_hours:working_days
+         
           }),
         );
      
+        const working_days= weekdays.map((day) => {
+          return new DayHours({
+            name_ar: day.ar,
+            name_en: day.en,
+            start_time: '08:00',
+            end_time: '14:00',
+            order_by: weekdays.indexOf(day),
+            school_id:school.id
+          })
+        })
+        
+        await context.save(working_days)
         savedUser.school = school;
         const admin = await context.findOne(User,{where:{id:admin_id},relations:{school_users:true}})
         admin.school_users.push(savedUser);
