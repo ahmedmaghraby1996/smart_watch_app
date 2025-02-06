@@ -48,6 +48,7 @@ import { WatchUser } from 'src/infrastructure/entities/watch-user/watch-user.ent
 import { InjectRepository } from '@nestjs/typeorm';
 import { toUrl } from 'src/core/helpers/file.helper';
 import { I18nResponse } from 'src/core/helpers/i18n.helper';
+import { UpdateSchoolWorkHoursRequest } from './dto/request/updateSchoolWorkHours';
 
 @ApiBearerAuth()
 @ApiHeader({
@@ -191,6 +192,26 @@ export class UserController {
     const response = plainToInstance(UserResponse, schools, { excludeExtraneousValues: true });
     return new ActionResponse(
       response,
+    );
+  }
+
+  @Roles(Role.School)
+  @Get('/school/work-hours')
+  
+  async getSchoolWorkHours() {
+    const workHours = await this.userService.getSchoolWorkHours();
+    return new ActionResponse(
+      workHours,
+    );
+  }
+
+  @Roles(Role.School)
+  @Put('/school/work-hours')
+  
+  async updateSchoolWorkHours(@Body() req: UpdateSchoolWorkHoursRequest) {
+    const workHours = await this.userService.updateSchoolWorkHours(req);
+    return new ActionResponse(
+      workHours,
     );
   }
   @Get('/:id')

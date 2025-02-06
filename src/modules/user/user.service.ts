@@ -15,6 +15,8 @@ import * as bcrypt from 'bcrypt';
 import { School } from 'src/infrastructure/entities/school/school.entity';
 import { Role } from 'src/infrastructure/data/enums/role.enum';
 import { ConfigService } from '@nestjs/config';
+import { UpdateSchoolWorkHoursRequest } from './dto/request/updateSchoolWorkHours';
+import { DayHours } from 'src/infrastructure/entities/school/day-hours';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService extends BaseService<User> {
@@ -25,6 +27,7 @@ export class UserService extends BaseService<User> {
     @Inject(ImageManager) private readonly imageManager: ImageManager,
     @Inject(StorageManager) private readonly storageManager: StorageManager,
     @Inject(ConfigService) private readonly _config: ConfigService,
+    @InjectRepository(DayHours) private readonly dayHoursRepo: Repository<DayHours>,
   ) {
     super(userRepo);
   }
@@ -88,5 +91,17 @@ export class UserService extends BaseService<User> {
   async getUserSchools() {
     const user = await this._repo.findOne({ where: { id: this.request.user.id },relations:{school_users:{school:true}} });
     return user.school_users;
+  }
+  async getSchoolWorkHours() {
+    const user = await this._repo.findOne({ where: { id: this.request.user.id },relations:{school:{day_hours:true}} })
+    return user.school.day_hours;
+  }
+  async updateSchoolWorkHours(req: UpdateSchoolWorkHoursRequest) {
+    const day_hour=await this.dayHoursRepo.findOne({where:{id:req.id}})
+    day_hour.start_time=req.start_time
+    day_hour.end_time=req.end_time
+    day_hour.is_active=req.is_active
+    await this.dayHoursRepo.save(day_hour)
+    return day_hour
   }
 }
