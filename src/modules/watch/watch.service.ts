@@ -131,24 +131,25 @@ export class WatchService extends BaseService<WatchUser> {
     // if (!request) throw new BadRequestException('invalid code');
     watch_request.status = RequestStatus.CONFIRMED;
     await this.watchRequest_repo.save(watch_request);
-    if (this.request.user.id != watch_request.watch_user.parent_id) {
+  
       await this.notification_service.sendToUsers(
         new SendToUsersNotificationRequest({
-          message_ar: 'تم تأكيد الطب',
-          message_en: 'request has been confirmed',
-          title_ar: 'تم تأكيد الطب',
-          title_en: 'request has been confirmed',
-          users_id: [watch_request.watch_user.parent_id],
+          message_ar: `${watch_request.number} تم تأكيد الطلب`,
+          message_en: `${watch_request.number} request has been confirmed`,
+          title_ar: `${watch_request.number} تم تأكيد الطلب`,
+          title_en: `${watch_request.number} request has been confirmed`,
+          users_id: [watch_request.user_id],
         }),
       );
 
-    }
+    
     const requestResposne =  plainToInstance(
       WatchRequestResponse,
     this._i18nResponse.entity(  await this.getSingleRequest(watch_request.id)),
     );
 
-    this.watchGateway.server.emit(`request-confirmed-${watch_request.watch_user.parent_id}`, requestResposne);
+    this.watchGateway.server.emit(`request-confirmed-${watch_request.user_id}`, requestResposne);
+    
     
     return watch_request;
   }
@@ -166,10 +167,10 @@ export class WatchService extends BaseService<WatchUser> {
     if (this.request.user.id != watch_request.watch_user.parent_id) {
       await this.notification_service.sendToUsers(
         new SendToUsersNotificationRequest({
-          message_ar: 'تم اكمال الطلب',
-          message_en: 'request has been completed',
-          title_ar: 'تم اكمال الطلب',
-          title_en: 'request has been completed',
+          message_ar: `${watch_request.number} تم اكمال الطلب`,
+          message_en: `${watch_request.number} request has been completed`,
+          title_ar: `${watch_request.number} تم اكمال الطلب`,
+          title_en: `${watch_request.number} request has been completed`,
           users_id: [watch_request.watch_user.parent_id],
         }),
       );
@@ -245,14 +246,14 @@ relations:{school:{day_hours:true},},order:{school:{day_hours:{order_by:'ASC'}} 
     const securities= await this.user_repo.find({
       where: { school_id: watch.school_id ,grades:{id:watch.grade_id}},
     }) 
-    const school=await this.user_repo.findOne({where:{school_id:watch.school_id}})
+    const school=await this.user_repo.findOne({where:{school_id:watch.school_id,roles:Role.School}})
     securities.push(school)
     await this.notification_service.sendToUsers(
       new SendToUsersNotificationRequest({
-        message_ar: 'تم تقديم طلب جديد',
-        message_en: 'request has been sent',
-        title_ar: 'تم تقديم طلب جديد',
-        title_en: 'request has been sent',
+        message_ar: `${requestResposne.number} تم تقديم طلب جديد`, 
+        message_en: `${requestResposne.number} request has been sent`,
+        title_ar: `${requestResposne.number} تم تقديم طلب جديد  `,
+        title_en: `${requestResposne.number} request has been sent`,
         users_id: securities.map((user) => user.id),
       }),
     );
