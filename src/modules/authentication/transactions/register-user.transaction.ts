@@ -74,7 +74,12 @@ export class RegisterUserTransaction extends BaseTransaction<
       );
       
       user.username = user.phone;
-      user.city_id = req?.city_id;
+     if(req?.city_id){
+       const city = await context.findOneBy(City, { id: req.city_id });
+       if (!city) throw new BadRequestException('message.city_not_found');
+       user.city = city;
+     }
+      
       // set user role
       user.roles = [req.role];
       // save user
