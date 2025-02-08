@@ -1,5 +1,6 @@
 import { Expose, Transform } from 'class-transformer';
 import { toUrl } from 'src/core/helpers/file.helper';
+import { City } from 'src/infrastructure/entities/school/city.entity';
 import { School } from 'src/infrastructure/entities/school/school.entity';
 
 export class UserResponse {
@@ -36,4 +37,15 @@ export class UserResponse {
       : null;
   })
   school: School;
+  @Expose()
+  @Transform((value) => {
+    return value.obj?.city
+      ? {
+          id: value.obj.city.id,
+          name_ar: value.obj.city?.name_ar,
+          name_en: value.obj.city?.name_en,
+        }
+      : null;
+  })
+  city: City;
 }

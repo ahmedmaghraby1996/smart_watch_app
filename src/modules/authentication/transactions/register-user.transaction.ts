@@ -74,6 +74,7 @@ export class RegisterUserTransaction extends BaseTransaction<
       );
       
       user.username = user.phone;
+      user.city_id = req?.city_id;
       // set user role
       user.roles = [req.role];
       // save user

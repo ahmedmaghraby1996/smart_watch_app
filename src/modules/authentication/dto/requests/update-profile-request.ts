@@ -57,4 +57,9 @@ export class UpdateProfileRequest {
   @IsString()
   @IsOptional()
   fcm_token: string;
+
+  @ApiProperty({required:false})
+  @IsString()
+  @IsOptional()
+  city_id: string;
 }

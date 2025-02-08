@@ -25,6 +25,7 @@ import { School } from '../school/school.entity';
 import { WatchRequest } from '../watch-user/watch-request.entity';
 import { SuggestionsComplaints } from '../suggestions-complaints/suggestions-complaints.entity';
 import { Grade } from '../school/grade.entity';
+import { City } from '../school/city.entity';
 
 @Entity()
 export class User extends AuditableEntity {
@@ -32,6 +33,11 @@ export class User extends AuditableEntity {
   @Factory((faker) => faker.phone.number('########'))
   @Column({ length: 8, unique: true })
   account: string;
+
+  @ManyToOne(()=>City,)
+  city:City
+  @Column({nullable:true})
+  city_id:string
 
   @OneToMany(() => NotificationEntity, (notification) => notification.user)
   notifications: NotificationEntity[];
