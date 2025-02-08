@@ -75,7 +75,7 @@ export class UserController {
       applyQueryFilters(query, `school_id=${this.request.user.school_id}`);
       applyQueryFilters(query, `roles=${Role.SECURITY}`);
     }
-
+applyQueryIncludes(query, 'city');
     applyQueryIncludes(query, 'school');
     const users = await this.userService.findAll(query);
     const usersResponse = await Promise.all(
