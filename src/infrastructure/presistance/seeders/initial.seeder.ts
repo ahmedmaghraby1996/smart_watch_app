@@ -10,7 +10,7 @@ export const DB_SEEDERS = [
   // UsersSeeder,
   // AddressSeeder,
   citySeeder,
-// StaticPageSeeder
-// gradeSeeder
+StaticPageSeeder,
+gradeSeeder
 
 ];
