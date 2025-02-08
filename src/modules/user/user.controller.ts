@@ -97,6 +97,7 @@ applyQueryIncludes(query, 'city');
           created_at: user.created_at,
           familyMembersCount,
           watchUsersCount,
+          city: user.city,
           school: user.school,
         });
       }),
