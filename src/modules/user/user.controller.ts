@@ -86,7 +86,7 @@ applyQueryIncludes(query, 'city');
         const watchUsersCount = await this.watchUserRepo.count({
           where: { parent_id: user.id },
         });
-        return plainToInstance(UserResponse, {
+        return this._i18nResponse.entity( plainToInstance(UserResponse, {
           id: user.id,
           name: user.name,
           email: user.email,
@@ -99,7 +99,7 @@ applyQueryIncludes(query, 'city');
           watchUsersCount,
           city: user.city,
           school: user.school,
-        });
+        }));
       }),
     );
     const total = await this.userService.count(query);
@@ -219,10 +219,10 @@ applyQueryIncludes(query, 'city');
   async getUserById(@Param('id') id: string) {
     const user=   await this.userService._repo.findOne({
       where: { id: id },
-      relations: { school: true ,family: true,children: true},
+      relations: { school: true ,family: true,children: true,city: true},
     });
     return new ActionResponse(
-      plainToInstance(
+     this._i18nResponse.entity( plainToInstance(
         UserResponse,
      {
       id: user.id,
@@ -236,10 +236,11 @@ applyQueryIncludes(query, 'city');
        family: plainToInstance(UserResponse, user.family, { excludeExtraneousValues: true }),
        children:plainToInstance(UserResponse, user.family, { excludeExtraneousValues: true }),
        school: user.school,
+       city: user.city,
      },
        
       
-      ),
+      )),
     );
   }
 
