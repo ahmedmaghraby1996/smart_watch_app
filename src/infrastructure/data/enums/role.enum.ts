@@ -15,4 +15,5 @@ export enum Role {
   School = 'SCHOOL',
   SECURITY = 'SECURITY',
   SUPERVISOR = 'SUPERVISOR',
+  SCHOOLADMIN = 'SCHOOL_ADMIN',
 }
