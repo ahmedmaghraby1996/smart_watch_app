@@ -73,7 +73,7 @@ export class RegisterUserTransaction extends BaseTransaction<
         10,
       );
       
-      user.username = user.phone;
+      user.username = user?.phone??user?.email;
      if(req?.city_id){
        const city = await context.findOneBy(City, { id: req.city_id });
        if (!city) throw new BadRequestException('message.city_not_found');

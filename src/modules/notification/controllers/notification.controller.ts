@@ -49,7 +49,7 @@ export class NotificationController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.PARENT,Role.SECURITY,Role.School,Role.DRIVER,Role.ADMIN)
+  @Roles(Role.PARENT,Role.SECURITY,Role.School,Role.DRIVER,Role.ADMIN,Role.SUPERVISOR)
   async findAll(@Query() query: PaginatedRequest) {
     applyQuerySort(query, `created_at=desc`);
     applyQueryFilters(query, `user_id=${this.notificationService.currentUser.id}`);
