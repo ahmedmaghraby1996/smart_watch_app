@@ -70,7 +70,7 @@ export class NotificationController {
 
   @Get("/:id")
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN,Role.School)
+  @Roles(Role.ADMIN,Role.School,Role.SUPERVISOR)
   async getSingleNotification(@Param("id") id: string) {
     const result= await this.notificationService.getSingleNotification(id);
 return new ActionResponse<NotificationResponse>(
@@ -92,7 +92,7 @@ return new ActionResponse<NotificationResponse>(
     return new ActionResponse<NotificationResponse>(response);
   }
 
-  @Roles(Role.ADMIN,Role.School)
+  @Roles(Role.ADMIN,Role.School,Role.SUPERVISOR)
   @Post('send-to-users')
   async sendToUsers(
     @Body() sendToUsersNotificationRequest: SendToUsersNotificationRequest,

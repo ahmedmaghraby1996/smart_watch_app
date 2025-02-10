@@ -22,7 +22,7 @@ import { plainToInstance } from 'class-transformer';
   description: 'Language header: en, ar',
 })
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.ADMIN, Role.PARENT, Role.SECURITY, Role.School, Role.DRIVER)
+@Roles(Role.ADMIN, Role.PARENT, Role.SECURITY, Role.School, Role.DRIVER,Role.SUPERVISOR)
 @ApiBearerAuth()
 export class FaqController {
   constructor(

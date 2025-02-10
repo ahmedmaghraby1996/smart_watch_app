@@ -31,7 +31,7 @@ import { Roles } from '../authentication/guards/roles.decorator';
 })
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
-@Roles(Role.ADMIN, Role.PARENT, Role.SECURITY, Role.School, Role.DRIVER)
+@Roles(Role.ADMIN, Role.PARENT, Role.SECURITY, Role.School, Role.DRIVER, Role.SUPERVISOR)
 
 @Controller('contact-us')
 export class ContactUsController {
