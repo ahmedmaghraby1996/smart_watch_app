@@ -88,7 +88,7 @@ export class RegisterUserTransaction extends BaseTransaction<
     
       
       // create driver setting if user is a driver
-      if(req.role==Role.SchoolAdmin){
+      if(req.role==Role.SUPERVISOR){
        
         if(!admin_id) throw new BadRequestException('must be admin');
       }

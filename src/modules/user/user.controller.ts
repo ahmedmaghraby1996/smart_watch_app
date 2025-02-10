@@ -107,7 +107,7 @@ applyQueryIncludes(query, 'city');
     return new PaginatedResponse(usersResponse, { meta: { total, ...query } });
   }
 
-  @Roles(Role.ADMIN, Role.School, Role.SECURITY, Role.PARENT, Role.DRIVER, Role.SchoolAdmin)
+  @Roles(Role.ADMIN, Role.School, Role.SECURITY, Role.PARENT, Role.DRIVER, Role.SUPERVISOR)
   @Get('profile')
   async getProile() {
     return new ActionResponse(
@@ -185,7 +185,7 @@ applyQueryIncludes(query, 'city');
     );
   }
 
-  @Roles(Role.SchoolAdmin)
+  @Roles(Role.SUPERVISOR)
   @Get('/schools')
   
   async getUserSchools() {
