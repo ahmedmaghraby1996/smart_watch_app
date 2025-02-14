@@ -271,7 +271,7 @@ relations:{school:{day_hours:true},},order:{school:{day_hours:{order_by:'ASC'}} 
     return request;
   }
   async getWatchRequests() {
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const oneDayAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
     return await this.watchRequest_repo.find({
       where: [
         {
@@ -296,7 +296,7 @@ relations:{school:{day_hours:true},},order:{school:{day_hours:{order_by:'ASC'}} 
   }
 
   async getSchoolWatchRequests() {
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const oneDayAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
     return await this.watchRequest_repo.find({
       where: [
         {   created_at: MoreThan(oneDayAgo),

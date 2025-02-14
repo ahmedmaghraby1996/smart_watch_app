@@ -240,7 +240,7 @@ export class WatchController {
     applyQuerySort(query, 'created_at=desc');
     applyQueryISDeleted(query);
     const last_day = new Date(
-      new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+      new Date(new Date().getTime() - 12 * 60 * 60 * 1000),
     );
     applyQueryFilters(
       query,
@@ -260,7 +260,7 @@ export class WatchController {
     applyQuerySort(query, 'created_at=desc');
     applyQueryISDeleted(query);
     const last_day = new Date(
-      new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+      new Date(new Date().getTime() - 12 * 60 * 60 * 1000),
     );
     applyQueryFilters(
       query,
@@ -330,7 +330,7 @@ export class WatchController {
     );
     applyQueryISDeleted(query);
     const last_day = new Date(
-      new Date(new Date().getTime() - 24 * 60 * 60 * 1000),
+      new Date(new Date().getTime() - 12 * 60 * 60 * 1000),
     );
     applyQueryFilters(
       query,
