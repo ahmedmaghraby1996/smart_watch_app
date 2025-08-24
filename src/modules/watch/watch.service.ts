@@ -130,6 +130,7 @@ export class WatchService extends BaseService<WatchUser> {
 
     // if (!request) throw new BadRequestException('invalid code');
     watch_request.status = RequestStatus.CONFIRMED;
+    watch_request.confirmed_by_id = this.request.user.id;
     await this.watchRequest_repo.save(watch_request);
   
       await this.notification_service.sendToUsers(
@@ -163,6 +164,7 @@ export class WatchService extends BaseService<WatchUser> {
 
     // if (!request) throw new BadRequestException('invalid code');
     watch_request.status = RequestStatus.COMPLETED;
+    watch_request.completed_by_id = this.request.user.id;
     await this.watchRequest_repo.save(watch_request);
     if (this.request.user.id != watch_request.watch_user.parent_id) {
       await this.notification_service.sendToUsers(
@@ -290,7 +292,9 @@ relations:{school:{day_hours:true},},order:{school:{day_hours:{order_by:'ASC'}} 
         },
       ],
       relations: {
-        watch_user: { parent: true, drivers: true ,grade:true},
+        watch_user: { parent: true, drivers: true ,grade:true,},
+        completed_by: true,
+        confirmed_by: true,
       },
     });
   }
@@ -306,6 +310,8 @@ relations:{school:{day_hours:true},},order:{school:{day_hours:{order_by:'ASC'}} 
       ],
       relations: {
         watch_user: { parent: true, drivers: true ,grade:true },
+        completed_by: true,
+        confirmed_by: true,
       },
     });
   }

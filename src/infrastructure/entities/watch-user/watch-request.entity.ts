@@ -30,5 +30,16 @@ export class WatchRequest extends OwnedEntity{
 
   @Column({ length: 10, unique: true })
   number: string;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'confirmed_by_id' })
+  confirmed_by: User
+  @Column({nullable:true})
+  confirmed_by_id:string
   
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'completed_by_id' })
+  completed_by: User
+  @Column({nullable:true})
+  completed_by_id:string
 }
