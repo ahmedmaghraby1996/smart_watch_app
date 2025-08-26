@@ -79,7 +79,7 @@ export class WatchController {
     private readonly _request_service: WatchRequestService,
     private readonly _IMEI_service: IMEIService,
     @InjectRepository(User) private userRepo: Repository<User>,
-   @Inject(I18nResponse) private readonly _i18nResponse: I18nResponse,
+    @Inject(I18nResponse) private readonly _i18nResponse: I18nResponse,
 
     @Inject(REQUEST) private readonly request: Request,
   ) {}
@@ -149,7 +149,9 @@ export class WatchController {
   async getIEMI(@Param('id') id: string) {
     const IMEI = await this._IMEI_service._repo.findOne({
       where: { id: id },
-      relations: { watch_user: { parent: true, school: true, drivers: true,grade:true } },
+      relations: {
+        watch_user: { parent: true, school: true, drivers: true, grade: true },
+      },
     });
     return new ActionResponse({
       id: IMEI.id,
@@ -198,13 +200,13 @@ export class WatchController {
     return new ActionResponse(await this._service.makeRequest(watch_user_id));
   }
 
-  @Roles( Role.PARENT, Role.DRIVER, Role.ADMIN)
+  @Roles(Role.PARENT, Role.DRIVER, Role.ADMIN)
   @Post('complete-request')
   async completeRequest(@Body() req: ConfirmRequest) {
     return new ActionResponse(await this._service.completeRequest(req));
   }
 
-  @Roles( Role.School, Role.ADMIN,Role.SECURITY)
+  @Roles(Role.School, Role.ADMIN, Role.SECURITY)
   @Post('confirm-request')
   async confirmRequest(@Body() req: ConfirmRequest) {
     return new ActionResponse(await this._service.confirmRequest(req));
@@ -218,7 +220,7 @@ export class WatchController {
     );
   }
 
-  @Roles(Role.PARENT,Role.ADMIN)
+  @Roles(Role.PARENT, Role.ADMIN)
   @Delete('/delete-watch-user/:watch_user_id')
   async deleteWatchUsers(@Param('watch_user_id') watch_user_id: string) {
     const watch_user = await this._service._repo.findOneBy({
@@ -236,7 +238,7 @@ export class WatchController {
   @Get('/get-admin-requests')
   async getWatchRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
-       applyQueryIncludes(query, 'completed_by');
+    applyQueryIncludes(query, 'completed_by');
     applyQueryIncludes(query, 'confirmed_by');
     applyQueryIncludes(query, 'watch_user#school.drivers.parent.grade');
     applyQuerySort(query, 'created_at=desc');
@@ -251,7 +253,7 @@ export class WatchController {
 
     const requests = await this._request_service.findAll(query);
     const total = await this._request_service.count(query);
-    const response =this._i18nResponse.entity(requests)
+    const response = this._i18nResponse.entity(requests);
     const result = plainToInstance(WatchRequestResponse, response, {});
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
@@ -259,7 +261,7 @@ export class WatchController {
   @Get('/get-users-requests')
   async getWatchUsersRequests(@Query() query: PaginatedRequest) {
     applyQueryIncludes(query, 'user');
-       applyQueryIncludes(query, 'completed_by');
+    applyQueryIncludes(query, 'completed_by');
     applyQueryIncludes(query, 'confirmed_by');
     applyQuerySort(query, 'created_at=desc');
     applyQueryISDeleted(query);
@@ -287,18 +289,22 @@ export class WatchController {
           `watch_user.parent_id=${this.request.user.id}`,
         );
         break;
-      case Role.SECURITY:{
-        const grades= await this.userRepo.findOne({
+      case Role.SECURITY: {
+        const grades = await this.userRepo.findOne({
           where: { id: this.request.user.id },
           relations: { grades: true },
-        })
-     
-        applyQueryFilters(query,`school_id=${this.request.user.school_id}`)
+        });
+
+        applyQueryFilters(query, `school_id=${this.request.user.school_id}`);
         applyQueryFilters(
           query,
-          `watch_user.grade_id/${grades.grades.map((grade) => grade.id).toString().replace(/,/g, "_")}`,
+          `watch_user.grade_id/${grades.grades
+            .map((grade) => grade.id)
+            .toString()
+            .replace(/,/g, '_')}`,
         );
-        break;}
+        break;
+      }
       default:
         applyQueryFilters(
           query,
@@ -309,7 +315,7 @@ export class WatchController {
 
     const requests = await this._request_service.findAll(query);
     const total = await this._request_service.count(query);
-    const response =this._i18nResponse.entity(requests)
+    const response = this._i18nResponse.entity(requests);
     const result = plainToInstance(WatchRequestResponse, response, {});
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
@@ -343,7 +349,7 @@ export class WatchController {
     );
     const requests = await this._request_service.findAll(query);
     const total = await this._request_service.count(query);
-    const response =this._i18nResponse.entity(requests)
+    const response = this._i18nResponse.entity(requests);
     const result = plainToInstance(WatchRequestResponse, response, {});
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
@@ -358,7 +364,7 @@ export class WatchController {
     applyQueryFilters(query, `school_id=${this.request.user.school_id}`);
     const watch_users = await this._service.findAll(query);
     const total = await this._service.count(query);
-    const response =this._i18nResponse.entity(watch_users)
+    const response = this._i18nResponse.entity(watch_users);
     const result = plainToInstance(WatchUserResponse, response, {});
     return new PaginatedResponse(result, { meta: { total, ...query } });
   }
@@ -375,6 +381,5 @@ export class WatchController {
         };
       }),
     );
-
   }
 }
