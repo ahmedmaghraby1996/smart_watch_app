@@ -48,4 +48,11 @@ export class UserResponse {
       : null;
   })
   city: City;
+
+  @Expose()
+  completed_requests: number;
+  @Expose()
+  confirmed_requests: number;
+  @Expose()
+  pending_requests: number;
 }

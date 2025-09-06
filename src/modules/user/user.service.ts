@@ -1,4 +1,10 @@
-import { BadRequestException, Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  Scope,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/infrastructure/entities/user/user.entity';
 import { Repository } from 'typeorm';
@@ -17,6 +23,8 @@ import { Role } from 'src/infrastructure/data/enums/role.enum';
 import { ConfigService } from '@nestjs/config';
 import { UpdateSchoolWorkHoursRequest } from './dto/request/updateSchoolWorkHours';
 import { DayHours } from 'src/infrastructure/entities/school/day-hours';
+import { WatchRequest } from 'src/infrastructure/entities/watch-user/watch-request.entity';
+import { RequestStatus } from 'src/infrastructure/data/enums/reservation-status.eum';
 
 @Injectable({ scope: Scope.REQUEST })
 export class UserService extends BaseService<User> {
@@ -27,7 +35,8 @@ export class UserService extends BaseService<User> {
     @Inject(ImageManager) private readonly imageManager: ImageManager,
     @Inject(StorageManager) private readonly storageManager: StorageManager,
     @Inject(ConfigService) private readonly _config: ConfigService,
-    @InjectRepository(DayHours) private readonly dayHoursRepo: Repository<DayHours>,
+    @InjectRepository(DayHours)
+    private readonly dayHoursRepo: Repository<DayHours>,
   ) {
     super(userRepo);
   }
@@ -35,16 +44,19 @@ export class UserService extends BaseService<User> {
   async deleteUser(id: string) {
     const user = await this._repo.findOne({
       where: { id: id },
-      relations: { school: true ,},
+      relations: { school: true },
     });
     if (!user) throw new NotFoundException('user not found');
     user.username = 'deleted_' + user.username + '_' + randNum(4);
     await this.update(user);
-    if (user.roles[0] == Role.School){
-      const watchUsers=await this.schoolRepo.find({where:{watchUsers:{school_id:user.school_id}}})
-      if(watchUsers.length>0)
+    if (user.roles[0] == Role.School) {
+      const watchUsers = await this.schoolRepo.find({
+        where: { watchUsers: { school_id: user.school_id } },
+      });
+      if (watchUsers.length > 0)
         throw new BadRequestException('school has watch users');
-      await this.schoolRepo.softRemove(user.school);}
+      await this.schoolRepo.softRemove(user.school);
+    }
     return await this.userRepo.softRemove(user);
   }
   async updateProfile(id, req: UpdateProfileRequest) {
@@ -84,24 +96,66 @@ export class UserService extends BaseService<User> {
     });
   }
   async getUserGrades(id: string) {
-    const user = await this._repo.findOne({ where: { id: id },relations:{grades:true} });
+    const user = await this._repo.findOne({
+      where: { id: id },
+      relations: { grades: true },
+    });
     return user.grades;
   }
 
   async getUserSchools() {
-    const user = await this._repo.findOne({ where: { id: this.request.user.id },relations:{school_users:{school:true}} });
-    return user.school_users;
-  }
+  const user = await this._repo.findOne({
+    where: { id: this.request.user.id },
+    relations: {
+      school_users: {
+        school: {
+          watchUsers: { requests: true },
+        },
+      },
+    },
+  });
+
+  if (!user) return [];
+
+  return user.school_users.map((su) => {
+    const requests = su.school.watchUsers.flatMap((wu) => wu.requests);
+
+    const pending = requests.filter(
+      (r) => r.status === RequestStatus.PENDNING,
+    ).length;
+
+    const confirmed = requests.filter(
+      (r) => r.status === RequestStatus.CONFIRMED,
+    ).length;
+
+    const completed = requests.filter(
+      (r) => r.status === RequestStatus.COMPLETED,
+    ).length;
+
+    return {
+      ...su,
+      pending_requests: pending,
+      confirmed_requests: confirmed,
+      completed_requests: completed,
+    };
+  });
+}
+
+
   async getSchoolWorkHours() {
-    const user = await this._repo.findOne({ where: { id: this.request.user.id },relations:{school:{day_hours:true},},order:{school:{day_hours:{order_by:'ASC'}} }})
+    const user = await this._repo.findOne({
+      where: { id: this.request.user.id },
+      relations: { school: { day_hours: true } },
+      order: { school: { day_hours: { order_by: 'ASC' } } },
+    });
     return user.school.day_hours;
   }
   async updateSchoolWorkHours(req: UpdateSchoolWorkHoursRequest) {
-    const day_hour=await this.dayHoursRepo.findOne({where:{id:req.id}})
-    day_hour.start_time=req.start_time
-    day_hour.end_time=req.end_time
-    day_hour.is_active=req.is_active
-    await this.dayHoursRepo.save(day_hour)
-    return day_hour
+    const day_hour = await this.dayHoursRepo.findOne({ where: { id: req.id } });
+    day_hour.start_time = req.start_time;
+    day_hour.end_time = req.end_time;
+    day_hour.is_active = req.is_active;
+    await this.dayHoursRepo.save(day_hour);
+    return day_hour;
   }
 }
