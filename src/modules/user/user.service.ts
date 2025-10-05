@@ -103,7 +103,7 @@ export class UserService extends BaseService<User> {
     return user.grades;
   }
 
-  async getUserSchools() {
+async getUserSchools() {
   const user = await this._repo.findOne({
     where: { id: this.request.user.id },
     relations: {
@@ -117,18 +117,44 @@ export class UserService extends BaseService<User> {
 
   if (!user) return [];
 
+  // KSA timezone offset in minutes (+3 hours)
+  const KSA_OFFSET = 3 * 60;
+
+  // Current time in UTC
+  const now = new Date();
+
+  // Convert UTC time to KSA time
+  const ksaNow = new Date(now.getTime() + KSA_OFFSET * 60 * 1000);
+
+  // Calculate start and end of KSA day
+  const startOfDayKSA = new Date(ksaNow);
+  startOfDayKSA.setHours(0, 0, 0, 0);
+
+  const endOfDayKSA = new Date(ksaNow);
+  endOfDayKSA.setHours(23, 59, 59, 999);
+
+  // Convert them back to UTC for comparison
+  const startUTC = new Date(startOfDayKSA.getTime() - KSA_OFFSET * 60 * 1000);
+  const endUTC = new Date(endOfDayKSA.getTime() - KSA_OFFSET * 60 * 1000);
+
   return user.school_users.map((su) => {
     const requests = su.school.watchUsers.flatMap((wu) => wu.requests);
 
-    const pending = requests.filter(
+    // Filter only requests created today in KSA time
+    const todayRequests = requests.filter((r) => {
+      const createdAt = new Date(r.created_at);
+      return createdAt >= startUTC && createdAt <= endUTC;
+    });
+
+    const pending = todayRequests.filter(
       (r) => r.status === RequestStatus.PENDNING,
     ).length;
 
-    const confirmed = requests.filter(
+    const confirmed = todayRequests.filter(
       (r) => r.status === RequestStatus.CONFIRMED,
     ).length;
 
-    const completed = requests.filter(
+    const completed = todayRequests.filter(
       (r) => r.status === RequestStatus.COMPLETED,
     ).length;
 
@@ -137,9 +163,11 @@ export class UserService extends BaseService<User> {
       pending_requests: pending,
       confirmed_requests: confirmed,
       completed_requests: completed,
+      total_requests_today: todayRequests.length,
     };
   });
 }
+
 
 
   async getSchoolWorkHours() {
