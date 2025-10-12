@@ -178,6 +178,14 @@ applyQueryIncludes(query, 'city');
     );
   }
 
+    @Get('/:id/grades')
+  async getUserGrades(@Param('id') id: string) {
+    const grades = await this.userService.getUserGrades(id);
+    const response = this._i18nResponse.entity(grades);
+    return new ActionResponse(
+      response,
+    );
+  }
   //update fcm token
   @Delete('/delete')
   async deleteUser(@Query() query: GetUserRequest) {
@@ -245,12 +253,5 @@ applyQueryIncludes(query, 'city');
     );
   }
 
-  @Get('/:id/grades')
-  async getUserGrades(@Param('id') id: string) {
-    const grades = await this.userService.getUserGrades(id);
-    const response = this._i18nResponse.entity(grades);
-    return new ActionResponse(
-      response,
-    );
-  }
+
 }
