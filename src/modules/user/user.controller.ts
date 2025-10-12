@@ -56,7 +56,7 @@ import { UpdateSchoolWorkHoursRequest } from './dto/request/updateSchoolWorkHour
   required: false,
   description: 'Language header: en, ar',
 })
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Users')
 @Controller('user')
 export class UserController {
