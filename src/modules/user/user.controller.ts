@@ -68,6 +68,14 @@ export class UserController {
     @Inject(I18nResponse) private readonly _i18nResponse: I18nResponse,
   ) {}
 
+      @Get('/:id/grades')
+  async getUserGrades(@Param('id') id: string) {
+    const grades = await this.userService.getUserGrades(id);
+    const response = this._i18nResponse.entity(grades);
+    return new ActionResponse(
+      response,
+    );
+  }
   @Roles(Role.ADMIN, Role.School)
   @Get("")
   async getAll(@Query() query: PaginatedRequest) {
@@ -178,14 +186,7 @@ applyQueryIncludes(query, 'city');
     );
   }
 
-    @Get('/:id/grades')
-  async getUserGrades(@Param('id') id: string) {
-    const grades = await this.userService.getUserGrades(id);
-    const response = this._i18nResponse.entity(grades);
-    return new ActionResponse(
-      response,
-    );
-  }
+
   //update fcm token
   @Delete('/delete')
   async deleteUser(@Query() query: GetUserRequest) {
