@@ -58,6 +58,7 @@ import { UpdateSchoolWorkHoursRequest } from './dto/request/updateSchoolWorkHour
 })
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Users')
+@Roles(Role.ADMIN, Role.School, Role.SECURITY, Role.PARENT, Role.DRIVER, Role.SUPERVISOR)
 @Controller('user')
 export class UserController {
   constructor(
