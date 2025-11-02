@@ -160,6 +160,13 @@ export class WatchService extends BaseService<WatchUser> {
       requestResposne,
     );
 
+    this.watchGateway.server.emit(
+      `remove-request`,{
+        request_id: watch_request.id,
+        status: RequestStatus.PENDNING
+      }
+    )
+
     return watch_request;
   }
 
@@ -185,6 +192,12 @@ export class WatchService extends BaseService<WatchUser> {
         }),
       );
     }
+       this.watchGateway.server.emit(
+      `remove-request`,{
+        request_id: watch_request.id,
+        status: RequestStatus.CONFIRMED
+      }
+    )
     return watch_request;
   }
   async makeRequest(id: string) {
